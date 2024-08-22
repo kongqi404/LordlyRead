@@ -23,8 +23,11 @@
             <text class="group-title">官方Q群</text>
             <text class="text">Lordly Wear 可穿戴设备交流群</text>
             <image src="/common/image/qr-qq.png" class="qr-code" />
+            <text class="group-title">赞助</text>
+            <text class="text">afdian@tiger14tiger</text>
+            <image src="/common/image/qr-feed.png" class="qr-code" />
             <text class="group-title">开源地址</text>
-            <text class="text">jiwangyihao/LordlyRead</text>
+            <text class="text">Lordly-Tech/LordlyRead</text>
             <image src="/common/image/qr-github.png" class="qr-code" />
             <text class="group-title">更多资源请访问</text>
             <text class="text">bandbbs.cn</text>
