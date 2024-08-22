@@ -1,0 +1,112 @@
+<template>
+  <div class="page {{pageClass}}" @swipe="pageSwipe">
+    <div class="topbar">
+      <image src="/common/icon/refresh.png" class="icon" />
+      <text class="title">{{ $t("index.title") }}</text>
+      <image src="/common/icon/search.png" class="icon" />
+    </div>
+    <!--  @swipe="bodySwipe" -->
+    <div class="body">
+      <swiper class="body-swiper" id="body-swiper" indicator="false" loop="false" @change="swiperChange">
+        <div class="swiper-container">
+          <div if="holder" class="body-holder">
+            <text>这里……</text>
+            <text>空空如也呢~</text>
+          </div>
+          <scroll else class="body-container" scroll-y="true" bounces="true">
+            <input class="btn" type="button" value="跳转到详情页" @click="push('/pages/detail')" />
+          </scroll>
+        </div>
+        <div class="swiper-container">
+          <div class="body-holder">
+            <text>这里……</text>
+            <text>空空如也呢~</text>
+          </div>
+        </div>
+        <div class="swiper-container">
+          <scroll class="body-container" scroll-y="true" bounces="true">
+            <text class="btn-group-title">设置</text>
+            <div class="card-btn" @click="push('/pages/detail')">
+              <image src="/common/icon/setting.png" class="icon" />
+              <text class="card-btn-text">基本/其他设置</text>
+            </div>
+            <text class="btn-group-title">其他</text>
+            <div class="card-btn" @click="push('/pages/about')">
+              <image src="/common/icon/info.png" class="icon" />
+              <text class="card-btn-text">关于</text>
+            </div>
+          </scroll>
+        </div>
+      </swiper>
+    </div>
+    <div class="tabbar">
+      <div class="tab" @click="setTab(0)">
+        <image src="/common/icon/home{{ tab===0 ? '-active' : '' }}.png" class="icon" />
+      </div>
+      <div class="tab" @click="setTab(1)">
+        <image src="/common/icon/explore{{ tab===1 ? '-active' : '' }}.png" class="icon" />
+      </div>
+      <div class="tab" @click="setTab(2)">
+        <image src="/common/icon/user{{ tab===2 ? '-active' : '' }}.png" class="icon" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import utils from "../../utils"
+
+const {template, on, router} = utils
+
+export default {
+  ...template,
+  // 页面级组件的数据模型，影响传入数据的覆盖机制：private内定义的属性不允许被覆盖
+  private: {
+    ...template.private,
+    title: "示例页面",
+    bodyHeight: 0,
+    holder: false,
+    tab: 0
+  },
+
+  ...router,
+
+  bodySwipe(evt) {
+    // 切换 Tab
+    if (evt.direction === "right") {
+      if (this.tab > 0) {
+        this.setTab(this.tab - 1)
+      } else {
+        this.$app.$def.util.routerBack()
+      }
+    } else if (evt.direction === "left") {
+      if (this.tab < 2) {
+        this.setTab(this.tab + 1)
+      }
+    }
+  },
+
+  setTab(tab) {
+    this.tab = tab
+    this.$element("body-swiper").swipeTo({index: this.tab})
+  },
+
+  swiperChange(evt) {
+    this.tab = evt.index
+  }
+}
+</script>
+
+<style>
+@import url(../../common/css/page.css);
+
+.btn {
+  width: 200px;
+  height: 40px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  background-color: #09ba07;
+  font-size: 20px;
+  color: #ffffff;
+}
+</style>

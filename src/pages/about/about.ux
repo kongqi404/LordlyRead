@@ -1,0 +1,108 @@
+<template>
+  <div class="page {{pageClass}}" @swipe="pageSwipe">
+    <div class="topbar">
+      <image src="/common/icon/back.png" class="icon" @click="back()" />
+      <text class="title">关于</text>
+    </div>
+    <div class="body">
+      <swiper class="body-swiper" indicator="false" loop="false">
+        <div class="swiper-container">
+          <scroll class="body-container" scroll-y="true" bounces="true">
+            <div class="app-info">
+              <image src="{{ appInfo.icon }}" class="app-logo" />
+              <div class="col">
+                <text class="app-name">{{ appInfo.name }}</text>
+                <text class="app-version">版本 {{ appInfo.versionName }}</text>
+              </div>
+            </div>
+            <text class="app-desc">支持「开源阅读」规则的手环在线阅读工具</text>
+            <text class="app-desc">本应用为开源项目，欢迎提交 PR 或 Issue</text>
+            <text class="group-title">开发者</text>
+            <text class="text">@吉王义昊</text>
+            <text class="text">@两广总督-tiger</text>
+            <text class="group-title">官方Q群</text>
+            <text class="text">Lordly Wear 可穿戴设备交流群</text>
+            <image src="/common/image/qr-qq.jpg" class="qr-code" />
+            <text class="group-title">开源地址</text>
+            <text class="text">jiwangyihao/lordly-read</text>
+            <text class="group-title">更多资源请访问</text>
+            <text class="text">bandbbs.cn</text>
+            <text class="group-title">免责声明</text>
+            <text class="text">本应用仅用于学习交流，请勿用于商业用途</text>
+            <text class="text">本应用只是一个转码工具，不提供内容</text>
+          </scroll>
+        </div>
+      </swiper>
+    </div>
+  </div>
+</template>
+
+<script>
+import utils from "../../utils"
+import app from "@system.app"
+
+const {template, router} = utils
+
+export default {
+  ...template,
+  private: {
+    ...template.private,
+    appInfo: app.getInfo()
+  },
+  ...router
+}
+</script>
+
+<style>
+@import url(../../common/css/page.css);
+
+.body-container {
+  align-items: center;
+}
+
+.app-info {
+  align-items: center;
+}
+
+.app-logo {
+  width: 80px;
+  height: 80px;
+  margin-right: 20px;
+}
+
+.app-name {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.app-version {
+  font-size: 24px;
+  color: #999;
+}
+
+.app-desc {
+  font-size: 24px;
+  color: #666;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.group-title {
+  font-size: 24px;
+  color: #666;
+  margin-top: 32px;
+  text-align: center;
+}
+
+.text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.qr-code {
+  width: 240px;
+  height: 240px;
+}
+</style>

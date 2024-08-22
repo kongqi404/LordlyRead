@@ -1,0 +1,35 @@
+<template>
+  <div class="page {{pageClass}}" @swipe="pageSwipe">
+    <div class="topbar">
+      <image src="/common/icon/back.png" class="icon" @click="back()" />
+      <text class="title">详情</text>
+    </div>
+    <div class="body">
+      <swiper class="body-swiper" indicator="false" loop="false">
+        <div class="swiper-container">
+          <scroll class="body-container" scroll-y="true" bounces="true">
+            <text class="title">{{ text }}</text>
+          </scroll>
+        </div>
+      </swiper>
+    </div>
+  </div>
+</template>
+
+<script>
+import utils from "../../utils"
+
+const {template} = utils
+
+export default {
+  ...template,
+  private: {
+    ...template.private,
+    text: "欢迎打开详情页"
+  }
+}
+</script>
+
+<style>
+@import url(../../common/css/page.css);
+</style>

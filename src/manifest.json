@@ -1,0 +1,40 @@
+{
+  "package": "top.jwyihao.lordly_read",
+  "name": "Lordly·阅读",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "minPlatformVersion": 1000,
+  "minAPILevel": 3,
+  "icon": "/common/logo/96-round.png",
+  "deviceTypeList": [
+    "watch"
+  ],
+  "features": [
+    {
+      "name": "system.router"
+    }
+  ],
+  "config": {
+    "logLevel": "log",
+    "designWidth": 336
+  },
+  "router": {
+    "entry": "pages/index",
+    "pages": {
+      "pages/index": {
+        "component": "index",
+        "launchMode": "singleTask"
+      },
+      "pages/about": {
+        "component": "about",
+        "launchMode": "singleTask"
+      },
+      "pages/detail": {
+        "component": "detail"
+      }
+    }
+  },
+  "display": {
+    "backgroundColor": "#000000"
+  }
+}
