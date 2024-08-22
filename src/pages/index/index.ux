@@ -35,6 +35,14 @@
         </div>
         <div class="swiper-container">
           <scroll class="body-container" scroll-y="true" bounces="true">
+            <div class="card-btn" @click="push('/pages/detail')">
+              <image src="/common/icon/library.png" class="icon" />
+              <text class="card-btn-text">书源管理</text>
+            </div>
+            <div class="card-btn" @click="push('/pages/detail')">
+              <image src="/common/icon/magic.png" class="icon" />
+              <text class="card-btn-text">替换净化</text>
+            </div>
             <text class="btn-group-title">设置</text>
             <div class="card-btn" @click="push('/pages/detail')">
               <image src="/common/icon/setting.png" class="icon" />
