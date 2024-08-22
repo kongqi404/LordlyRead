@@ -22,9 +22,10 @@
             <text class="text">@两广总督-tiger</text>
             <text class="group-title">官方Q群</text>
             <text class="text">Lordly Wear 可穿戴设备交流群</text>
-            <image src="/common/image/qr-qq.jpg" class="qr-code" />
+            <image src="/common/image/qr-qq.png" class="qr-code" />
             <text class="group-title">开源地址</text>
-            <text class="text">jiwangyihao/lordly-read</text>
+            <text class="text">jiwangyihao/LordlyRead</text>
+            <image src="/common/image/qr-github.png" class="qr-code" />
             <text class="group-title">更多资源请访问</text>
             <text class="text">bandbbs.cn</text>
             <text class="group-title">免责声明</text>
