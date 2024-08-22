@@ -10,8 +10,27 @@
   height: 32px;
 }
 
+.badge {
+  font-size: 16px;
+  padding: 2px 8px;
+  border-radius: 16px;
+  background-color: #666;
+}
+
 .col {
   flex-direction: column;
+}
+
+.center {
+  align-items: center;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.grow {
+  flex-grow: 1;
 }
 
 .topbar {
@@ -35,8 +54,8 @@
 }
 
 .body-swiper {
-  flex-grow: 1;
   width: 100%;
+  flex-grow: 1;
 }
 
 .swiper-container {
@@ -78,9 +97,9 @@
   margin-bottom: 8px;
 }
 
-.card-btn {
+.card {
   width: 100%;
-  padding: 12px 16px;
+  padding: 12px 12px;
   border-radius: 8px;
   background-color: rgba(255,255,255,0.1);
   align-items: center;

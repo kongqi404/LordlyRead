@@ -17,14 +17,24 @@
     </div>
     <!--  @swipe="bodySwipe" -->
     <div class="body">
-      <swiper class="body-swiper" id="body-swiper" indicator="false" loop="false" @change="swiperChange">
+      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false" @change="swiperChange">
         <div class="swiper-container">
           <div if="holder" class="body-holder">
             <text>这里……</text>
             <text>空空如也呢~</text>
           </div>
           <scroll else class="body-container" scroll-y="true" bounces="true">
-            <input class="btn" type="button" value="跳转到详情页" @click="push('/pages/detail')" />
+            <div class="card">
+              <image src="/common/image/cover.jpg" class="book-cover" />
+              <div class="col grow">
+                <text class="book-name">书名</text>
+                <text class="book-progress">阅读进度</text>
+                <div class="center space-between">
+                  <text class="book-update">最新章节</text>
+                  <text class="badge">100</text>
+                </div>
+              </div>
+            </div>
           </scroll>
         </div>
         <div class="swiper-container">
@@ -35,21 +45,21 @@
         </div>
         <div class="swiper-container">
           <scroll class="body-container" scroll-y="true" bounces="true">
-            <div class="card-btn" @click="push('/pages/detail')">
+            <div class="card" @click="push('/pages/detail')">
               <image src="/common/icon/library.png" class="icon" />
               <text class="card-btn-text">书源管理</text>
             </div>
-            <div class="card-btn" @click="push('/pages/detail')">
+            <div class="card" @click="push('/pages/detail')">
               <image src="/common/icon/magic.png" class="icon" />
               <text class="card-btn-text">替换净化</text>
             </div>
             <text class="btn-group-title">设置</text>
-            <div class="card-btn" @click="push('/pages/detail')">
+            <div class="card" @click="push('/pages/detail')">
               <image src="/common/icon/setting.png" class="icon" />
               <text class="card-btn-text">基本/其他设置</text>
             </div>
             <text class="btn-group-title">其他</text>
-            <div class="card-btn" @click="push('/pages/about')">
+            <div class="card" @click="push('/pages/about')">
               <image src="/common/icon/info.png" class="icon" />
               <text class="card-btn-text">关于</text>
             </div>
@@ -118,13 +128,25 @@ export default {
 <style>
 @import url(../../common/css/page.css);
 
-.btn {
-  width: 200px;
-  height: 40px;
-  margin-bottom: 20px;
-  border-radius: 5px;
-  background-color: #09ba07;
-  font-size: 20px;
-  color: #ffffff;
+.book-name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.book-progress {
+  font-size: 24px;
+  color: #999;
+}
+
+.book-update {
+  font-size: 24px;
+  color: #999;
+}
+
+.book-cover {
+  width: 64px;
+  height: 96px;
+  border-radius: 8px;
+  margin-right: 8px;
 }
 </style>

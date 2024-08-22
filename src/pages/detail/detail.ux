@@ -5,7 +5,7 @@
       <text class="title">详情</text>
     </div>
     <div class="body">
-      <swiper class="body-swiper" indicator="false" loop="false">
+      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false">
         <div class="swiper-container">
           <scroll class="body-container" scroll-y="true" bounces="true">
             <text class="title">{{ text }}</text>

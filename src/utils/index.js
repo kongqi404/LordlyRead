@@ -23,7 +23,6 @@ const router = {
     }, config.animationDuration + config.animationDelay)
   },
   back() {
-    if (thisObj.tab > 0) return
     thisObj.$app.$def.utils.state.animationBack = true
     thisObj.pageClass = "animation-out-back"
     setTimeout(() => {
@@ -44,9 +43,17 @@ const on = {
   show(pageThis) {
     thisObj = pageThis
     animation.in()
+
+    thisObj.$element("body-swiper").getBoundingClientRect({
+      success: (rect) => {
+        console.log(`body-swiper: ${rect.left}, ${rect.top}, ${rect.width}, ${rect.height}`)
+        thisObj.swiperHeight = rect.height
+      }
+    })
   },
   pageSwipe(evt) {
     if (evt.direction === "right") {
+      if (thisObj.tab > 0) return
       router.back()
     }
   }
@@ -54,7 +61,8 @@ const on = {
 
 const template = {
   private: {
-    pageClass: "animation-in"
+    pageClass: "animation-in",
+    swiperHeight: -1
   },
   onShow() {
     on.show(this)
