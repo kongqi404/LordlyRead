@@ -17,7 +17,8 @@
     </div>
     <!--  @swipe="bodySwipe" -->
     <div class="body">
-      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false" @change="swiperChange">
+      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false"
+        @change="swiperChange" @swipeend="swiperSwipe">
         <div class="swiper-container">
           <div if="holder" class="body-holder">
             <text>这里……</text>
@@ -121,6 +122,12 @@ export default {
 
   swiperChange(evt) {
     this.tab = evt.index
+  },
+
+  swiperSwipe(evt) {
+    if (this.tab === 0 && evt.index === 0) {
+      router.back()
+    }
   }
 }
 </script>
