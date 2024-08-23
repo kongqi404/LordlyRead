@@ -18,7 +18,7 @@
     <!--  @swipe="bodySwipe" -->
     <div class="body">
       <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false"
-        @change="swiperChange" @swipeend="swiperSwipe">
+        @change="swiperChange" index="{{tab}}">
         <div class="swiper-container">
           <div if="holder" class="body-holder">
             <text>这里……</text>
@@ -28,10 +28,10 @@
             <div class="card">
               <image src="/common/image/cover.jpg" class="book-cover" />
               <div class="col grow">
-                <text class="book-name">书名</text>
-                <text class="book-progress">阅读进度</text>
+                <text class="book-name">书名很长很长很长很长</text>
+                <text class="book-progress">阅读进度很长很长很长</text>
                 <div class="center space-between">
-                  <text class="book-update">最新章节</text>
+                  <text class="book-update">最新章节很长很长很长</text>
                   <text class="badge">100</text>
                 </div>
               </div>
@@ -46,7 +46,7 @@
         </div>
         <div class="swiper-container">
           <scroll class="body-container" scroll-y="true" bounces="true">
-            <div class="card" @click="push('/pages/detail')">
+            <div class="card" @click="push('/pages/source')">
               <image src="/common/icon/library.png" class="icon" />
               <text class="card-btn-text">书源管理</text>
             </div>
@@ -55,7 +55,7 @@
               <text class="card-btn-text">替换净化</text>
             </div>
             <text class="btn-group-title">设置</text>
-            <div class="card" @click="push('/pages/detail')">
+            <div class="card" @click="push('/pages/setting')">
               <image src="/common/icon/setting.png" class="icon" />
               <text class="card-btn-text">基本/其他设置</text>
             </div>
@@ -84,6 +84,7 @@
 
 <script>
 import utils from "../../utils"
+import storage from "@system.storage"
 
 const {template, on, router} = utils
 
@@ -100,6 +101,28 @@ export default {
 
   ...router,
 
+  onInit() {
+    storage.get({
+      key: "default_home",
+      success: (data) => {
+        switch (JSON.parse(data)) {
+          case "bookshelf":
+            this.tab = 0
+            this.$element("body-swiper").swipeTo({index: 0})
+            break
+          case "explore":
+            this.tab = 1
+            this.$element("body-swiper").swipeTo({index: 1})
+            break
+          case "mine":
+            this.tab = 2
+            this.$element("body-swiper").swipeTo({index: 2})
+            break
+        }
+      }
+    })
+  },
+
   bodySwipe(evt) {
     // 切换 Tab
     if (evt.direction === "right") {
@@ -115,9 +138,8 @@ export default {
     }
   },
 
-  setTab(tab) {
-    this.tab = tab
-    this.$element("body-swiper").swipeTo({index: this.tab})
+  setTab(index) {
+    this.$element("body-swiper").swipeTo({index})
   },
 
   swiperChange(evt) {
@@ -125,15 +147,20 @@ export default {
   },
 
   swiperSwipe(evt) {
-    if (this.tab === 0 && evt.index === 0) {
-      router.back()
-    }
+    console.log(evt)
   }
 }
 </script>
 
 <style>
 @import url(../../common/css/page.css);
+
+.book-name,
+.book-progress,
+.book-update {
+  lines: 1;
+  text-overflow: ellipsis;
+}
 
 .book-name {
   font-size: 24px;

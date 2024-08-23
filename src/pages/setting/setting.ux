@@ -1,0 +1,170 @@
+<template>
+  <div class="page {{pageClass}}" @swipe="pageSwipe">
+    <div class="topbar">
+      <image src="/common/icon/back.png" class="icon" @click="back()" />
+      <text class="title">设置</text>
+    </div>
+    <div class="body">
+      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false">
+        <div class="swiper-container">
+          <scroll class="body-container" scroll-y="true" bounces="true">
+            <block for="item in list">
+              <text if="item.type==='title'" class="btn-group-title">{{ item.title }}</text>
+              <div elif="item.type==='switch'" class="card" @click="setValue(item, !item.value)">
+                <div class="col grow">
+                  <text class="card-btn-text margin-0">{{ item.title }}</text>
+                  <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
+                </div>
+                <image src="/common/icon/check{{ item.value ? '-active' : ''}}.png" class="icon" />
+              </div>
+              <div elif="item.type==='choose'" class="card">
+                <div class="col grow">
+                  <text class="card-btn-text margin-0">{{ item.title }}</text>
+                  <div class="choose-container">
+                    <block for="(index, option) in item.options">
+                      <div if="index > 0" class="horizontal-separator transparent" style="width: 10px"></div>
+                      <text class="choose-item {{ item.value==option.value ? 'choose-item-active' : '' }}"
+                        @click="setValue(item, option.value)">
+                        {{ option.label }}
+                      </text>
+                    </block>
+                  </div>
+                </div>
+              </div>
+              <div elif="item.type==='button'" class="card" @click="item.action">
+                <div class="col grow">
+                  <text class="card-btn-text margin-0">{{ item.title }}</text>
+                  <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
+                </div>
+              </div>
+            </block>
+          </scroll>
+        </div>
+      </swiper>
+    </div>
+  </div>
+</template>
+
+<script>
+import utils from "../../utils"
+import storage from "@system.storage"
+
+const {template, router} = utils
+
+const settingList = [
+  {
+    type: "title",
+    title: "主界面"
+  },
+  {
+    type: "switch",
+    title: "自动刷新",
+    subtitle: "打开软件时自动更新书籍",
+    name: "auto_refresh",
+    value: false
+  },
+  {
+    type: "switch",
+    title: "自动跳转最近阅读",
+    subtitle: "默认打开书架",
+    name: "jump_last",
+    value: false
+  },
+  {
+    type: "choose",
+    title: "默认主页",
+    options: [
+      {label: "书架", value: "bookshelf"},
+      {label: "探索", value: "explore"},
+      {label: "我的", value: "mine"}
+    ],
+    name: "default_home",
+    value: "bookshelf"
+  },
+  {
+    type: "title",
+    title: "其他设置"
+  },
+  {
+    type: "choose",
+    title: "预下载章节数量",
+    options: [
+      {label: "1", value: 1},
+      {label: "2", value: 2},
+      {label: "3", value: 3},
+      {label: "4", value: 4}
+    ],
+    name: "preload",
+    value: 1
+  },
+  {
+    type: "switch",
+    title: "默认启用替换净化",
+    subtitle: "为新加入书架的书启用替换净化",
+    name: "default_purify",
+    value: true
+  },
+  {
+    type: "switch",
+    title: "返回时提示放入书架",
+    subtitle: "阅读未放入书架的书籍在返回时提示放入书架",
+    name: "default_add",
+    value: true
+  },
+  {
+    type: "button",
+    title: "清除缓存",
+    subtitle: "清除已下载的书籍缓存",
+    action() {
+      console.log("清除缓存");
+    }
+  },
+  {
+    type: "switch",
+    title: "记录日志",
+    subtitle: "记录调试日志",
+    name: "log",
+    value: false
+  }
+]
+
+export default {
+  ...template,
+  private: {
+    ...template.private,
+    list: settingList
+  },
+
+  ...router,
+
+  onInit() {
+    this.list.forEach((item) => {
+      if (item.name) {
+        storage.get({
+          key: item.name,
+          success: (data) => {
+            console.log(data)
+            item.value = JSON.parse(data)
+          }
+        })
+      }
+    })
+  },
+
+  setValue(item, newValue) {
+    storage.set({
+      key: item.name,
+      value: JSON.stringify(newValue)
+    })
+    item.value = newValue
+  },
+
+  log(...args) {
+    console.log(...args)
+  }
+}
+</script>
+
+<style>
+@import url(../../common/css/page.css);
+</style>
