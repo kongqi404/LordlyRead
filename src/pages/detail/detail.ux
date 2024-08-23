@@ -17,9 +17,7 @@
 </template>
 
 <script>
-import utils from "../../utils"
-
-const {template} = utils
+const {template} = global
 
 export default {
   ...template,

@@ -46,10 +46,9 @@
 </template>
 
 <script>
-import utils from "../../utils"
 import storage from "@system.storage"
 
-const {template, router} = utils
+const {template, router} = global
 
 const settingList = [
   {
@@ -137,7 +136,7 @@ export default {
 
   ...router,
 
-  onInit() {
+  onReady() {
     this.list.forEach((item) => {
       if (item.name) {
         storage.get({

@@ -72,6 +72,13 @@ const template = {
   }
 }
 
+global.config = config
+global.state = state
+global.router = router
+global.animation = animation
+global.on = on
+global.template = template
+
 export default {
   config,
   state,

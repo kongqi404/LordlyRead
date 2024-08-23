@@ -83,10 +83,9 @@
 </template>
 
 <script>
-import utils from "../../utils"
 import storage from "@system.storage"
 
-const {template, on, router} = utils
+const {template, router} = global
 
 export default {
   ...template,
@@ -101,7 +100,7 @@ export default {
 
   ...router,
 
-  onInit() {
+  onReady() {
     storage.get({
       key: "default_home",
       success: (data) => {

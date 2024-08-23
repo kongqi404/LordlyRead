@@ -42,10 +42,9 @@
 </template>
 
 <script>
-import utils from "../../utils"
 import app from "@system.app"
 
-const {template, router} = utils
+const {template, router} = global
 
 export default {
   ...template,
