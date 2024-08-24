@@ -14,7 +14,7 @@ const state = {
 const router = {
   push(uri, objArgs) {
     thisObj.$app.$def.utils.state.animationBack = false
-    thisObj.pageClass = "animation-out"
+    thisObj.pageClass = "a-out"
     setTimeout(() => {
       systemRouter.push({
         uri,
@@ -23,8 +23,9 @@ const router = {
     }, config.animationDuration + config.animationDelay)
   },
   back() {
+    if (thisObj.onBack?.call()) return
     thisObj.$app.$def.utils.state.animationBack = true
-    thisObj.pageClass = "animation-out-back"
+    thisObj.pageClass = "a-out-back"
     setTimeout(() => {
       systemRouter.back()
     }, config.animationDuration + config.animationDelay)
@@ -34,8 +35,8 @@ const router = {
 const animation = {
   in() {
     thisObj.pageClass = thisObj.$app.$def.utils.state.animationBack
-      ? "animation-in-back"
-      : "animation-in"
+      ? "a-in-back"
+      : "a-in"
   }
 }
 
@@ -52,7 +53,6 @@ const on = {
   },
   pageSwipe(evt) {
     if (evt.direction === "right") {
-      if (thisObj.tab > 0) return
       router.back()
     }
   }
@@ -60,7 +60,7 @@ const on = {
 
 const template = {
   private: {
-    pageClass: "animation-in",
+    pageClass: "a-in",
     swiperHeight: -1
   },
   onShow() {

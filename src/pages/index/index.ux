@@ -122,6 +122,10 @@ export default {
     })
   },
 
+  onBack() {
+    if (this.tab > 0) return true
+  },
+
   bodySwipe(evt) {
     // 切换 Tab
     if (evt.direction === "right") {

@@ -19,7 +19,7 @@
               </div>
             </block>
           </scroll>
-          <div class="menu {{ menu }}" @click="toggleMenu" @swipe="toggleMenu">
+          <div class="menu {{ menu }}" @click="toggleMenu">
             <block if="activeItem">
               <div class="card">
                 <image src="/common/icon/up.png" class="icon" />
@@ -43,7 +43,9 @@
               </div>
               <div class="card" @click="setValue(activeItem, !activeItem.value)">
                 <image src="/common/icon/check{{ activeItem.value ? '-active' : ''}}.png" class="icon" />
-                <text class="card-btn-text center">{{ activeItem.value ? "禁用" : "启用" }}发现</text>
+                <text class="card-btn-text center">
+                  {{ activeItem.value ? "禁用" : "启用" }}发现
+                </text>
               </div>
             </block>
             <block else>
@@ -83,20 +85,25 @@ export default {
     activeItem: undefined
   },
   ...router,
+  onBack() {
+    if (this.menu === "p-in") {
+      this.toggleMenu()
+      return true
+    }
+  },
   setValue(item, value, evt) {
     item.value = value
     evt.stopPropagation()
   },
   toggleMenu(item) {
-    if (item.title) this.activeItem = item
-    if (item.stopPropagation) item.stopPropagation()
-    if (this.menu === "animation-in") {
+    if (item?.title) this.activeItem = item
+    if (this.menu === "p-in") {
       setTimeout(() => {
         this.activeItem = undefined
       }, 200)
-      this.menu = "animation-out-back"
+      this.menu = "p-out-back"
     } else {
-      this.menu = "animation-in"
+      this.menu = "p-in"
     }
   }
 }

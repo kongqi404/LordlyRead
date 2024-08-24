@@ -152,92 +152,97 @@
 .menu {
   position: absolute;
   top: 0;
-  left: 0;
+  left: 336px;
   width: 100%;
   height: 100%;
   padding: 24px;
   background-color: rgba(0,0,0,0.8);
   justify-content: center;
   flex-direction: column;
-  transform: translateX(100%);
 }
 
-@keyframes In {
+@keyframes Left {
   100% {
     transform: translateX(-336px);
   }
 
   0% {
-    transform: translateX(0%);
+    transform: translateX(0px);
   }
 }
 
-.animation-in {
-  animation-name: In;
+.a-in {
+  animation-name: Left;
   animation-duration: 200ms;
-  animation-timing-function: ease-out;
   animation-delay: 50ms;
+  animation-timing-function: ease-out;
   margin-left: 336px;
 }
 
-@keyframes Out {
-  100% {
-    transform: translateX(-100%);
-    /* opacity: 1; */
-  }
-
-  0% {
-    transform: translateX(0%);
-    /* opacity: 0; */
-  }
-}
-
-.animation-out {
-  animation-name: Out;
+.a-out {
+  animation-name: Left;
   animation-duration: 200ms;
-  animation-timing-function: ease-in;
   animation-delay: 50ms;
+  animation-timing-function: ease-in;
   margin-left: 0;
 }
 
-@keyframes InBack {
+.p-in {
+  animation-name: Left;
+  animation-duration: 200ms;
+  animation-delay: 50ms;
+  animation-timing-function: ease-out;
+  left: 336px;
+}
+
+.p-out {
+  animation-name: Left;
+  animation-duration: 200ms;
+  animation-delay: 50ms;
+  animation-timing-function: ease-in;
+  left: 0;
+}
+
+@keyframes Right {
   100% {
     transform: translateX(336px);
-    /* opacity: 1; */
   }
 
   0% {
-    transform: translateX(0%);
-    /* opacity: 0; */
+    transform: translateX(0px);
   }
 }
 
-.animation-in-back {
-  animation-name: InBack;
+.a-in-back {
+  animation-name: Right;
   animation-duration: 200ms;
   animation-delay: 50ms;
   animation-timing-function: ease-out;
   margin-left: -336px;
 }
 
-@keyframes OutBack {
-  100% {
-    transform: translateX(100%);
-    /* opacity: 1; */
-  }
-
-  0% {
-    transform: translateX(0%);
-    /* opacity: 0; */
-  }
-}
-
-.animation-out-back {
-  animation-name: OutBack;
+.a-out-back {
+  animation-name: Right;
   animation-duration: 200ms;
   animation-delay: 50ms;
   animation-timing-function: ease-in;
   margin-left: 0;
+}
+
+.p-in-back {
+  animation-name: Right;
+  animation-duration: 200ms;
+  animation-delay: 50ms;
+  animation-timing-function: ease-out;
+  left: -336px;
+}
+
+.p-out-back {
+  animation-name: Right;
+  animation-duration: 200ms;
+  animation-delay: 50ms;
+  animation-timing-function: ease-in;
+  left: 0;
 }
 
 /* style reset classes */
