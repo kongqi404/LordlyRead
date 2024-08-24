@@ -5,6 +5,9 @@
         <image src="/common/icon/back.png" class="icon" />
       </div>
       <text class="title">详情</text>
+      <div class="topbar-btn" @click="wait">
+        <image src="/common/icon/menu.png" class="icon" />
+      </div>
     </div>
     <div class="body">
       <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false">

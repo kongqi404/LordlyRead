@@ -1,29 +1,29 @@
 <template>
   <div class="page {{pageClass}}" @swipe="pageSwipe">
     <div if="tab==0" class="topbar">
-      <div class="topbar-btn">
+      <div class="topbar-btn" @click="wait">
         <image src="/common/icon/refresh.png" class="icon" />
       </div>
       <text class="title">{{ $t("index.title") }}</text>
-      <div class="topbar-btn">
+      <div class="topbar-btn" @click="wait">
         <image src="/common/icon/search.png" class="icon" />
       </div>
     </div>
     <div elif="tab==1" class="topbar">
-      <div class="topbar-btn">
+      <div class="topbar-btn" @click="wait">
         <image src="/common/icon/refresh.png" class="icon" />
       </div>
       <text class="title">探索</text>
-      <div class="topbar-btn">
+      <div class="topbar-btn" @click="wait">
         <image src="/common/icon/search.png" class="icon" />
       </div>
     </div>
     <div else class="topbar">
-      <div class="topbar-btn">
+      <div class="topbar-btn" @click="wait">
         <image src="/common/icon/refresh.png" class="icon" />
       </div>
       <text class="title">我的</text>
-      <div class="topbar-btn">
+      <div class="topbar-btn" @click="wait">
         <image src="/common/icon/search.png" class="icon" />
       </div>
     </div>
@@ -95,9 +95,13 @@
 </template>
 
 <script>
-import storage from "@system.storage"
+const {template, router, setting} = global
 
-const {template, router} = global
+const tabIdentifiers = {
+  bookshelf: 0,
+  explore: 1,
+  mine: 2
+}
 
 export default {
   ...template,
@@ -107,31 +111,13 @@ export default {
     title: "示例页面",
     bodyHeight: 0,
     holder: false,
-    tab: 0
+    tab: tabIdentifiers[setting.get("default_home")],
   },
 
   ...router,
 
-  onReady() {
-    storage.get({
-      key: "default_home",
-      success: (data) => {
-        switch (JSON.parse(data)) {
-          case "bookshelf":
-            this.tab = 0
-            this.$element("body-swiper").swipeTo({index: 0})
-            break
-          case "explore":
-            this.tab = 1
-            this.$element("body-swiper").swipeTo({index: 1})
-            break
-          case "mine":
-            this.tab = 2
-            this.$element("body-swiper").swipeTo({index: 2})
-            break
-        }
-      }
-    })
+  async onReady() {
+    this.tab= tabIdentifiers[await setting.getRaw("default_home")]
   },
 
   onBack() {
