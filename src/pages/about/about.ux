@@ -5,7 +5,7 @@
         <image src="/common/icon/back.png" class="icon" />
       </div>
       <text class="title">关于</text>
-      <div class="topbar-btn" @click="wait">
+      <div class="topbar-btn" @click="push('/pages/detail')">
         <image src="/common/icon/menu.png" class="icon" />
       </div>
     </div>
@@ -43,6 +43,7 @@
         </div>
       </swiper>
     </div>
+    <div class="cover-animation-helper {{coverAnimation}}"></div>
   </div>
 </template>
 

@@ -74,6 +74,7 @@
         </div>
       </swiper>
     </div>
+    <div class="cover-animation-helper {{coverAnimation}}"></div>
   </div>
 </template>
 

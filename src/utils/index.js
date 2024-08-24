@@ -15,8 +15,7 @@ const state = {
 
 const router = {
   push(uri, objArgs) {
-    thisObj.$app.$def.utils.state.animationBack = false
-    thisObj.pageClass = "animation-out"
+    animation.out(false)
     setTimeout(() => {
       systemRouter.push({
         uri,
@@ -26,8 +25,7 @@ const router = {
   },
   back() {
     if (thisObj.onBack?.call()) return
-    thisObj.$app.$def.utils.state.animationBack = true
-    thisObj.pageClass = "animation-out-back"
+    animation.out(true)
     setTimeout(() => {
       systemRouter.back()
     }, config.animationDuration + config.animationDelay)
@@ -36,9 +34,26 @@ const router = {
 
 const animation = {
   in() {
-    thisObj.pageClass = thisObj.$app.$def.utils.state.animationBack
-      ? "animation-in-back"
-      : "animation-in"
+    if (setting.get("page_transition") === "cover") {
+      thisObj.coverAnimation = thisObj.$app.$def.utils.state.animationBack
+        ? "animation-out-back"
+        : "animation-out"
+      setTimeout(() => {
+        thisObj.coverAnimation = "none"
+      }, config.animationDuration + config.animationDelay);
+    } else {
+      thisObj.pageClass = thisObj.$app.$def.utils.state.animationBack
+        ? "animation-in-back"
+        : "animation-in"
+    }
+  },
+  out(back) {
+    thisObj.$app.$def.utils.state.animationBack = back
+    if (setting.get("page_transition") === "cover") {
+      thisObj.coverAnimation = back ? "animation-in-back" : "animation-in"
+    } else {
+      thisObj.pageClass = back ? "animation-out-back" : "animation-out"
+    }
   }
 }
 
@@ -100,7 +115,7 @@ const setting = {
         {label: "覆盖", value: "cover"}
       ],
       name: "page_transition",
-      value: "cover"
+      value: "slide"
     },
     {
       type: "title",
@@ -182,6 +197,9 @@ const setting = {
               item.value = value
             }
           })
+          if (name === "page_transition") {
+            systemRouter.clear()
+          }
           resolve()
         },
         fail: (err) => {
@@ -209,7 +227,8 @@ setting.init()
 const template = {
   private: {
     pageClass: "animation-in",
-    swiperHeight: -1
+    swiperHeight: -1,
+    coverAnimation: ""
   },
   onShow() {
     on.show(this)
@@ -221,6 +240,15 @@ const template = {
     prompt.showToast({message: "敬请期待"})
   }
 }
+
+setting.getRaw("page_transition").then((value) => {
+  if (value === "cover") {
+    template.private.coverAnimation = "animation-out"
+    template.private.pageClass = ""
+  } else {
+    template.private.pageClass = "animation-in"
+  }
+})
 
 global.config = config
 global.state = state
