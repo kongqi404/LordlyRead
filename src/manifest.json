@@ -29,6 +29,14 @@
         "component": "about",
         "launchMode": "singleTask"
       },
+      "pages/setting": {
+        "component": "setting",
+        "launchMode": "singleTask"
+      },
+      "pages/source": {
+        "component": "source",
+        "launchMode": "singleTask"
+      },
       "pages/detail": {
         "component": "detail"
       }

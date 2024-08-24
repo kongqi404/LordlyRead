@@ -142,7 +142,6 @@ export default {
         storage.get({
           key: item.name,
           success: (data) => {
-            console.log(data)
             item.value = JSON.parse(data)
           }
         })

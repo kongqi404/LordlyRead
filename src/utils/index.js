@@ -2,7 +2,7 @@ import systemRouter from "@system.router"
 
 const config = {
   animationDuration: 200,
-  animationDelay: 50
+  animationDelay: 100
 }
 
 let thisObj = undefined
@@ -46,7 +46,6 @@ const on = {
 
     thisObj.$element("body-swiper").getBoundingClientRect({
       success: (rect) => {
-        console.log(`body-swiper: ${rect.left}, ${rect.top}, ${rect.width}, ${rect.height}`)
         thisObj.swiperHeight = rect.height
       }
     })

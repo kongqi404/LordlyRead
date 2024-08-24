@@ -113,7 +113,7 @@
   width: 100%;
   padding: 12px 12px;
   border-radius: 8px;
-  background-color: rgba(255,255,255,0.1);
+  background-color: #161616;
   align-items: center;
   margin-bottom: 8px;
 }
@@ -149,23 +149,35 @@
   color: black;
 }
 
+.menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  background-color: rgba(0,0,0,0.8);
+  justify-content: center;
+  flex-direction: column;
+  transform: translateX(100%);
+}
+
 @keyframes In {
   100% {
     transform: translateX(-336px);
-    /* opacity: 1; */
   }
 
   0% {
     transform: translateX(0%);
-    /* opacity: 0; */
   }
 }
 
 .animation-in {
   animation-name: In;
   animation-duration: 200ms;
-  margin-left: 336px;
   animation-timing-function: ease-out;
+  animation-delay: 50ms;
+  margin-left: 336px;
 }
 
 @keyframes Out {
@@ -183,8 +195,9 @@
 .animation-out {
   animation-name: Out;
   animation-duration: 200ms;
-  margin-left: 0;
   animation-timing-function: ease-in;
+  animation-delay: 50ms;
+  margin-left: 0;
 }
 
 @keyframes InBack {
@@ -202,8 +215,9 @@
 .animation-in-back {
   animation-name: InBack;
   animation-duration: 200ms;
-  margin-left: -336px;
+  animation-delay: 50ms;
   animation-timing-function: ease-out;
+  margin-left: -336px;
 }
 
 @keyframes OutBack {
@@ -221,8 +235,9 @@
 .animation-out-back {
   animation-name: OutBack;
   animation-duration: 200ms;
-  margin-left: 0;
+  animation-delay: 50ms;
   animation-timing-function: ease-in;
+  margin-left: 0;
 }
 
 /* style reset classes */

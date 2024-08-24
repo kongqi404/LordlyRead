@@ -1,0 +1,107 @@
+<template>
+  <div class="page {{pageClass}}" id="page" @swipe="pageSwipe">
+    <div class="topbar">
+      <image src="/common/icon/back.png" class="icon" @click="back()" />
+      <text class="title">书源管理</text>
+      <image src="/common/icon/menu.png" class="icon" @click="toggleMenu" />
+    </div>
+    <div class="body">
+      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false">
+        <div class="swiper-container">
+          <scroll class="body-container" scroll-y="true" bounces="true">
+            <block for="item in list">
+              <div class="card" @click="toggleMenu(item)">
+                <div class="col grow">
+                  <text class="card-btn-text margin-0">{{ item.title }}</text>
+                </div>
+                <image src="/common/icon/check{{ item.value ? '-active' : ''}}.png" class="icon"
+                  @click="setValue(item, !item.value)" />
+              </div>
+            </block>
+          </scroll>
+          <div class="menu {{ menu }}" @click="toggleMenu" @swipe="toggleMenu">
+            <block if="activeItem">
+              <div class="card">
+                <image src="/common/icon/up.png" class="icon" />
+                <text class="card-btn-text center">置顶</text>
+              </div>
+              <div class="card">
+                <image src="/common/icon/down.png" class="icon" />
+                <text class="card-btn-text center">置底</text>
+              </div>
+              <div class="card">
+                <image src="/common/icon/password.png" class="icon" />
+                <text class="card-btn-text center">登录</text>
+              </div>
+              <div class="card">
+                <image src="/common/icon/search.png" class="icon" />
+                <text class="card-btn-text center">搜索</text>
+              </div>
+              <div class="card">
+                <image src="/common/icon/trash.png" class="icon" />
+                <text class="card-btn-text center">删除</text>
+              </div>
+              <div class="card" @click="setValue(activeItem, !activeItem.value)">
+                <image src="/common/icon/check{{ activeItem.value ? '-active' : ''}}.png" class="icon" />
+                <text class="card-btn-text center">{{ activeItem.value ? "禁用" : "启用" }}发现</text>
+              </div>
+            </block>
+            <block else>
+              <div class="card">
+                <image src="/common/icon/web.png" class="icon" />
+                <text class="card-btn-text center">网络导入</text>
+              </div>
+              <div class="card">
+                <image src="/common/icon/group.png" class="icon" />
+                <text class="card-btn-text center">分组管理</text>
+              </div>
+              <div class="card">
+                <image src="/common/icon/trash.png" class="icon" />
+                <text class="card-btn-text center">清空书源</text>
+              </div>
+              <div class="card">
+                <image src="/common/icon/help.png" class="icon" />
+                <text class="card-btn-text center">帮助</text>
+              </div>
+            </block>
+          </div>
+        </div>
+      </swiper>
+    </div>
+  </div>
+</template>
+
+<script>
+const {template, router} = global
+
+export default {
+  ...template,
+  private: {
+    ...template.private,
+    list: [{title: "书源1", value: true}],
+    menu: "",
+    activeItem: undefined
+  },
+  ...router,
+  setValue(item, value, evt) {
+    item.value = value
+    evt.stopPropagation()
+  },
+  toggleMenu(item) {
+    if (item.title) this.activeItem = item
+    if (item.stopPropagation) item.stopPropagation()
+    if (this.menu === "animation-in") {
+      setTimeout(() => {
+        this.activeItem = undefined
+      }, 200)
+      this.menu = "animation-out-back"
+    } else {
+      this.menu = "animation-in"
+    }
+  }
+}
+</script>
+
+<style>
+@import url(../../common/css/page.css);
+</style>
