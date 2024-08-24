@@ -1,7 +1,9 @@
 <template>
   <div class="page {{pageClass}}" @swipe="pageSwipe">
     <div class="topbar">
-      <image src="/common/icon/back.png" class="icon" @click="back()" />
+      <div class="topbar-btn" @click="back()">
+        <image src="/common/icon/back.png" class="icon" />
+      </div>
       <text class="title">关于</text>
     </div>
     <div class="body">

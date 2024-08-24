@@ -1,19 +1,31 @@
 <template>
   <div class="page {{pageClass}}" @swipe="pageSwipe">
     <div if="tab==0" class="topbar">
-      <image src="/common/icon/refresh.png" class="icon" />
+      <div class="topbar-btn">
+        <image src="/common/icon/refresh.png" class="icon" />
+      </div>
       <text class="title">{{ $t("index.title") }}</text>
-      <image src="/common/icon/search.png" class="icon" />
+      <div class="topbar-btn">
+        <image src="/common/icon/search.png" class="icon" />
+      </div>
     </div>
     <div elif="tab==1" class="topbar">
-      <image src="/common/icon/refresh.png" class="icon" />
+      <div class="topbar-btn">
+        <image src="/common/icon/refresh.png" class="icon" />
+      </div>
       <text class="title">探索</text>
-      <image src="/common/icon/search.png" class="icon" />
+      <div class="topbar-btn">
+        <image src="/common/icon/search.png" class="icon" />
+      </div>
     </div>
     <div else class="topbar">
-      <image src="/common/icon/refresh.png" class="icon" />
+      <div class="topbar-btn">
+        <image src="/common/icon/refresh.png" class="icon" />
+      </div>
       <text class="title">我的</text>
-      <image src="/common/icon/search.png" class="icon" />
+      <div class="topbar-btn">
+        <image src="/common/icon/search.png" class="icon" />
+      </div>
     </div>
     <!--  @swipe="bodySwipe" -->
     <div class="body">

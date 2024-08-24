@@ -45,12 +45,16 @@
 }
 
 .topbar {
-  padding: 16px 32px;
   width: 100%;
   align-items: center;
 }
 
+.topbar-btn {
+  padding: 16px 32px;
+}
+
 .title {
+  padding: 16px 0;
   flex-grow: 1;
   font-size: 24px;
   font-weight: bold;
@@ -152,97 +156,92 @@
 .menu {
   position: absolute;
   top: 0;
-  left: 336px;
+  left: 0;
   width: 100%;
   height: 100%;
   padding: 24px;
   background-color: rgba(0,0,0,0.8);
   justify-content: center;
   flex-direction: column;
+  margin-left: 336px;
 }
 
-@keyframes Left {
+@keyframes In {
   100% {
     transform: translateX(-336px);
   }
 
   0% {
-    transform: translateX(0px);
+    transform: translateX(0%);
   }
 }
 
-.a-in {
-  animation-name: Left;
+.animation-in {
+  animation-name: In;
   animation-duration: 200ms;
-  animation-delay: 50ms;
   animation-timing-function: ease-out;
+  animation-delay: 50ms;
   margin-left: 336px;
 }
 
-.a-out {
-  animation-name: Left;
-  animation-duration: 200ms;
-  animation-delay: 50ms;
-  animation-timing-function: ease-in;
-  margin-left: 0;
-}
-
-.p-in {
-  animation-name: Left;
-  animation-duration: 200ms;
-  animation-delay: 50ms;
-  animation-timing-function: ease-out;
-  left: 336px;
-}
-
-.p-out {
-  animation-name: Left;
-  animation-duration: 200ms;
-  animation-delay: 50ms;
-  animation-timing-function: ease-in;
-  left: 0;
-}
-
-@keyframes Right {
+@keyframes Out {
   100% {
-    transform: translateX(336px);
+    transform: translateX(-100%);
+    /* opacity: 1; */
   }
 
   0% {
-    transform: translateX(0px);
+    transform: translateX(0%);
+    /* opacity: 0; */
   }
 }
 
-.a-in-back {
-  animation-name: Right;
+.animation-out {
+  animation-name: Out;
+  animation-duration: 200ms;
+  animation-timing-function: ease-in;
+  animation-delay: 50ms;
+  margin-left: 0;
+}
+
+@keyframes InBack {
+  100% {
+    transform: translateX(336px);
+    /* opacity: 1; */
+  }
+
+  0% {
+    transform: translateX(0%);
+    /* opacity: 0; */
+  }
+}
+
+.animation-in-back {
+  animation-name: InBack;
   animation-duration: 200ms;
   animation-delay: 50ms;
   animation-timing-function: ease-out;
   margin-left: -336px;
 }
 
-.a-out-back {
-  animation-name: Right;
+@keyframes OutBack {
+  100% {
+    transform: translateX(100%);
+    /* opacity: 1; */
+  }
+
+  0% {
+    transform: translateX(0%);
+    /* opacity: 0; */
+  }
+}
+
+.animation-out-back {
+  animation-name: OutBack;
   animation-duration: 200ms;
   animation-delay: 50ms;
   animation-timing-function: ease-in;
   margin-left: 0;
-}
-
-.p-in-back {
-  animation-name: Right;
-  animation-duration: 200ms;
-  animation-delay: 50ms;
-  animation-timing-function: ease-out;
-  left: -336px;
-}
-
-.p-out-back {
-  animation-name: Right;
-  animation-duration: 200ms;
-  animation-delay: 50ms;
-  animation-timing-function: ease-in;
-  left: 0;
 }
 
 /* style reset classes */

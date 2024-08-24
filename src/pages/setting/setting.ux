@@ -1,7 +1,9 @@
 <template>
   <div class="page {{pageClass}}" @swipe="pageSwipe">
     <div class="topbar">
-      <image src="/common/icon/back.png" class="icon" @click="back()" />
+      <div class="topbar-btn" @click="back()">
+        <image src="/common/icon/back.png" class="icon" />
+      </div>
       <text class="title">设置</text>
     </div>
     <div class="body">
@@ -115,7 +117,7 @@ const settingList = [
     title: "清除缓存",
     subtitle: "清除已下载的书籍缓存",
     action() {
-      console.log("清除缓存");
+      console.log("清除缓存")
     }
   },
   {
