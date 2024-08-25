@@ -1,0 +1,3 @@
+[submodule "src/third-party/Vela_input_method"]
+	path = src/third-party/Vela_input_method
+	url = https://github.com/NEORUAA/Vela_input_method.git
