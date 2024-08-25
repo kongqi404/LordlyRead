@@ -1,3 +1,7 @@
+<import
+  name="input-method"
+  src="../../third-party/Vela_input_method/components/InputMethod/InputMethod.ux"
+></import>
 <template>
   <div class="page {{pageClass}}" id="page" @swipe="pageSwipe">
     <div class="topbar">
@@ -13,63 +17,80 @@
       <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false">
         <div class="swiper-container">
           <scroll class="body-container" scroll-y="true" bounces="true">
-            <block for="item in list">
-              <div class="card" @click="toggleMenu(item)">
+            <block if="{{list.length > 0}}" for="item in list">
+              <div class="card" @click="toggleSourceMenu(item)">
                 <div class="col grow">
-                  <text class="card-btn-text margin-0">{{ item.title }}</text>
+                  <text class="card-btn-text margin-0">{{ item.bookSourceName }}</text>
                 </div>
-                <image src="/common/icon/check{{ item.value ? '-active' : ''}}.png" class="icon"
-                  @click="setValue(item, !item.value)" />
+                <image src="/common/icon/check{{ item.enabled ? '-active' : ''}}.png" class="icon"
+                  @click="setValue(item, 'enabled', !item.enabled)" />
               </div>
             </block>
+            <div else class="body-holder">
+              <text>这里……</text>
+              <text>空空如也呢~</text>
+            </div>
           </scroll>
-          <div class="menu {{ menu }}" @click="toggleMenu">
-            <block if="!activeItem">
+          <div class="menu {{ menu }}">
+            <div class="card" @click="onlineImport">
+              <image src="/common/icon/web.png" class="icon" />
+              <text class="card-btn-text center">网络导入</text>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/group.png" class="icon" />
+              <text class="card-btn-text center">分组管理</text>
+            </div>
+            <div class="card" @click="clear">
+              <image src="/common/icon/trash.png" class="icon" />
+              <text class="card-btn-text center">清空书源</text>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/help.png" class="icon" />
+              <text class="card-btn-text center">帮助</text>
+            </div>
+          </div>
+          <div class="menu {{ sourceMenu }}">
+            <div class="card" @click="moveUp">
+              <image src="/common/icon/up.png" class="icon" />
+              <text class="card-btn-text center">置顶</text>
+            </div>
+            <div class="card" @click="moveDown">
+              <image src="/common/icon/down.png" class="icon" />
+              <text class="card-btn-text center">置底</text>
+            </div>
+            <div if="{{activeItem.hasLogin}}" class="card" @click="wait">
+              <image src="/common/icon/password.png" class="icon" />
+              <text class="card-btn-text center">登录</text>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/search.png" class="icon" />
+              <text class="card-btn-text center">搜索</text>
+            </div>
+            <div class="card" @click="remove">
+              <image src="/common/icon/trash.png" class="icon" />
+              <text class="card-btn-text center">删除</text>
+            </div>
+            <div if="{{activeItem.hasExplore}}" class="card"
+              @click="setValue(activeItem, 'enabledExplore', !activeItem.enabledExplore)">
+              <image src="/common/icon/check{{ activeItem.enabledExplore ? '-active' : ''}}.png" class="icon" />
+              <text class="card-btn-text center">
+                {{ activeItem.enabledExplore ? "禁用" : "启用" }}发现
+              </text>
+            </div>
+          </div>
+          <div class="menu input-menu {{importMenu}}">
+            <div class="pa-md col">
               <div class="card">
-                <image src="/common/icon/web.png" class="icon" />
-                <text class="card-btn-text center">网络导入</text>
-              </div>
-              <div class="card">
-                <image src="/common/icon/group.png" class="icon" />
-                <text class="card-btn-text center">分组管理</text>
-              </div>
-              <div class="card">
-                <image src="/common/icon/trash.png" class="icon" />
-                <text class="card-btn-text center">清空书源</text>
-              </div>
-              <div class="card">
-                <image src="/common/icon/help.png" class="icon" />
-                <text class="card-btn-text center">帮助</text>
-              </div>
-            </block>
-            <block else>
-              <div class="card">
-                <image src="/common/icon/up.png" class="icon" />
-                <text class="card-btn-text center">置顶</text>
-              </div>
-              <div class="card">
-                <image src="/common/icon/down.png" class="icon" />
-                <text class="card-btn-text center">置底</text>
-              </div>
-              <div class="card">
-                <image src="/common/icon/password.png" class="icon" />
-                <text class="card-btn-text center">登录</text>
-              </div>
-              <div class="card">
-                <image src="/common/icon/search.png" class="icon" />
-                <text class="card-btn-text center">搜索</text>
-              </div>
-              <div class="card">
-                <image src="/common/icon/trash.png" class="icon" />
-                <text class="card-btn-text center">删除</text>
-              </div>
-              <div class="card" @click="setValue(activeItem, !activeItem.value)">
-                <image src="/common/icon/check{{ activeItem.value ? '-active' : ''}}.png" class="icon" />
-                <text class="card-btn-text center">
-                  {{ activeItem.value ? "禁用" : "启用" }}发现
+                <text class="card-btn-text">
+                  {{ sourceUrl === "" ? "请输入链接/9位传输码" : sourceUrl }}
                 </text>
               </div>
-            </block>
+              <div class="card justify-center" @click="submit">
+                <image src="/common/icon/submit.png" class="icon" />
+                <text class="card-btn-text">提交</text>
+              </div>
+            </div>
+            <input-method hide="{{false}}" screentype="{{'rect'}}" @delete="delete" @complete="complete"></input-method>
           </div>
         </div>
       </swiper>
@@ -79,41 +100,133 @@
 </template>
 
 <script>
-const {template, router} = global
+const {template, router, fetch, source} = global
 
 export default {
   ...template,
   private: {
     ...template.private,
-    list: [{title: "书源1", value: true}],
+    list: source.mapForUi(),
     menu: "",
-    activeItem: undefined
+    sourceMenu: "",
+    importMenu: "",
+    activeItem: undefined,
+    sourceUrl: ""
   },
   ...router,
   onBack() {
+    if (this.importMenu === "animation-in") {
+      this.toggleImportMenu()
+      return true
+    }
+    if (this.sourceMenu === "animation-in") {
+      this.toggleSourceMenu(this.activeItem)
+      return true
+    }
     if (this.menu === "animation-in") {
       this.toggleMenu()
       return true
     }
   },
-  setValue(item, value, evt) {
-    item.value = value
+  onDestroy() {
+    source.save()
+  },
+  setValue(item, key, value, evt) {
+    item[key] = value
+    source.syncFromUi(this.list)
     evt.stopPropagation()
   },
-  toggleMenu(item) {
-    if (item?.title) this.activeItem = item
+  toggleMenu() {
+    if (this.sourceMenu === "animation-in") {
+      this.toggleSourceMenu(this.activeItem)
+    }
     if (this.menu === "animation-in") {
-      setTimeout(() => {
-        this.activeItem = undefined
-      }, 200)
       this.menu = "animation-out-back"
     } else {
       this.menu = "animation-in"
     }
+  },
+  toggleSourceMenu(item) {
+    this.activeItem = item
+    if (this.sourceMenu === "animation-in") {
+      this.sourceMenu = "animation-out-back"
+    } else {
+      this.sourceMenu = "animation-in"
+    }
+  },
+  toggleImportMenu() {
+    if (this.importMenu === "animation-in") {
+      this.importMenu = "animation-out-back"
+    } else {
+      this.importMenu = "animation-in"
+    }
+  },
+  onlineImport() {
+    this.toggleImportMenu()
+  },
+  complete(evt) {
+    this.sourceUrl += evt.detail.content
+  },
+  delete() {
+    this.sourceUrl = this.sourceUrl.slice(0, -1)
+  },
+  submit() {
+    let url
+    if (this.sourceUrl.startsWith("http://") || this.sourceUrl.startsWith("https://")) {
+      url = this.sourceUrl
+    } else if (this.sourceUrl.length === 9) {
+      url = `https://t.doruo.cn/${this.sourceUrl}`
+    } else {
+      this.toast("请输入正确的链接/9位传输码")
+      return
+    }
+
+    fetch(url).then((res) => {
+      if (res.data.length > 0) {
+        res.data.forEach((item) => {
+          source.add(item)
+        })
+        this.list = source.mapForUi()
+
+        this.back()
+        this.back()
+      }
+    })
+  },
+  moveUp() {
+    if (this.activeItem) {
+      source.moveUp(this.activeItem)
+      this.list = source.mapForUi()
+      this.back()
+    }
+  },
+  moveDown() {
+    if (this.activeItem) {
+      source.moveDown(this.activeItem)
+      this.list = source.mapForUi()
+      this.back()
+    }
+  },
+  remove() {
+    if (this.activeItem) {
+      source.remove(this.activeItem)
+      this.list = source.mapForUi()
+      this.back()
+    }
+  },
+  clear() {
+    source.clear()
+    this.list = source.mapForUi()
+    this.back()
   }
 }
 </script>
 
 <style>
 @import url(../../common/css/page.css);
+
+.input-menu {
+  padding: 0;
+  justify-content: flex-start;
+}
 </style>

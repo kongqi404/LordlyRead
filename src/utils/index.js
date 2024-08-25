@@ -1,6 +1,7 @@
 import systemRouter from "@system.router"
 import storage from "@system.storage"
 import prompt from "@system.prompt"
+import systemFetch from "@system.fetch"
 
 const config = {
   animationDuration: 200,
@@ -40,7 +41,7 @@ const animation = {
         : "animation-out"
       setTimeout(() => {
         thisObj.coverAnimation = "none"
-      }, config.animationDuration + config.animationDelay);
+      }, config.animationDuration + config.animationDelay)
     } else {
       thisObj.pageClass = thisObj.$app.$def.utils.state.animationBack
         ? "animation-in-back"
@@ -238,6 +239,9 @@ const template = {
   },
   wait() {
     prompt.showToast({message: "敬请期待"})
+  },
+  toast(message) {
+    prompt.showToast({message})
   }
 }
 
@@ -250,6 +254,86 @@ setting.getRaw("page_transition").then((value) => {
   }
 })
 
+const fetch = (url, options) => {
+  return new Promise((resolve, reject) => {
+    systemFetch.fetch({
+      url,
+      ...options,
+      success: (res) => {
+        resolve(res)
+      },
+      fail: (err) => {
+        reject(err)
+      }
+    })
+  })
+}
+
+const source = {
+  list: [],
+  init() {
+    storage.get({
+      key: "source",
+      success: (data) => {
+        this.list = JSON.parse(data)
+      }
+    })
+  },
+  add(source) {
+    for (const item of this.list) {
+      if (item.bookSourceUrl === source.bookSourceUrl) {
+        return false
+      }
+    }
+    this.list.push(source)
+  },
+  remove(source) {
+    this.list = this.list.filter((item) => item.bookSourceUrl !== source.bookSourceUrl)
+  },
+  moveUp(source) {
+    source = this.list.find((item) => item.bookSourceUrl === source.bookSourceUrl)
+    this.list = this.list.filter((item) => item.bookSourceUrl !== source.bookSourceUrl)
+    this.list.unshift(source)
+  },
+  moveDown(source) {
+    source = this.list.find((item) => item.bookSourceUrl === source.bookSourceUrl)
+    this.list = this.list.filter((item) => item.bookSourceUrl !== source.bookSourceUrl)
+    this.list.push(source)
+  },
+  clear() {
+    this.list = []
+  },
+  save() {
+    storage.set({
+      key: "source",
+      value: JSON.stringify(this.list)
+    })
+  },
+  mapForUi() {
+    return this.list.map((item) => {
+      return {
+        bookSourceUrl: item.bookSourceUrl,
+        bookSourceName: item.bookSourceName,
+        enabled: item.enabled,
+        enabledExplore: item.enabledExplore,
+        hasExplore: !!item.exploreUrl,
+        hasLogin: !!item.loginUrl
+      }
+    })
+  },
+  syncFromUi(uiList) {
+    uiList.forEach((item) => {
+      const source = this.list.find((item2) => item2.bookSourceUrl === item.bookSourceUrl)
+      if (source) {
+        source.enabled = item.enabled
+        source.enabledExplore = item.enabledExplore
+      }
+    })
+  }
+}
+
+source.init()
+
 global.config = config
 global.state = state
 global.router = router
@@ -257,6 +341,8 @@ global.animation = animation
 global.on = on
 global.template = template
 global.setting = setting
+global.fetch = fetch
+global.source = source
 
 export default {
   state
