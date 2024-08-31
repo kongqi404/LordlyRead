@@ -18,6 +18,10 @@
   font-weight: bold;
 }
 
+.badge-btn {
+  padding: 8px 0;
+}
+
 .horizontal-separator {
   width: 1px;
   height: 100%;
@@ -42,6 +46,10 @@
 
 .space-between {
   justify-content: space-between;
+}
+
+.full-width {
+  width: 100%;
 }
 
 .grow {
@@ -168,7 +176,7 @@
   width: 336px;
   height: 100%;
   padding: 24px;
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(0,0,0,0.9);
   justify-content: center;
   flex-direction: column;
   margin-left: 336px;

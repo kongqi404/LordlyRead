@@ -137,6 +137,10 @@ export default {
     evt.stopPropagation()
   },
   toggleMenu() {
+    if (this.importMenu === "animation-in") {
+      this.toggleImportMenu()
+      return
+    }
     if (this.sourceMenu === "animation-in") {
       this.toggleSourceMenu(this.activeItem)
     }
