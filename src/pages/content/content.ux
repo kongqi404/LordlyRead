@@ -1,0 +1,109 @@
+<template>
+  <div class="page {{pageClass}}" @swipe="pageSwipe">
+    <div class="body">
+      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false">
+        <div class="swiper-container col">
+          <div class="topbar space-between">
+            <text class="info">详情</text>
+            <text class="info">{{ time }}</text>
+          </div>
+          <div class="vertical-separator"></div>
+          <scroll class="body-container" scroll-y="true" bounces="true" @click="toggleMenu">
+            <text class="chapter">第一章 章节名</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+            <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+          </scroll>
+          <div class="menu {{ menu }}">
+            <div class="topbar">
+              <div class="topbar-btn" @click="back">
+                <image src="/common/icon/back.png" class="icon" />
+              </div>
+              <text class="title">{{ $t("index.title") }}</text>
+              <div class="topbar-btn" @click="wait">
+                <image src="/common/icon/search.png" class="icon" />
+              </div>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/refresh.png" class="icon" />
+              <text class="card-btn-text center">刷新</text>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/book-code.png" class="icon" />
+              <text class="card-btn-text center">设置书籍变量</text>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/code.png" class="icon" />
+              <text class="card-btn-text center">设置源变量</text>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/trash.png" class="icon" />
+              <text class="card-btn-text center">清理缓存</text>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/check.png" class="icon" />
+              <text class="card-btn-text center">启用更新</text>
+            </div>
+          </div>
+        </div>
+      </swiper>
+    </div>
+    <div class="cover-animation-helper {{coverAnimation}}"></div>
+  </div>
+</template>
+
+<script>
+const {template, router} = global
+
+export default {
+  ...template,
+  private: {
+    ...template.private,
+    menu: "",
+    time: `${new Date().getHours()}:${new Date().getMinutes()}`
+  },
+  ...router,
+  onInit() {
+    setInterval(() => {
+      this.time = `${new Date().getHours()}:${new Date().getMinutes()}`
+    }, 1000)
+  },
+  onBack() {
+    if (this.menu === "animation-in") {
+      this.toggleMenu()
+      return true
+    }
+  },
+  toggleMenu() {
+    if (this.menu === "animation-in") {
+      this.menu = "animation-out-back"
+    } else {
+      this.menu = "animation-in"
+    }
+  }
+}
+</script>
+
+<style>
+@import url(../../common/css/page.css);
+
+.chapter {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 16px 0;
+}
+
+.paragraph {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+</style>

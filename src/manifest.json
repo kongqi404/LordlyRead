@@ -47,7 +47,12 @@
         "launchMode": "singleTask"
       },
       "pages/detail": {
-        "component": "detail"
+        "component": "detail",
+        "launchMode": "singleTask"
+      },
+      "pages/content": {
+        "component": "content",
+        "launchMode": "singleTask"
       }
     }
   },
