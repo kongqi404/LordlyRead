@@ -18,7 +18,7 @@
         <block if="{{list.length > 0}}" for="item in list">
           <div class="card" @click="toggleSourceMenu(item)">
             <div class="col grow">
-              <text class="card-btn-text margin-0">{{ item.bookSourceName }}</text>
+              <text class="card-btn-text ma-0">{{ item.bookSourceName }}</text>
             </div>
             <image src="/common/icon/check{{ item.enabled ? '-active' : ''}}.png" class="icon"
               @click="setValue(item, 'enabled', !item.enabled)" />

@@ -15,14 +15,14 @@
           <text if="item.type==='title'" class="btn-group-title">{{ item.title }}</text>
           <div elif="item.type==='switch'" class="card" @click="setValue(item, !item.value)">
             <div class="col grow">
-              <text class="card-btn-text margin-0">{{ item.title }}</text>
+              <text class="card-btn-text ma-0">{{ item.title }}</text>
               <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
             </div>
             <image src="/common/icon/check{{ item.value ? '-active' : ''}}.png" class="icon" />
           </div>
           <div elif="item.type==='choose'" class="card">
             <div class="col grow">
-              <text class="card-btn-text margin-0">{{ item.title }}</text>
+              <text class="card-btn-text ma-0">{{ item.title }}</text>
               <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
               <div class="choose-container">
                 <block for="(index, option) in item.options">
@@ -37,7 +37,7 @@
           </div>
           <div elif="item.type==='button'" class="card" @click="item.action">
             <div class="col grow">
-              <text class="card-btn-text margin-0">{{ item.title }}</text>
+              <text class="card-btn-text ma-0">{{ item.title }}</text>
               <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
             </div>
           </div>

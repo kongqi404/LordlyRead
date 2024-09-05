@@ -283,10 +283,6 @@
 }
 
 /* style reset classes */
-.margin-0 {
-  margin: 0;
-}
-
 .transparent {
   background-color: transparent;
 }
@@ -295,21 +291,209 @@
   display: none;
 }
 
+/* margin and padding classes */
+
+.ma-lg {
+  margin: 48px;
+}
+
 .ma-md {
   margin: 24px;
+}
+
+.ma-sm {
+  margin: 12px;
+}
+
+.ma-xs {
+  margin: 8px;
 }
 
 .ma-0 {
   margin: 0;
 }
 
+.mt-lg {
+  margin-top: 48px;
+}
+
+.mt-md {
+  margin-top: 24px;
+}
+
+.mt-sm {
+  margin-top: 12px;
+}
+
+.mt-xs {
+  margin-top: 8px;
+}
+
+.mt-0 {
+  margin-top: 0;
+}
+
+.mb-lg {
+  margin-bottom: 48px;
+}
+
+.mb-md {
+  margin-bottom: 24px;
+}
+
+.mb-sm {
+  margin-bottom: 12px;
+}
+
+.mb-xs {
+  margin-bottom: 8px;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.ml-lg {
+  margin-left: 48px;
+}
+
+.ml-md {
+  margin-left: 24px;
+}
+
+.ml-sm {
+  margin-left: 12px;
+}
+
+.ml-xs {
+  margin-left: 8px;
+}
+
+.ml-0 {
+  margin-left: 0;
+}
+
+.mr-lg {
+  margin-right: 48px;
+}
+
+.mr-md {
+  margin-right: 24px;
+}
+
+.mr-sm {
+  margin-right: 12px;
+}
+
+.mr-xs {
+  margin-right: 8px;
+}
+
+.mr-0 {
+  margin-right: 0;
+}
+
+.pa-lg {
+  padding: 48px;
+}
+
 .pa-md {
   padding: 24px;
+}
+
+.pa-sm {
+  padding: 12px;
+}
+
+.pa-xs {
+  padding: 8px;
 }
 
 .pa-0 {
   padding: 0;
 }
+
+.pt-lg {
+  padding-top: 48px;
+}
+
+.pt-md {
+  padding-top: 24px;
+}
+
+.pt-sm {
+  padding-top: 12px;
+}
+
+.pt-xs {
+  padding-top: 8px;
+}
+
+.pt-0 {
+  padding-top: 0;
+}
+
+.pb-lg {
+  padding-bottom: 48px;
+}
+
+.pb-md {
+  padding-bottom: 24px;
+}
+
+.pb-sm {
+  padding-bottom: 12px;
+}
+
+.pb-xs {
+  padding-bottom: 8px;
+}
+
+.pb-0 {
+  padding-bottom: 0;
+}
+
+.pl-lg {
+  padding-left: 48px;
+}
+
+.pl-md {
+  padding-left: 24px;
+}
+
+.pl-sm {
+  padding-left: 12px;
+}
+
+.pl-xs {
+  padding-left: 8px;
+}
+
+.pl-0 {
+  padding-left: 0;
+}
+
+.pr-lg {
+  padding-right: 48px;
+}
+
+.pr-md {
+  padding-right: 24px;
+}
+
+.pr-sm {
+  padding-right: 12px;
+}
+
+.pr-xs {
+  padding-right: 8px;
+}
+
+.pr-0 {
+  padding-right: 0;
+}
+
+/* height classes */
 
 .h-0 {
   height: 0;
