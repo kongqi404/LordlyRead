@@ -29,7 +29,7 @@
           <text>空空如也呢~</text>
         </div>
       </scroll>
-      <div class="menu {{ menu }}">
+      <div class="menu pa-md {{ menu }}">
         <div class="card" @click="onlineImport">
           <image src="/common/icon/web.png" class="icon" />
           <text class="card-btn-text center">网络导入</text>
@@ -48,35 +48,43 @@
         </div>
       </div>
       <div class="menu {{ sourceMenu }}">
-        <div class="card" @click="moveUp">
-          <image src="/common/icon/up.png" class="icon" />
-          <text class="card-btn-text center">置顶</text>
-        </div>
-        <div class="card" @click="moveDown">
-          <image src="/common/icon/down.png" class="icon" />
-          <text class="card-btn-text center">置底</text>
-        </div>
-        <div if="{{activeItem.hasLogin}}" class="card" @click="wait">
-          <image src="/common/icon/password.png" class="icon" />
-          <text class="card-btn-text center">登录</text>
-        </div>
-        <div class="card" @click="wait">
-          <image src="/common/icon/search.png" class="icon" />
-          <text class="card-btn-text center">搜索</text>
-        </div>
-        <div class="card" @click="remove">
-          <image src="/common/icon/trash.png" class="icon" />
-          <text class="card-btn-text center">删除</text>
-        </div>
-        <div if="{{activeItem.hasExplore}}" class="card"
-          @click="setValue(activeItem, 'enabledExplore', !activeItem.enabledExplore)">
-          <image src="/common/icon/check{{ activeItem.enabledExplore ? '-active' : ''}}.png" class="icon" />
-          <text class="card-btn-text center">
-            {{ activeItem.enabledExplore ? "禁用" : "启用" }}发现
-          </text>
-        </div>
+        <scroll class="body-container" scroll-y="true" bounces="true">
+          <div class="card" @click="setValue(activeItem, 'enabled', !activeItem.enabled)">
+            <image src="/common/icon/check{{ activeItem.enabled ? '-active' : ''}}.png" class="icon" />
+            <text class="card-btn-text center">
+              {{ activeItem.enabled ? "禁用" : "启用" }}
+            </text>
+          </div>
+          <div class="card" @click="moveUp">
+            <image src="/common/icon/up.png" class="icon" />
+            <text class="card-btn-text center">置顶</text>
+          </div>
+          <div class="card" @click="moveDown">
+            <image src="/common/icon/down.png" class="icon" />
+            <text class="card-btn-text center">置底</text>
+          </div>
+          <div if="{{activeItem.hasLogin}}" class="card" @click="wait">
+            <image src="/common/icon/password.png" class="icon" />
+            <text class="card-btn-text center">登录</text>
+          </div>
+          <div class="card" @click="wait">
+            <image src="/common/icon/search.png" class="icon" />
+            <text class="card-btn-text center">搜索</text>
+          </div>
+          <div class="card" @click="remove">
+            <image src="/common/icon/trash.png" class="icon" />
+            <text class="card-btn-text center">删除</text>
+          </div>
+          <div if="{{activeItem.hasExplore}}" class="card"
+            @click="setValue(activeItem, 'enabledExplore', !activeItem.enabledExplore)">
+            <image src="/common/icon/check{{ activeItem.enabledExplore ? '-active' : ''}}.png" class="icon" />
+            <text class="card-btn-text center">
+              {{ activeItem.enabledExplore ? "禁用" : "启用" }}发现
+            </text>
+          </div>
+        </scroll>
       </div>
-      <div class="menu input-menu {{importMenu}}">
+      <div class="menu input-menu pa-md {{importMenu}}">
         <div class="pa-md col">
           <div class="card">
             <text class="card-btn-text">

@@ -27,22 +27,22 @@
             <text class="tag">标签10</text>
           </div>
         </scroll>
-        <div class="center full-width">
+        <div class="center w-100">
           <image src="/common/icon/author.png" class="icon" />
           <text class="item-text">作者</text>
         </div>
-        <div class="center full-width">
+        <div class="center w-100">
           <image src="/common/icon/source.png" class="icon" />
           <text class="item-text">书源</text>
           <div class="badge-btn" @click="wait">
             <text class="badge">换源</text>
           </div>
         </div>
-        <div class="center full-width">
+        <div class="center w-100">
           <image src="/common/icon/latest.png" class="icon" />
           <text class="item-text">最新章节</text>
         </div>
-        <div class="center full-width">
+        <div class="center w-100">
           <image src="/common/icon/catalog.png" class="icon" />
           <text class="item-text">当前看到</text>
           <div class="badge-btn" @click="wait">
@@ -64,7 +64,7 @@
           <text class="card-btn-text">加入书架</text>
         </div>
       </scroll>
-      <div class="menu {{ menu }}">
+      <div class="menu pa-md {{ menu }}">
         <div class="card" @click="wait">
           <image src="/common/icon/refresh.png" class="icon" />
           <text class="card-btn-text center">刷新</text>

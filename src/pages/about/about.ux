@@ -1,11 +1,11 @@
 <template>
   <div class="page {{pageClass}}" @swipe="pageSwipe">
     <div class="topbar">
-      <div class="topbar-btn" @click="back()">
+      <div class="topbar-btn" @click="back">
         <image src="/common/icon/back.png" class="icon" />
       </div>
       <text class="title">关于</text>
-      <div class="topbar-btn" @click="push('/pages/detail')">
+      <div class="topbar-btn" @click="wait">
         <image src="/common/icon/menu.png" class="icon" />
       </div>
     </div>

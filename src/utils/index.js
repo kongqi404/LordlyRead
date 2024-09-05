@@ -24,11 +24,13 @@ const router = {
       })
     }, config.animationDuration + config.animationDelay)
   },
-  back() {
-    if (thisObj.onBack?.call()) return
+  back(path) {
+    if (typeof path !== "string") if (thisObj.onBack?.call()) return
     animation.out(true)
     setTimeout(() => {
-      systemRouter.back()
+      systemRouter.back({
+        path
+      })
     }, config.animationDuration + config.animationDelay)
   }
 }

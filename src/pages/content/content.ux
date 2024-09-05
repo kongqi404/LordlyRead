@@ -2,11 +2,12 @@
   <div class="page {{pageClass}}" @swipe="pageSwipe">
     <div class="body">
       <div class="topbar space-between">
-        <text class="info">详情</text>
-        <text class="info">{{ time }}</text>
+        <text class="info mx-lg my-xs">详情</text>
+        <text class="info mx-lg my-xs">{{ time }}</text>
       </div>
       <div class="vertical-separator"></div>
-      <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true" @click="toggleMenu">
+      <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true"
+        @click="toggleMenu">
         <text class="chapter">第一章 章节名</text>
         <text class="paragraph">段落内容段落内容段落内容段落内容</text>
         <text class="paragraph">段落内容段落内容段落内容段落内容</text>
@@ -21,38 +22,62 @@
         <text class="paragraph">段落内容段落内容段落内容段落内容</text>
         <text class="paragraph">段落内容段落内容段落内容段落内容</text>
       </scroll>
-      <div class="menu pa-0 {{ menu }}">
+      <div class="menu {{ menu }}">
         <div class="topbar">
-          <div class="topbar-btn" @click="back">
+          <div class="topbar-btn no-shrink" @click="back">
             <image src="/common/icon/back.png" class="icon" />
           </div>
-          <text class="title">{{ $t("index.title") }}</text>
-          <div class="topbar-btn" @click="wait">
-            <image src="/common/icon/search.png" class="icon" />
+          <text class="title ellipsis">书籍名称特别特别特别长</text>
+          <div class="topbar-btn no-shrink" @click="back('/')">
+            <image src="/common/icon/close.png" class="icon" />
           </div>
         </div>
-        <div class="body-container">
+        <scroll class="body-container" scroll-y="true" bounces="true">
+          <div class="justify-center my-xs">
+            <text class="info ma-0 mr-xs ellipsis">第一章 章节名特别特别特别长</text>
+            <text class="info ma-0 no-shrink">(1/10086)</text>
+          </div>
+          <div class="mb-xs">
+            <div class="card ma-0 mr-xs" @click="wait">
+              <image src="/common/icon/left.png" class="icon" />
+            </div>
+            <div class="card ma-0 mr-xs grow justify-center" @click="wait">
+              <image src="/common/icon/catalog.png" class="icon" />
+              <text class="card-btn-text center">目录</text>
+            </div>
+            <div class="card ma-0" @click="wait">
+              <image src="/common/icon/right.png" class="icon" />
+            </div>
+          </div>
           <div class="card" @click="wait">
             <image src="/common/icon/refresh.png" class="icon" />
             <text class="card-btn-text center">刷新</text>
           </div>
           <div class="card" @click="wait">
-            <image src="/common/icon/book-code.png" class="icon" />
-            <text class="card-btn-text center">设置书籍变量</text>
+            <image src="/common/icon/down.png" class="icon" />
+            <text class="card-btn-text center">缓存</text>
           </div>
           <div class="card" @click="wait">
-            <image src="/common/icon/code.png" class="icon" />
-            <text class="card-btn-text center">设置源变量</text>
+            <image src="/common/icon/magic.png" class="icon" />
+            <text class="card-btn-text center">替换净化</text>
           </div>
           <div class="card" @click="wait">
-            <image src="/common/icon/trash.png" class="icon" />
-            <text class="card-btn-text center">清理缓存</text>
+            <image src="/common/icon/up.png" class="icon" />
+            <text class="card-btn-text center">更新目录</text>
           </div>
           <div class="card" @click="wait">
-            <image src="/common/icon/check.png" class="icon" />
-            <text class="card-btn-text center">启用更新</text>
+            <image src="/common/icon/library.png" class="icon" />
+            <text class="card-btn-text center">换源</text>
           </div>
-        </div>
+          <div class="card" @click="wait">
+            <image src="/common/icon/ui.png" class="icon" />
+            <text class="card-btn-text center">界面</text>
+          </div>
+          <div class="card" @click="wait">
+            <image src="/common/icon/setting.png" class="icon" />
+            <text class="card-btn-text center">设置</text>
+          </div>
+        </scroll>
       </div>
     </div>
     <div class="cover-animation-helper {{coverAnimation}}"></div>
