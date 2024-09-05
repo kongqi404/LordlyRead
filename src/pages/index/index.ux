@@ -37,7 +37,7 @@
             <text>空空如也呢~</text>
           </div>
           <scroll else class="body-container" scroll-y="true" bounces="true">
-            <div class="card" @click="push('/pages/content')" @longpress="push('/pages/detail')">
+            <div class="card" @click="toContent" @longpress="toDetail">
               <image src="/common/image/cover.jpg" class="book-cover" />
               <div class="col grow">
                 <text class="book-name">书名很长很长很长很长</text>
@@ -104,6 +104,8 @@ const tabIdentifiers = {
   mine: 2
 }
 
+let longpress = false
+
 export default {
   ...template,
   // 页面级组件的数据模型，影响传入数据的覆盖机制：private内定义的属性不允许被覆盖
@@ -150,6 +152,19 @@ export default {
 
   swiperSwipe(evt) {
     console.log(evt)
+  },
+
+  toContent() {
+    if (longpress) {
+      longpress = false
+      return
+    }
+    this.push('/pages/content')
+  },
+
+  toDetail() {
+    longpress = true
+    this.push('/pages/detail')
   }
 }
 </script>

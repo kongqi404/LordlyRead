@@ -10,87 +10,85 @@
       </div>
     </div>
     <div class="body">
-      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false">
-        <div class="swiper-container">
-          <scroll class="body-container center" scroll-y="true" bounces="true">
-            <image src="/common/image/cover.jpg" class="book-cover" @click="toggleImgMenu" />
-            <text class="book-name">书名很长很长很长很长（）（）（）（）（）</text>
-            <scroll class="tags" scroll-x="true" bounces="true">
-              <div class="grow justify-center">
-                <text class="tag">标签1</text>
-                <text class="tag">标签2</text>
-                <text class="tag">标签3</text>
-                <text class="tag">标签4</text>
-                <text class="tag">标签5</text>
-                <text class="tag">标签6</text>
-                <text class="tag">标签7</text>
-                <text class="tag">标签8</text>
-                <text class="tag">标签9</text>
-                <text class="tag">标签10</text>
-              </div>
-            </scroll>
-            <div class="center full-width">
-              <image src="/common/icon/author.png" class="icon" />
-              <text class="item-text">作者</text>
-            </div>
-            <div class="center full-width">
-              <image src="/common/icon/source.png" class="icon" />
-              <text class="item-text">书源</text>
-              <div class="badge-btn" @click="wait">
-                <text class="badge">换源</text>
-              </div>
-            </div>
-            <div class="center full-width">
-              <image src="/common/icon/latest.png" class="icon" />
-              <text class="item-text">最新章节</text>
-            </div>
-            <div class="center full-width">
-              <image src="/common/icon/catalog.png" class="icon" />
-              <text class="item-text">当前看到</text>
-              <div class="badge-btn" @click="wait">
-                <text class="badge">目录</text>
-              </div>
-            </div>
-            <div class="intro col">
-              <text class="intro-text">简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介
-              </text>
-              <text class="intro-text">简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介
-              </text>
-            </div>
-            <div class="card justify-center">
-              <text class="card-btn-text">开始阅读</text>
-            </div>
-            <div class="card justify-center">
-              <text class="card-btn-text">加入书架</text>
-            </div>
-          </scroll>
-          <div class="menu {{ menu }}">
-            <div class="card" @click="wait">
-              <image src="/common/icon/refresh.png" class="icon" />
-              <text class="card-btn-text center">刷新</text>
-            </div>
-            <div class="card" @click="wait">
-              <image src="/common/icon/book-code.png" class="icon" />
-              <text class="card-btn-text center">设置书籍变量</text>
-            </div>
-            <div class="card" @click="wait">
-              <image src="/common/icon/code.png" class="icon" />
-              <text class="card-btn-text center">设置源变量</text>
-            </div>
-            <div class="card" @click="wait">
-              <image src="/common/icon/trash.png" class="icon" />
-              <text class="card-btn-text center">清理缓存</text>
-            </div>
-            <div class="card" @click="wait">
-              <image src="/common/icon/check.png" class="icon" />
-              <text class="card-btn-text center">启用更新</text>
-            </div>
+      <scroll class="body-container center" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
+        <image src="/common/image/cover.jpg" class="book-cover" @click="toggleImgMenu" />
+        <text class="book-name">书名很长很长很长很长（）（）（）（）（）</text>
+        <scroll class="tags" scroll-x="true" bounces="true">
+          <div class="grow justify-center">
+            <text class="tag">标签1</text>
+            <text class="tag">标签2</text>
+            <text class="tag">标签3</text>
+            <text class="tag">标签4</text>
+            <text class="tag">标签5</text>
+            <text class="tag">标签6</text>
+            <text class="tag">标签7</text>
+            <text class="tag">标签8</text>
+            <text class="tag">标签9</text>
+            <text class="tag">标签10</text>
           </div>
-          <div class="menu center {{ imgMenu }}">
-            <image src="/common/image/cover.jpg" class="book-cover full-cover" />
+        </scroll>
+        <div class="center full-width">
+          <image src="/common/icon/author.png" class="icon" />
+          <text class="item-text">作者</text>
+        </div>
+        <div class="center full-width">
+          <image src="/common/icon/source.png" class="icon" />
+          <text class="item-text">书源</text>
+          <div class="badge-btn" @click="wait">
+            <text class="badge">换源</text>
           </div>
         </div>
-      </swiper>
+        <div class="center full-width">
+          <image src="/common/icon/latest.png" class="icon" />
+          <text class="item-text">最新章节</text>
+        </div>
+        <div class="center full-width">
+          <image src="/common/icon/catalog.png" class="icon" />
+          <text class="item-text">当前看到</text>
+          <div class="badge-btn" @click="wait">
+            <text class="badge">目录</text>
+          </div>
+        </div>
+        <div class="intro col">
+          <text class="intro-text">
+            简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介
+          </text>
+          <text class="intro-text">
+            简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介
+          </text>
+        </div>
+        <div class="card justify-center">
+          <text class="card-btn-text">开始阅读</text>
+        </div>
+        <div class="card justify-center">
+          <text class="card-btn-text">加入书架</text>
+        </div>
+      </scroll>
+      <div class="menu {{ menu }}">
+        <div class="card" @click="wait">
+          <image src="/common/icon/refresh.png" class="icon" />
+          <text class="card-btn-text center">刷新</text>
+        </div>
+        <div class="card" @click="wait">
+          <image src="/common/icon/book-code.png" class="icon" />
+          <text class="card-btn-text center">设置书籍变量</text>
+        </div>
+        <div class="card" @click="wait">
+          <image src="/common/icon/code.png" class="icon" />
+          <text class="card-btn-text center">设置源变量</text>
+        </div>
+        <div class="card" @click="wait">
+          <image src="/common/icon/trash.png" class="icon" />
+          <text class="card-btn-text center">清理缓存</text>
+        </div>
+        <div class="card" @click="wait">
+          <image src="/common/icon/check.png" class="icon" />
+          <text class="card-btn-text center">启用更新</text>
+        </div>
+      </div>
+      <div class="menu center {{ imgMenu }}">
+        <image src="/common/image/cover.jpg" class="book-cover full-cover" />
+      </div>
     </div>
     <div class="cover-animation-helper {{coverAnimation}}"></div>
   </div>
@@ -104,7 +102,7 @@ export default {
   private: {
     ...template.private,
     menu: "",
-    imgMenu: "",
+    imgMenu: ""
   },
   ...router,
   onBack() {

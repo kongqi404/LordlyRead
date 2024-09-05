@@ -10,43 +10,39 @@
       </div>
     </div>
     <div class="body">
-      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false">
-        <div class="swiper-container">
-          <scroll class="body-container" scroll-y="true" bounces="true">
-            <block for="item in list">
-              <text if="item.type==='title'" class="btn-group-title">{{ item.title }}</text>
-              <div elif="item.type==='switch'" class="card" @click="setValue(item, !item.value)">
-                <div class="col grow">
-                  <text class="card-btn-text margin-0">{{ item.title }}</text>
-                  <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
-                </div>
-                <image src="/common/icon/check{{ item.value ? '-active' : ''}}.png" class="icon" />
+      <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
+        <block for="item in list">
+          <text if="item.type==='title'" class="btn-group-title">{{ item.title }}</text>
+          <div elif="item.type==='switch'" class="card" @click="setValue(item, !item.value)">
+            <div class="col grow">
+              <text class="card-btn-text margin-0">{{ item.title }}</text>
+              <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
+            </div>
+            <image src="/common/icon/check{{ item.value ? '-active' : ''}}.png" class="icon" />
+          </div>
+          <div elif="item.type==='choose'" class="card">
+            <div class="col grow">
+              <text class="card-btn-text margin-0">{{ item.title }}</text>
+              <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
+              <div class="choose-container">
+                <block for="(index, option) in item.options">
+                  <div if="index > 0" class="horizontal-separator transparent" style="width: 10px"></div>
+                  <text class="choose-item {{ item.value==option.value ? 'choose-item-active' : '' }}"
+                    @click="setValue(item, option.value)">
+                    {{ option.label }}
+                  </text>
+                </block>
               </div>
-              <div elif="item.type==='choose'" class="card">
-                <div class="col grow">
-                  <text class="card-btn-text margin-0">{{ item.title }}</text>
-                  <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
-                  <div class="choose-container">
-                    <block for="(index, option) in item.options">
-                      <div if="index > 0" class="horizontal-separator transparent" style="width: 10px"></div>
-                      <text class="choose-item {{ item.value==option.value ? 'choose-item-active' : '' }}"
-                        @click="setValue(item, option.value)">
-                        {{ option.label }}
-                      </text>
-                    </block>
-                  </div>
-                </div>
-              </div>
-              <div elif="item.type==='button'" class="card" @click="item.action">
-                <div class="col grow">
-                  <text class="card-btn-text margin-0">{{ item.title }}</text>
-                  <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
-                </div>
-              </div>
-            </block>
-          </scroll>
-        </div>
-      </swiper>
+            </div>
+          </div>
+          <div elif="item.type==='button'" class="card" @click="item.action">
+            <div class="col grow">
+              <text class="card-btn-text margin-0">{{ item.title }}</text>
+              <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
+            </div>
+          </div>
+        </block>
+      </scroll>
     </div>
     <div class="cover-animation-helper {{coverAnimation}}"></div>
   </div>

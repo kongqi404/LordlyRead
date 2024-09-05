@@ -10,38 +10,34 @@
       </div>
     </div>
     <div class="body">
-      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false">
-        <div class="swiper-container">
-          <scroll class="body-container" scroll-y="true" bounces="true">
-            <div class="app-info">
-              <image src="{{ appInfo.icon }}" class="app-logo" />
-              <div class="col">
-                <text class="app-name">{{ appInfo.name }}</text>
-                <text class="app-version">版本 {{ appInfo.versionName }}</text>
-              </div>
-            </div>
-            <text class="app-desc">支持「开源阅读」规则的手环在线阅读工具</text>
-            <text class="app-desc">本应用为开源项目，欢迎提交 PR 或 Issue</text>
-            <text class="group-title">开发者</text>
-            <text class="text">@吉王义昊</text>
-            <text class="text">@两广总督-tiger</text>
-            <text class="group-title">官方Q群</text>
-            <text class="text">Lordly Wear 可穿戴设备交流群</text>
-            <image src="/common/image/qr-qq.png" class="qr-code" />
-            <text class="group-title">赞助</text>
-            <text class="text">afdian@tiger14tiger</text>
-            <image src="/common/image/qr-feed.png" class="qr-code" />
-            <text class="group-title">开源地址</text>
-            <text class="text">Lordly-Tech/LordlyRead</text>
-            <image src="/common/image/qr-github.png" class="qr-code" />
-            <text class="group-title">更多资源请访问</text>
-            <text class="text">bandbbs.cn</text>
-            <text class="group-title">免责声明</text>
-            <text class="text">本应用仅用于学习交流，请勿用于商业用途</text>
-            <text class="text">本应用只是一个转码工具，不提供内容</text>
-          </scroll>
+      <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
+        <div class="app-info">
+          <image src="{{ appInfo.icon }}" class="app-logo" />
+          <div class="col">
+            <text class="app-name">{{ appInfo.name }}</text>
+            <text class="app-version">版本 {{ appInfo.versionName }}</text>
+          </div>
         </div>
-      </swiper>
+        <text class="app-desc">支持「开源阅读」规则的手环在线阅读工具</text>
+        <text class="app-desc">本应用为开源项目，欢迎提交 PR 或 Issue</text>
+        <text class="group-title">开发者</text>
+        <text class="text">@吉王义昊</text>
+        <text class="text">@两广总督-tiger</text>
+        <text class="group-title">官方Q群</text>
+        <text class="text">Lordly Wear 可穿戴设备交流群</text>
+        <image src="/common/image/qr-qq.png" class="qr-code" />
+        <text class="group-title">赞助</text>
+        <text class="text">afdian@tiger14tiger</text>
+        <image src="/common/image/qr-feed.png" class="qr-code" />
+        <text class="group-title">开源地址</text>
+        <text class="text">Lordly-Tech/LordlyRead</text>
+        <image src="/common/image/qr-github.png" class="qr-code" />
+        <text class="group-title">更多资源请访问</text>
+        <text class="text">bandbbs.cn</text>
+        <text class="group-title">免责声明</text>
+        <text class="text">本应用仅用于学习交流，请勿用于商业用途</text>
+        <text class="text">本应用只是一个转码工具，不提供内容</text>
+      </scroll>
     </div>
     <div class="cover-animation-helper {{coverAnimation}}"></div>
   </div>

@@ -14,86 +14,82 @@
       </div>
     </div>
     <div class="body">
-      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false">
-        <div class="swiper-container">
-          <scroll class="body-container" scroll-y="true" bounces="true">
-            <block if="{{list.length > 0}}" for="item in list">
-              <div class="card" @click="toggleSourceMenu(item)">
-                <div class="col grow">
-                  <text class="card-btn-text margin-0">{{ item.bookSourceName }}</text>
-                </div>
-                <image src="/common/icon/check{{ item.enabled ? '-active' : ''}}.png" class="icon"
-                  @click="setValue(item, 'enabled', !item.enabled)" />
-              </div>
-            </block>
-            <div else class="body-holder">
-              <text>这里……</text>
-              <text>空空如也呢~</text>
+      <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
+        <block if="{{list.length > 0}}" for="item in list">
+          <div class="card" @click="toggleSourceMenu(item)">
+            <div class="col grow">
+              <text class="card-btn-text margin-0">{{ item.bookSourceName }}</text>
             </div>
-          </scroll>
-          <div class="menu {{ menu }}">
-            <div class="card" @click="onlineImport">
-              <image src="/common/icon/web.png" class="icon" />
-              <text class="card-btn-text center">网络导入</text>
-            </div>
-            <div class="card" @click="wait">
-              <image src="/common/icon/group.png" class="icon" />
-              <text class="card-btn-text center">分组管理</text>
-            </div>
-            <div class="card" @click="clear">
-              <image src="/common/icon/trash.png" class="icon" />
-              <text class="card-btn-text center">清空书源</text>
-            </div>
-            <div class="card" @click="wait">
-              <image src="/common/icon/help.png" class="icon" />
-              <text class="card-btn-text center">帮助</text>
-            </div>
+            <image src="/common/icon/check{{ item.enabled ? '-active' : ''}}.png" class="icon"
+              @click="setValue(item, 'enabled', !item.enabled)" />
           </div>
-          <div class="menu {{ sourceMenu }}">
-            <div class="card" @click="moveUp">
-              <image src="/common/icon/up.png" class="icon" />
-              <text class="card-btn-text center">置顶</text>
-            </div>
-            <div class="card" @click="moveDown">
-              <image src="/common/icon/down.png" class="icon" />
-              <text class="card-btn-text center">置底</text>
-            </div>
-            <div if="{{activeItem.hasLogin}}" class="card" @click="wait">
-              <image src="/common/icon/password.png" class="icon" />
-              <text class="card-btn-text center">登录</text>
-            </div>
-            <div class="card" @click="wait">
-              <image src="/common/icon/search.png" class="icon" />
-              <text class="card-btn-text center">搜索</text>
-            </div>
-            <div class="card" @click="remove">
-              <image src="/common/icon/trash.png" class="icon" />
-              <text class="card-btn-text center">删除</text>
-            </div>
-            <div if="{{activeItem.hasExplore}}" class="card"
-              @click="setValue(activeItem, 'enabledExplore', !activeItem.enabledExplore)">
-              <image src="/common/icon/check{{ activeItem.enabledExplore ? '-active' : ''}}.png" class="icon" />
-              <text class="card-btn-text center">
-                {{ activeItem.enabledExplore ? "禁用" : "启用" }}发现
-              </text>
-            </div>
+        </block>
+        <div else class="body-holder">
+          <text>这里……</text>
+          <text>空空如也呢~</text>
+        </div>
+      </scroll>
+      <div class="menu {{ menu }}">
+        <div class="card" @click="onlineImport">
+          <image src="/common/icon/web.png" class="icon" />
+          <text class="card-btn-text center">网络导入</text>
+        </div>
+        <div class="card" @click="wait">
+          <image src="/common/icon/group.png" class="icon" />
+          <text class="card-btn-text center">分组管理</text>
+        </div>
+        <div class="card" @click="clear">
+          <image src="/common/icon/trash.png" class="icon" />
+          <text class="card-btn-text center">清空书源</text>
+        </div>
+        <div class="card" @click="wait">
+          <image src="/common/icon/help.png" class="icon" />
+          <text class="card-btn-text center">帮助</text>
+        </div>
+      </div>
+      <div class="menu {{ sourceMenu }}">
+        <div class="card" @click="moveUp">
+          <image src="/common/icon/up.png" class="icon" />
+          <text class="card-btn-text center">置顶</text>
+        </div>
+        <div class="card" @click="moveDown">
+          <image src="/common/icon/down.png" class="icon" />
+          <text class="card-btn-text center">置底</text>
+        </div>
+        <div if="{{activeItem.hasLogin}}" class="card" @click="wait">
+          <image src="/common/icon/password.png" class="icon" />
+          <text class="card-btn-text center">登录</text>
+        </div>
+        <div class="card" @click="wait">
+          <image src="/common/icon/search.png" class="icon" />
+          <text class="card-btn-text center">搜索</text>
+        </div>
+        <div class="card" @click="remove">
+          <image src="/common/icon/trash.png" class="icon" />
+          <text class="card-btn-text center">删除</text>
+        </div>
+        <div if="{{activeItem.hasExplore}}" class="card"
+          @click="setValue(activeItem, 'enabledExplore', !activeItem.enabledExplore)">
+          <image src="/common/icon/check{{ activeItem.enabledExplore ? '-active' : ''}}.png" class="icon" />
+          <text class="card-btn-text center">
+            {{ activeItem.enabledExplore ? "禁用" : "启用" }}发现
+          </text>
+        </div>
+      </div>
+      <div class="menu input-menu {{importMenu}}">
+        <div class="pa-md col">
+          <div class="card">
+            <text class="card-btn-text">
+              {{ sourceUrl === "" ? "请输入链接/9位传输码" : sourceUrl }}
+            </text>
           </div>
-          <div class="menu input-menu {{importMenu}}">
-            <div class="pa-md col">
-              <div class="card">
-                <text class="card-btn-text">
-                  {{ sourceUrl === "" ? "请输入链接/9位传输码" : sourceUrl }}
-                </text>
-              </div>
-              <div class="card justify-center" @click="submit">
-                <image src="/common/icon/submit.png" class="icon" />
-                <text class="card-btn-text">提交</text>
-              </div>
-            </div>
-            <input-method hide="{{false}}" screentype="{{'rect'}}" @delete="delete" @complete="complete"></input-method>
+          <div class="card justify-center" @click="submit">
+            <image src="/common/icon/submit.png" class="icon" />
+            <text class="card-btn-text">提交</text>
           </div>
         </div>
-      </swiper>
+        <input-method hide="{{false}}" screentype="{{'rect'}}" @delete="delete" @complete="complete"></input-method>
+      </div>
     </div>
     <div class="cover-animation-helper {{coverAnimation}}"></div>
   </div>

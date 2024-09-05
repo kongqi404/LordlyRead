@@ -63,9 +63,9 @@ const on = {
     thisObj = pageThis
     animation.in()
 
-    thisObj.$element("body-swiper").getBoundingClientRect({
+    thisObj.$element("body").getBoundingClientRect({
       success: (rect) => {
-        thisObj.swiperHeight = rect.height
+        thisObj.bodyHeight = rect.height
       }
     })
   },
@@ -228,7 +228,7 @@ setting.init()
 const template = {
   private: {
     pageClass: "animation-in",
-    swiperHeight: -1,
+    bodyHeight: 0,
     coverAnimation: ""
   },
   onShow() {
