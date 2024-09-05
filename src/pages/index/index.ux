@@ -29,7 +29,7 @@
     </div>
     <!--  @swipe="bodySwipe" -->
     <div class="body">
-      <swiper class="body-swiper" id="body-swiper" style="height: {{swiperHeight}}px" indicator="false" loop="false"
+      <swiper class="body-swiper" id="body" style="height: {{swiperHeight}}px" indicator="false" loop="false"
         @change="swiperChange" index="{{tab}}">
         <div class="swiper-container">
           <div if="holder" class="body-holder">
@@ -143,7 +143,7 @@ export default {
   },
 
   setTab(index) {
-    this.$element("body-swiper").swipeTo({index})
+    this.$element("body").swipeTo({index})
   },
 
   swiperChange(evt) {

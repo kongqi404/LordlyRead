@@ -7,7 +7,7 @@
       </div>
       <div class="vertical-separator"></div>
       <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true"
-        @click="toggleMenu">
+        @longpress="onLongPress" @click="onClick">
         <text class="chapter">第一章 章节名</text>
         <text class="paragraph">段落内容段落内容段落内容段落内容</text>
         <text class="paragraph">段落内容段落内容段落内容段落内容</text>
@@ -85,19 +85,21 @@
 </template>
 
 <script>
-const {template, router} = global
+const {template, router, device, date} = global
+
+let longpress = false
 
 export default {
   ...template,
   private: {
     ...template.private,
     menu: "",
-    time: `${new Date().getHours()}:${new Date().getMinutes()}`
+    time: date.formatNow("hh:mm"),
   },
   ...router,
   onInit() {
     setInterval(() => {
-      this.time = `${new Date().getHours()}:${new Date().getMinutes()}`
+      this.time = date.formatNow("hh:mm")
     }, 1000)
   },
   onBack() {
@@ -112,6 +114,28 @@ export default {
     } else {
       this.menu = "animation-in"
     }
+  },
+  onLongPress() {
+    longpress = true
+    this.toggleMenu()
+  },
+  async onClick(evt) {
+    if (longpress) {
+      longpress = false
+      return
+    }
+    const info = await device.getInfo()
+    if (evt.clientY < info.screenHeight / 2) {
+      this.lastPage()
+    } else {
+      this.nextPage()
+    }
+  },
+  async nextPage() {
+    this.$element("body").scrollBy({ top: this.bodyHeight, behavior: "smooth" })
+  },
+  async lastPage() {
+    this.$element("body").scrollBy({ top: -this.bodyHeight, behavior: "smooth" })
   }
 }
 </script>

@@ -2,6 +2,7 @@ import systemRouter from "@system.router"
 import storage from "@system.storage"
 import prompt from "@system.prompt"
 import systemFetch from "@system.fetch"
+import systemDevice from "@system.device"
 
 const config = {
   animationDuration: 200,
@@ -28,9 +29,13 @@ const router = {
     if (typeof path !== "string") if (thisObj.onBack?.call()) return
     animation.out(true)
     setTimeout(() => {
-      systemRouter.back({
-        path
-      })
+      if (typeof path === "string") {
+        systemRouter.back({
+          path
+        })
+      } else {
+        systemRouter.back()
+      }
     }, config.animationDuration + config.animationDelay)
   }
 }
@@ -336,6 +341,87 @@ const source = {
 
 source.init()
 
+const device = {
+  info: undefined,
+  async getInfo() {
+    if (!this.info) {
+      await this.init()
+    }
+    return this.info
+  },
+  getRawInfo() {
+    return new Promise((resolve, reject) => {
+      systemDevice.getInfo({
+        success: (res) => {
+          resolve(res)
+        },
+        fail: (err) => {
+          reject(err)
+        }
+      })
+    })
+  },
+  getTotalStorage() {
+    return new Promise((resolve, reject) => {
+      systemDevice.getTotalStorage({
+        success: (res) => {
+          resolve(res)
+        },
+        fail: (err) => {
+          reject(err)
+        }
+      })
+    })
+  },
+  getAvailableStorage() {
+    return new Promise((resolve, reject) => {
+      systemDevice.getAvailableStorage({
+        success: (res) => {
+          resolve(res)
+        },
+        fail: (err) => {
+          reject(err)
+        }
+      })
+    })
+  },
+  async init() {
+    this.info = await this.getRawInfo()
+  }
+}
+
+device.init()
+
+const date = {
+  format(date, format) {
+    const opt = {
+      'y+': date.getFullYear().toString(), // 年
+      'M+': (date.getMonth() + 1).toString(), // 月
+      'd+': date.getDate().toString(), // 日
+      'h+': date.getHours().toString(), // 时
+      'm+': date.getMinutes().toString(), // 分
+      's+': date.getSeconds().toString() // 秒
+    }
+    for (const k in opt) {
+      const ret = new RegExp('(' + k + ')').exec(format)
+      if (ret) {
+        if (/(y+)/.test(k)) {
+          format = format.replace(ret[1], opt[k].substring(4 - ret[1].length))
+        } else {
+          format = format.replace(ret[1], (ret[1].length === 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, '0')))
+        }
+      }
+    }
+    return format
+  },
+  now() {
+    return new Date().getTime()
+  },
+  formatNow(format) {
+    return this.format(new Date(), format)
+  }
+}
+
 global.config = config
 global.state = state
 global.router = router
@@ -345,6 +431,8 @@ global.template = template
 global.setting = setting
 global.fetch = fetch
 global.source = source
+global.device = device
+global.date = date
 
 export default {
   state

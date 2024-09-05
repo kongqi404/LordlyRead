@@ -57,7 +57,7 @@
             简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介
           </text>
         </div>
-        <div class="card justify-center">
+        <div class="card justify-center" @click="push('pages/content')">
           <text class="card-btn-text">开始阅读</text>
         </div>
         <div class="card justify-center">
