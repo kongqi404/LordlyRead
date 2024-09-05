@@ -19,10 +19,21 @@ const router = {
   push(uri, objArgs) {
     animation.out(false)
     setTimeout(() => {
-      systemRouter.push({
-        uri,
-        ...objArgs
-      })
+      if (objArgs?.length) {
+        const params = {}
+        objArgs.forEach((item) => {
+          params[item[0]] = item[1]
+        })
+        systemRouter.push({
+          uri,
+          params
+        })
+      } else {
+        systemRouter.push({
+          uri,
+          ...objArgs
+        })
+      }
     }, config.animationDuration + config.animationDelay)
   },
   back(path) {
@@ -75,6 +86,8 @@ const on = {
         thisObj.bodyHeight = rect.height
       }
     })
+
+    thisObj.updateSetting?.call()
   },
   pageSwipe(evt) {
     if (evt.direction === "right") {
@@ -87,18 +100,19 @@ const setting = {
   list: [
     {
       type: "title",
-      title: "主界面"
+      title: "主界面",
+      name: "main_ui"
     },
     {
       type: "switch",
-      title: "自动刷新",
+      title: "自动刷新 (TODO)",
       subtitle: "打开软件时自动更新书籍",
       name: "auto_refresh",
       value: false
     },
     {
       type: "switch",
-      title: "自动跳转最近阅读",
+      title: "自动跳转最近阅读 (TODO)",
       subtitle: "默认打开书架",
       name: "jump_last",
       value: false
@@ -127,11 +141,121 @@ const setting = {
     },
     {
       type: "title",
-      title: "其他设置"
+      title: "阅读界面",
+      name: "read_ui"
     },
     {
       type: "choose",
-      title: "预下载章节数量",
+      title: "正文字重",
+      subtitle: "阅读时正文段落的字体粗细",
+      options: [
+        {label: "正常", value: "normal"},
+        {label: "粗体", value: "bold"}
+      ],
+      name: "paragraph_weight",
+      value: "normal"
+    },
+    {
+      type: "number",
+      title: "正文字号",
+      subtitle: "阅读时正文段落的字体大小",
+      step: 1,
+      doubleStep: 5,
+      min: 0,
+      name: "paragraph_size",
+      value: 20
+    },
+    {
+      type: "number",
+      title: "正文段距",
+      subtitle: "阅读时正文段落的段间距，相对于字号大小的比例",
+      step: 0.1,
+      doubleStep: 0.5,
+      min: 0,
+      name: "paragraph_spacing",
+      value: 1
+    },
+    {
+      type: "choose",
+      title: "标题对齐",
+      subtitle: "阅读时章节标题的对齐方式",
+      options: [
+        {label: "左对齐", value: "left"},
+        {label: "居中", value: "center"},
+        {label: "右对齐", value: "right"}
+      ],
+      name: "chapter_title_align",
+      value: "left"
+    },
+    {
+      type: "number",
+      title: "标题字号",
+      subtitle: "阅读时章节标题的字体大小，相对于正文字号的比例",
+      step: 0.1,
+      doubleStep: 0.5,
+      min: 0,
+      name: "chapter_title_size",
+      value: 1.2
+    },
+    {
+      type: "number",
+      title: "标题上边距",
+      subtitle: "阅读时章节标题的上边距，相对于正文字号的比例",
+      step: 0.1,
+      doubleStep: 0.5,
+      min: 0,
+      name: "chapter_title_top_margin",
+      value: 1
+    },
+    {
+      type: "number",
+      title: "标题下边距",
+      subtitle: "阅读时章节标题的下边距，相对于正文字号的比例",
+      step: 0.1,
+      doubleStep: 0.5,
+      min: 0,
+      name: "chapter_title_bottom_margin",
+      value: 1
+    },
+    {
+      type: "title",
+      title: "阅读设置",
+      name: "read_setting"
+    },
+    {
+      type: "switch",
+      title: "平滑滚动",
+      subtitle: "阅读时启用平滑滚动",
+      name: "smooth_scroll",
+      value: true
+    },
+    {
+      type: "switch",
+      title: "屏幕常亮 (TODO)",
+      subtitle: "阅读时屏幕常亮",
+      name: "keep_screen_on",
+      value: false
+    },
+    {
+      type: "choose",
+      title: "点击翻页",
+      subtitle: "阅读时点击屏幕的翻页方式",
+      options: [
+        {label: "上下", value: "vertical"},
+        {label: "左右", value: "horizontal"},
+        {label: "禁用", value: "disable"}
+      ],
+      name: "click_to_turn_page",
+      value: "vertical"
+    },
+    {
+      type: "title",
+      title: "其他设置",
+      name: "other"
+    },
+    {
+      type: "choose",
+      title: "预下载章节数量 (TODO)",
       options: [
         {label: "1", value: 1},
         {label: "2", value: 2},
@@ -143,21 +267,21 @@ const setting = {
     },
     {
       type: "switch",
-      title: "默认启用替换净化",
+      title: "默认启用替换净化 (TODO)",
       subtitle: "为新加入书架的书启用替换净化",
       name: "default_purify",
       value: true
     },
     {
       type: "switch",
-      title: "返回时提示放入书架",
+      title: "返回时提示放入书架 (TODO)",
       subtitle: "阅读未放入书架的书籍在返回时提示放入书架",
       name: "default_add",
       value: true
     },
     {
       type: "button",
-      title: "清除缓存",
+      title: "清除缓存 (TODO)",
       subtitle: "清除已下载的书籍缓存",
       action() {
         console.log("清除缓存")
@@ -165,7 +289,7 @@ const setting = {
     },
     {
       type: "switch",
-      title: "记录日志",
+      title: "记录日志 (TODO)",
       subtitle: "记录调试日志",
       name: "log",
       value: false
@@ -220,7 +344,7 @@ const setting = {
   async init() {
     Promise.all(
       this.list.map((item) => {
-        if (item.name) {
+        if (item.value !== undefined) {
           return setting.getRaw(item.name).then((value) => {
             item.value = value
           })
@@ -395,20 +519,23 @@ device.init()
 const date = {
   format(date, format) {
     const opt = {
-      'y+': date.getFullYear().toString(), // 年
-      'M+': (date.getMonth() + 1).toString(), // 月
-      'd+': date.getDate().toString(), // 日
-      'h+': date.getHours().toString(), // 时
-      'm+': date.getMinutes().toString(), // 分
-      's+': date.getSeconds().toString() // 秒
+      "y+": date.getFullYear().toString(), // 年
+      "M+": (date.getMonth() + 1).toString(), // 月
+      "d+": date.getDate().toString(), // 日
+      "h+": date.getHours().toString(), // 时
+      "m+": date.getMinutes().toString(), // 分
+      "s+": date.getSeconds().toString() // 秒
     }
     for (const k in opt) {
-      const ret = new RegExp('(' + k + ')').exec(format)
+      const ret = new RegExp("(" + k + ")").exec(format)
       if (ret) {
         if (/(y+)/.test(k)) {
           format = format.replace(ret[1], opt[k].substring(4 - ret[1].length))
         } else {
-          format = format.replace(ret[1], (ret[1].length === 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, '0')))
+          format = format.replace(
+            ret[1],
+            ret[1].length === 1 ? opt[k] : opt[k].padStart(ret[1].length, "0")
+          )
         }
       }
     }

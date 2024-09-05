@@ -8,19 +8,14 @@
       <div class="vertical-separator"></div>
       <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true"
         @longpress="onLongPress" @click="onClick">
-        <text class="chapter">第一章 章节名</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
-        <text class="paragraph">段落内容段落内容段落内容段落内容</text>
+        <text class="chapter"
+          style="text-align: {{chapter_title_align}}; font-size: {{paragraph_size * chapter_title_size}}px; margin-top: {{paragraph_size * chapter_title_top_margin}}px; margin-bottom: {{paragraph_size * chapter_title_bottom_margin}}px;">
+          第一章 章节名
+        </text>
+        <text for="Array.from({length: 100})"
+          style="font-size: {{paragraph_size}}px; margin-bottom: {{paragraph_size * paragraph_spacing}}px; font-weight: {{paragraph_weight}};">
+          段落内容段落内容段落内容段落内容
+        </text>
       </scroll>
       <div class="menu {{ menu }}">
         <div class="topbar">
@@ -69,11 +64,11 @@
             <image src="/common/icon/library.png" class="icon" />
             <text class="card-btn-text center">换源</text>
           </div>
-          <div class="card" @click="wait">
+          <div class="card" @click="push('pages/setting', [['to', 'read_ui']])">
             <image src="/common/icon/ui.png" class="icon" />
             <text class="card-btn-text center">界面</text>
           </div>
-          <div class="card" @click="wait">
+          <div class="card" @click="push('pages/setting', [['to', 'read_setting']])">
             <image src="/common/icon/setting.png" class="icon" />
             <text class="card-btn-text center">设置</text>
           </div>
@@ -85,7 +80,7 @@
 </template>
 
 <script>
-const {template, router, device, date} = global
+const {template, router, device, date, setting} = global
 
 let longpress = false
 
@@ -95,6 +90,13 @@ export default {
     ...template.private,
     menu: "",
     time: date.formatNow("hh:mm"),
+    paragraph_weight: setting.get("paragraph_weight"),
+    paragraph_size: setting.get("paragraph_size"),
+    paragraph_spacing: setting.get("paragraph_spacing"),
+    chapter_title_align: setting.get("chapter_title_align"),
+    chapter_title_size: setting.get("chapter_title_size"),
+    chapter_title_top_margin: setting.get("chapter_title_top_margin"),
+    chapter_title_bottom_margin: setting.get("chapter_title_bottom_margin")
   },
   ...router,
   onInit() {
@@ -124,18 +126,42 @@ export default {
       longpress = false
       return
     }
+    const click_to_turn_page = setting.get("click_to_turn_page")
     const info = await device.getInfo()
-    if (evt.clientY < info.screenHeight / 2) {
-      this.lastPage()
-    } else {
-      this.nextPage()
+    if (click_to_turn_page === "vertical") {
+      if (evt.clientY < info.screenHeight / 2) {
+        this.lastPage()
+      } else {
+        this.nextPage()
+      }
+    } else if (click_to_turn_page === "horizontal") {
+      if (evt.clientX < info.screenWidth / 2) {
+        this.lastPage()
+      } else {
+        this.nextPage()
+      }
     }
   },
   async nextPage() {
-    this.$element("body").scrollBy({ top: this.bodyHeight, behavior: "smooth" })
+    this.$element("body").scrollBy({
+      top: this.bodyHeight,
+      behavior: setting.get("smooth_scroll") ? "smooth" : "auto"
+    })
   },
   async lastPage() {
-    this.$element("body").scrollBy({ top: -this.bodyHeight, behavior: "smooth" })
+    this.$element("body").scrollBy({
+      top: -this.bodyHeight,
+      behavior: setting.get("smooth_scroll") ? "smooth" : "auto"
+    })
+  },
+  updateSetting() {
+    this.paragraph_weight = setting.get("paragraph_weight")
+    this.paragraph_size = setting.get("paragraph_size")
+    this.paragraph_spacing = setting.get("paragraph_spacing")
+    this.chapter_title_align = setting.get("chapter_title_align")
+    this.chapter_title_size = setting.get("chapter_title_size")
+    this.chapter_title_top_margin = setting.get("chapter_title_top_margin")
+    this.chapter_title_bottom_margin = setting.get("chapter_title_bottom_margin")
   }
 }
 </script>
@@ -144,13 +170,6 @@ export default {
 @import url(../../common/css/page.css);
 
 .chapter {
-  font-size: 24px;
   font-weight: bold;
-  margin: 16px 0;
-}
-
-.paragraph {
-  font-size: 20px;
-  margin-bottom: 16px;
 }
 </style>

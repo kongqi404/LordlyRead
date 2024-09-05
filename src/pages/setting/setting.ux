@@ -12,22 +12,22 @@
     <div class="body">
       <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
         <block for="item in list">
-          <text if="item.type==='title'" class="btn-group-title">{{ item.title }}</text>
-          <div elif="item.type==='switch'" class="card" @click="setValue(item, !item.value)">
+          <text if="item.type==='title'" id="{{ item.name }}" class="btn-group-title">{{ item.title }}</text>
+          <div elif="item.type==='switch'" id="{{ item.name }}" class="card" @click="setValue(item, !item.value)">
             <div class="col grow">
               <text class="card-btn-text ma-0">{{ item.title }}</text>
               <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
             </div>
             <image src="/common/icon/check{{ item.value ? '-active' : ''}}.png" class="icon" />
           </div>
-          <div elif="item.type==='choose'" class="card">
+          <div elif="item.type==='choose'" id="{{ item.name }}" class="card">
             <div class="col grow">
               <text class="card-btn-text ma-0">{{ item.title }}</text>
               <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
               <div class="choose-container">
                 <block for="(index, option) in item.options">
-                  <div if="index > 0" class="horizontal-separator transparent" style="width: 10px"></div>
-                  <text class="choose-item {{ item.value==option.value ? 'choose-item-active' : '' }}"
+                  <div if="index > 0" class="horizontal-separator transparent w-xs"></div>
+                  <text class="choose-item grow {{ item.value==option.value ? 'choose-item-active' : '' }}"
                     @click="setValue(item, option.value)">
                     {{ option.label }}
                   </text>
@@ -35,7 +35,34 @@
               </div>
             </div>
           </div>
-          <div elif="item.type==='button'" class="card" @click="item.action">
+          <div elif="item.type==='number'" id="{{ item.name }}" class="card">
+            <div class="col grow">
+              <text class="card-btn-text ma-0">{{ item.title }}</text>
+              <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
+              <div class="choose-container">
+                <div class="choose-item" @click="setValue(item, Math.max(item.min ?? Number.NEGATIVE_INFINITY, item.value - item.doubleStep))">
+                  <image src="/common/icon/left-double.png" class="icon" />
+                </div>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <div class="choose-item" @click="setValue(item, Math.max(item.min ?? Number.NEGATIVE_INFINITY, item.value - item.step))">
+                  <image src="/common/icon/left.png" class="icon" />
+                </div>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <text class="choose-item choose-item-active grow">
+                  {{ item.value }}
+                </text>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <div class="choose-item" @click="setValue(item, Math.min(item.max ?? Number.POSITIVE_INFINITY, item.value + item.step))">
+                  <image src="/common/icon/right.png" class="icon" />
+                </div>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <div class="choose-item" @click="setValue(item, Math.min(item.max ?? Number.POSITIVE_INFINITY, item.value + item.doubleStep))">
+                  <image src="/common/icon/right-double.png" class="icon" />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div elif="item.type==='button'" id="{{ item.name }}" class="card" @click="item.action">
             <div class="col grow">
               <text class="card-btn-text ma-0">{{ item.title }}</text>
               <text if="item.subtitle" class="card-btn-secondary">{{ item.subtitle }}</text>
@@ -55,7 +82,8 @@ export default {
   ...template,
   private: {
     ...template.private,
-    list: setting.list
+    list: setting.list,
+    to: ''
   },
 
   ...router,
@@ -66,6 +94,17 @@ export default {
         item.value = setting.get(item.name)
       }
     })
+    if (this.to) {
+      this.$element('body').getBoundingClientRect({
+        success: ({top: bodyTop}) => {
+          this.$element(this.to).getBoundingClientRect({
+            success: ({top}) => {
+              this.$element('body').scrollTo({top: top - bodyTop})
+            }
+          })
+        }
+      })
+    }
   },
 
   async setValue(item, newValue) {

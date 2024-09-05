@@ -40,10 +40,10 @@
             <div class="card" @click="toContent" @longpress="toDetail">
               <image src="/common/image/cover.jpg" class="book-cover" />
               <div class="col grow">
-                <text class="book-name">书名很长很长很长很长</text>
-                <text class="book-progress">阅读进度很长很长很长</text>
+                <text class="book-name ellipsis">书名很长很长很长很长</text>
+                <text class="book-progress ellipsis">阅读进度很长很长很长</text>
                 <div class="center">
-                  <text class="book-update grow">最新章节很长很长很长</text>
+                  <text class="book-update ellipsis grow">最新章节很长很长很长</text>
                   <text class="badge">100</text>
                 </div>
               </div>
@@ -171,13 +171,6 @@ export default {
 
 <style>
 @import url(../../common/css/page.css);
-
-.book-name,
-.book-progress,
-.book-update {
-  lines: 1;
-  text-overflow: ellipsis;
-}
 
 .book-name {
   font-size: 24px;
