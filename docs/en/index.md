@@ -2,8 +2,6 @@
 # https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
-# Translate to English
-
 hero:
   name: "Lordly·Read"
   text: "Supports Legado rule band reading tool"
@@ -20,10 +18,10 @@ hero:
     alt: Lordly·Read Logo
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: 📖Intelligent Source
+    details: A rule-based Legado reader prioritizing compatibility and customization. It fetches and filters content, simplifying management and creating a personal library.
+  - title: 🌈Visual Experience
+    details: The interface design combines aesthetics and practicality with clean lines and harmonious colors. Attention to detail blends technology and art, offering an immersive reading experience.
+  - title: ⚙️Customization
+    details: The reading tool supports extensive customization, letting you create a unique environment for an enjoyable, tailored reading experience.
 ---
