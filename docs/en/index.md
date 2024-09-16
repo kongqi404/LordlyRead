@@ -2,20 +2,22 @@
 # https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
+# Translate to English
+
 hero:
-  name: "Lordly·阅读"
-  text: "支持「开源阅读」规则的手环在线阅读工具"
-  tagline: 本应用为开源项目，欢迎提交 PR 或 Issue
+  name: "Lordly·Read"
+  text: "Supports Legado rule band reading tool"
+  tagline: Open source project, welcome to PR or Issue
   actions:
     - theme: brand
-      text: 开始了解
+      text: Getting Started
       link: /getting-started
     - theme: alt
-      text: 在 GitHub 上查看
+      text: View on GitHub
       link: https://github.com/Lordly-Tech/LordlyRead
   image:
     src: /logo.png
-    alt: Lordly·阅读 Logo
+    alt: Lordly·Read Logo
 
 features:
   - title: Feature A
@@ -25,4 +27,3 @@ features:
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
-
