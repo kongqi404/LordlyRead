@@ -105,14 +105,14 @@ const setting = {
     },
     {
       type: "switch",
-      title: "自动刷新 (TODO)",
+      title: "自动刷新*",
       subtitle: "打开软件时自动更新书籍",
       name: "auto_refresh",
       value: false
     },
     {
       type: "switch",
-      title: "自动跳转最近阅读 (TODO)",
+      title: "自动跳转最近阅读*",
       subtitle: "默认打开书架",
       name: "jump_last",
       value: false
@@ -231,7 +231,7 @@ const setting = {
     },
     {
       type: "switch",
-      title: "屏幕常亮 (TODO)",
+      title: "屏幕常亮*",
       subtitle: "阅读时屏幕常亮",
       name: "keep_screen_on",
       value: false
@@ -255,7 +255,7 @@ const setting = {
     },
     {
       type: "choose",
-      title: "预下载章节数量 (TODO)",
+      title: "预下载章节数量*",
       options: [
         {label: "1", value: 1},
         {label: "2", value: 2},
@@ -267,21 +267,21 @@ const setting = {
     },
     {
       type: "switch",
-      title: "默认启用替换净化 (TODO)",
+      title: "默认启用替换净化*",
       subtitle: "为新加入书架的书启用替换净化",
       name: "default_purify",
       value: true
     },
     {
       type: "switch",
-      title: "返回时提示放入书架 (TODO)",
+      title: "返回时提示放入书架*",
       subtitle: "阅读未放入书架的书籍在返回时提示放入书架",
       name: "default_add",
       value: true
     },
     {
       type: "button",
-      title: "清除缓存 (TODO)",
+      title: "清除缓存*",
       subtitle: "清除已下载的书籍缓存",
       action() {
         console.log("清除缓存")
@@ -289,7 +289,7 @@ const setting = {
     },
     {
       type: "switch",
-      title: "记录日志 (TODO)",
+      title: "记录日志*",
       subtitle: "记录调试日志",
       name: "log",
       value: false

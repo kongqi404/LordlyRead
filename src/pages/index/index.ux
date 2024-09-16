@@ -67,9 +67,21 @@
               <text class="card-btn-text">替换净化</text>
             </div>
             <text class="btn-group-title">设置</text>
-            <div class="card" @click="push('/pages/setting')">
+            <div class="card" @click="push('/pages/setting', [['to', 'main_ui']])">
+              <image src="/common/icon/submit.png" class="icon" />
+              <text class="card-btn-text">主界面</text>
+            </div>
+            <div class="card" @click="push('/pages/setting', [['to', 'read_ui']])">
+              <image src="/common/icon/ui.png" class="icon" />
+              <text class="card-btn-text">阅读界面</text>
+            </div>
+            <div class="card" @click="push('/pages/setting', [['to', 'read_setting']])">
+              <image src="/common/icon/book-code.png" class="icon" />
+              <text class="card-btn-text">阅读设置</text>
+            </div>
+            <div class="card" @click="push('/pages/setting', [['to', 'other']])">
               <image src="/common/icon/setting.png" class="icon" />
-              <text class="card-btn-text">基本/其他设置</text>
+              <text class="card-btn-text">其他设置</text>
             </div>
             <text class="btn-group-title">其他</text>
             <div class="card" @click="push('/pages/about')">
