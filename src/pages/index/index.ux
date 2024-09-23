@@ -5,7 +5,7 @@
         <image src="/common/icon/refresh.png" class="icon" />
       </div>
       <text class="title">{{ $t("index.title") }}</text>
-      <div class="topbar-btn" @click="wait">
+      <div class="topbar-btn" @click="push('pages/search')">
         <image src="/common/icon/search.png" class="icon" />
       </div>
     </div>

@@ -54,6 +54,10 @@
       "pages/content": {
         "component": "content",
         "launchMode": "singleTask"
+      },
+      "pages/search": {
+        "component": "search",
+        "launchMode": "singleTask"
       }
     }
   },

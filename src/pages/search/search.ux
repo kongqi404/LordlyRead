@@ -1,0 +1,83 @@
+<import
+  name="input-method"
+  src="../../third-party/Vela_input_method/components/InputMethod/InputMethod.ux"
+></import>
+<template>
+  <div class="page {{pageClass}}" @swipe="pageSwipe">
+    <div class="topbar">
+      <div class="topbar-btn" @click="back">
+        <image src="/common/icon/back.png" class="icon" />
+      </div>
+      <text class="title">搜索</text>
+      <div class="topbar-btn" @click="toggleMenu">
+        <image src="/common/icon/menu.png" class="icon" />
+      </div>
+    </div>
+    <div class="body">
+      <div class="body-container center" id="body" style="height: {{bodyHeight}}px">
+        <div class="card w-100">
+          <text class="card-btn-text">
+            {{ searchText === "" ? "搜索书名、作者" : searchText }}
+          </text>
+        </div>
+        <div class="w-100">
+          <div class="card ma-0 mr-xs" @click="wait">
+            <image src="/common/icon/history.png" class="icon" />
+          </div>
+          <div class="card ma-0 grow justify-center" @click="wait">
+            <image src="/common/icon/search.png" class="icon" />
+            <text class="card-btn-text center">搜索</text>
+          </div>
+        </div>
+        <input-method hide="{{false}}" screentype="{{'rect'}}" @delete="delete" @complete="complete"></input-method>
+      </div>
+      <div class="menu pa-md {{ menu }}">
+        <div class="card" @click="push('/pages/source')">
+          <image src="/common/icon/library.png" class="icon" />
+          <text class="card-btn-text center">书源管理</text>
+        </div>
+      </div>
+    </div>
+    <div class="cover-animation-helper {{coverAnimation}}"></div>
+  </div>
+</template>
+
+<script>
+const {template, router} = global
+
+export default {
+  ...template,
+  private: {
+    ...template.private,
+    searchText: "",
+    menu: ""
+  },
+  ...router,
+  onBack() {
+    if (this.menu === "animation-in") {
+      this.toggleMenu()
+      return true
+    }
+  },
+  toggleMenu() {
+    if (this.imgMenu === "animation-in") {
+      this.toggleImgMenu()
+    }
+    if (this.menu === "animation-in") {
+      this.menu = "animation-out-back"
+    } else {
+      this.menu = "animation-in"
+    }
+  },
+  complete(evt) {
+    this.searchText += evt.detail.content
+  },
+  delete() {
+    this.searchText = this.searchText.slice(0, -1)
+  }
+}
+</script>
+
+<style>
+@import url(../../common/css/page.css);
+</style>
