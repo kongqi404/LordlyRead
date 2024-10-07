@@ -60,9 +60,6 @@ export default {
     }
   },
   toggleMenu() {
-    if (this.imgMenu === "animation-in") {
-      this.toggleImgMenu()
-    }
     if (this.menu === "animation-in") {
       this.menu = "animation-out-back"
     } else {

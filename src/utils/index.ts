@@ -1,8 +1,11 @@
-import systemRouter from "@system.router"
-import storage from "@system.storage"
-import prompt from "@system.prompt"
-import systemFetch from "@system.fetch"
-import systemDevice from "@system.device"
+import {
+  fetch as systemFetch,
+  storage,
+  device as systemDevice,
+  router as systemRouter,
+  prompt
+} from "./tsimports"
+import {Source, SourceData} from "./source"
 
 const config = {
   animationDuration: 200,
@@ -11,7 +14,7 @@ const config = {
 
 let thisObj = undefined
 
-const state = {
+export const state = {
   animationBack: false
 }
 
@@ -36,11 +39,11 @@ const router = {
       }
     }, config.animationDuration + config.animationDelay)
   },
-  back(path) {
-    if (typeof path !== "string") if (thisObj.onBack?.call()) return
+  back(path?: string) {
+    if (!path) if (thisObj.onBack?.call()) return
     animation.out(true)
     setTimeout(() => {
-      if (typeof path === "string") {
+      if (path) {
         systemRouter.back({
           path
         })
@@ -332,7 +335,7 @@ const setting = {
           if (name === "page_transition") {
             systemRouter.clear()
           }
-          resolve()
+          resolve(true)
         },
         fail: (err) => {
           reject(err)
@@ -342,7 +345,7 @@ const setting = {
   },
 
   async init() {
-    Promise.all(
+    await Promise.all(
       this.list.map((item) => {
         if (item.value !== undefined) {
           return setting.getRaw(item.name).then((value) => {
@@ -354,7 +357,7 @@ const setting = {
   }
 }
 
-setting.init()
+setting.init().then()
 
 const template = {
   private: {
@@ -385,7 +388,7 @@ setting.getRaw("page_transition").then((value) => {
   }
 })
 
-const fetch = (url, options) => {
+export const fetch = (url, options) => {
   return new Promise((resolve, reject) => {
     systemFetch.fetch({
       url,
@@ -401,12 +404,12 @@ const fetch = (url, options) => {
 }
 
 const source = {
-  list: [],
+  list: [] as Source[],
   init() {
     storage.get({
       key: "source",
       success: (data) => {
-        this.list = JSON.parse(data)
+        this.list = (JSON.parse(data) as SourceData[]).map((item) => new Source(item))
       }
     })
   },
@@ -437,7 +440,7 @@ const source = {
   save() {
     storage.set({
       key: "source",
-      value: JSON.stringify(this.list)
+      value: JSON.stringify(this.list.map((item) => item.raw))
     })
   },
   mapForUi() {
@@ -447,8 +450,8 @@ const source = {
         bookSourceName: item.bookSourceName,
         enabled: item.enabled,
         enabledExplore: item.enabledExplore,
-        hasExplore: !!item.exploreUrl,
-        hasLogin: !!item.loginUrl
+        hasExplore: item.hasExplore,
+        hasLogin: item.hasLogin
       }
     })
   },
@@ -514,7 +517,7 @@ const device = {
   }
 }
 
-device.init()
+device.init().then()
 
 const date = {
   format(date, format) {
@@ -556,11 +559,7 @@ global.animation = animation
 global.on = on
 global.template = template
 global.setting = setting
-global.fetch = fetch
+global.fetch = fetch as any
 global.source = source
 global.device = device
 global.date = date
-
-export default {
-  state
-}
