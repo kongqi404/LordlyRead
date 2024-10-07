@@ -24,13 +24,13 @@
           <div class="card ma-0 mr-xs" @click="wait">
             <image src="/common/icon/history.png" class="icon" />
           </div>
-          <div class="card ma-0 grow justify-center" @click="wait">
+          <div class="card ma-0 grow justify-center" @click="search">
             <image src="/common/icon/search.png" class="icon" />
             <text class="card-btn-text center">搜索</text>
           </div>
         </div>
-        <input-method hide="{{false}}" screentype="{{'rect'}}" @delete="delete" @complete="complete"></input-method>
       </div>
+      <input-method hide="{{false}}" screentype="{{'rect'}}" @delete="delete" @complete="complete"></input-method>
       <div class="menu pa-md {{ menu }}">
         <div class="card" @click="push('/pages/source')">
           <image src="/common/icon/library.png" class="icon" />
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-const {template, router} = global
+const {template, router, source} = global
 
 export default {
   ...template,
@@ -71,6 +71,17 @@ export default {
   },
   delete() {
     this.searchText = this.searchText.slice(0, -1)
+  },
+  search() {
+    if (this.searchText === "") {
+      this.toast("请输入搜索内容")
+      return
+    }
+    source.list
+      .filter((item) => item.enabled)
+      .forEach((item) => {
+        item.search(this.searchText, 1).then(res=>console.log(res))
+      })
   }
 }
 </script>

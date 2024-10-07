@@ -115,7 +115,7 @@ export default {
     sourceMenu: "",
     importMenu: "",
     activeItem: undefined,
-    sourceUrl: ""
+    sourceUrl: "1p7MAda36"
   },
   ...router,
   onBack() {
@@ -190,6 +190,7 @@ export default {
     }
 
     fetch(url).then((res) => {
+      console.log(res);
       if (res.data.length > 0) {
         res.data.forEach((item) => {
           source.add(item)

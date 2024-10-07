@@ -1,3 +1,7 @@
+import {JsExtension} from "./jsExtension"
+import {Cookie} from "./cookie"
+import {fetch} from "./fetch"
+
 export interface SourceData {
   bookSourceComment: string
   bookSourceGroup: string
@@ -60,41 +64,89 @@ export interface RuleToc {
   isVolume: string
 }
 
+export interface SourceUi {
+  bookSourceUrl: string
+  bookSourceName: string
+  enabled: boolean
+  enabledExplore: boolean
+  hasExplore: boolean
+  hasLogin: boolean
+}
+
 export class Source {
   raw: SourceData
-  constructor(public data: SourceData) {
-    this.raw = data
+  cookie: Cookie
+  constructor(raw: SourceData, cookie: Cookie) {
+    this.raw = raw
+    this.cookie = cookie
   }
 
   get bookSourceUrl() {
     return this.raw.bookSourceUrl
   }
-
   get bookSourceName() {
     return this.raw.bookSourceName
   }
-
   get enabled() {
     return this.raw.enabled
   }
-
   set enabled(value: boolean) {
     this.raw.enabled = value
   }
-
   get enabledExplore() {
     return this.raw.enabledExplore
   }
-
   set enabledExplore(value: boolean) {
     this.raw.enabledExplore = value
   }
-
   get hasExplore() {
     return this.raw.ruleExplore !== undefined
   }
-
   get hasLogin() {
     return this.raw.loginUrl !== undefined
+  }
+
+  async executeJs(js: string, java: JsExtension, additional: any) {
+    // noinspection JSUnusedLocalSymbols
+    const {key, page, result} = additional
+    const cookie = this.cookie
+    try {
+      return eval(js)
+    } catch (e) {
+      console.log(e)
+      return result
+    }
+  }
+
+  async search(key: string, page: number) {
+    const java = new JsExtension({
+      vars: new Map()
+    })
+    let parts = this.raw.searchUrl
+      .split(/(@js:[\s\S]*?$)|(<js>[\s\S]*?<\/js>)/gi)
+      .filter((v) => !!v && !v?.match(/^\s*$/))
+    let url = parts.shift()
+
+    parts.forEach((v) => {
+      const js = v.replace(/^<js>|^@js:|<\/js>$/gi, "")
+      // url = await this.executeJs(js, java, {result: url})
+    })
+
+    if (url.match(/{{[\s\S]*?}}/gi)) {
+      for (const v of url.match(/{{[\s\S]*?}}/gi)) {
+        const js = v.replace(/^{{|}}$/gi, "")
+        url = url.replace(v, await this.executeJs(js, java, {key, page}))
+      }
+    }
+
+    url.match(/{(key|page)}/gi)?.forEach((v) => {
+      url = url.replace(v, (/key/gi.test(v) ? key : page) as string)
+    })
+
+    const response = await fetch(url, {
+      baseUrl: this.bookSourceUrl
+    })
+
+    return response
   }
 }

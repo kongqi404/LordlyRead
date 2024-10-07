@@ -1,11 +1,7 @@
-import {
-  fetch as systemFetch,
-  storage,
-  device as systemDevice,
-  router as systemRouter,
-  prompt
-} from "./tsimports"
-import {Source, SourceData} from "./source"
+import {storage, device as systemDevice, router as systemRouter, prompt} from "./tsimports"
+import {Source, SourceData, SourceUi} from "./source"
+import {Cookie} from "./cookie"
+import {fetch} from "./fetch"
 
 const config = {
   animationDuration: 200,
@@ -14,7 +10,7 @@ const config = {
 
 let thisObj = undefined
 
-export const state = {
+const state = {
   animationBack: false
 }
 
@@ -388,50 +384,35 @@ setting.getRaw("page_transition").then((value) => {
   }
 })
 
-export const fetch = (url, options) => {
-  return new Promise((resolve, reject) => {
-    systemFetch.fetch({
-      url,
-      ...options,
-      success: (res) => {
-        resolve(res)
-      },
-      fail: (err) => {
-        reject(err)
-      }
-    })
-  })
-}
-
 const source = {
   list: [] as Source[],
   init() {
     storage.get({
       key: "source",
-      success: (data) => {
-        this.list = (JSON.parse(data) as SourceData[]).map((item) => new Source(item))
+      success: (data: string) => {
+        this.list = (JSON.parse(data) as SourceData[]).map((item) => new Source(item, cookie))
       }
     })
   },
-  add(source) {
+  add(source: SourceData) {
     for (const item of this.list) {
       if (item.bookSourceUrl === source.bookSourceUrl) {
         return false
       }
     }
-    this.list.push(source)
+    this.list.push(new Source(source, cookie))
   },
-  remove(source) {
-    this.list = this.list.filter((item) => item.bookSourceUrl !== source.bookSourceUrl)
+  remove(source: SourceUi) {
+    this.list = this.list.filter((item: Source) => item.bookSourceUrl !== source.bookSourceUrl)
   },
-  moveUp(source) {
-    source = this.list.find((item) => item.bookSourceUrl === source.bookSourceUrl)
-    this.list = this.list.filter((item) => item.bookSourceUrl !== source.bookSourceUrl)
+  moveUp(source: SourceUi) {
+    source = this.list.find((item: Source) => item.bookSourceUrl === source.bookSourceUrl)
+    this.list = this.list.filter((item: Source) => item.bookSourceUrl !== source.bookSourceUrl)
     this.list.unshift(source)
   },
-  moveDown(source) {
-    source = this.list.find((item) => item.bookSourceUrl === source.bookSourceUrl)
-    this.list = this.list.filter((item) => item.bookSourceUrl !== source.bookSourceUrl)
+  moveDown(source: SourceUi) {
+    source = this.list.find((item: Source) => item.bookSourceUrl === source.bookSourceUrl)
+    this.list = this.list.filter((item: Source) => item.bookSourceUrl !== source.bookSourceUrl)
     this.list.push(source)
   },
   clear() {
@@ -440,11 +421,11 @@ const source = {
   save() {
     storage.set({
       key: "source",
-      value: JSON.stringify(this.list.map((item) => item.raw))
+      value: JSON.stringify(this.list.map((item: Source) => item.raw))
     })
   },
-  mapForUi() {
-    return this.list.map((item) => {
+  mapForUi(): SourceUi[] {
+    return this.list.map((item: Source) => {
       return {
         bookSourceUrl: item.bookSourceUrl,
         bookSourceName: item.bookSourceName,
@@ -455,9 +436,9 @@ const source = {
       }
     })
   },
-  syncFromUi(uiList) {
+  syncFromUi(uiList: SourceUi[]) {
     uiList.forEach((item) => {
-      const source = this.list.find((item2) => item2.bookSourceUrl === item.bookSourceUrl)
+      const source = this.list.find((item2: Source) => item2.bookSourceUrl === item.bookSourceUrl)
       if (source) {
         source.enabled = item.enabled
         source.enabledExplore = item.enabledExplore
@@ -552,6 +533,8 @@ const date = {
   }
 }
 
+const cookie = new Cookie()
+
 global.config = config
 global.state = state
 global.router = router
@@ -559,7 +542,14 @@ global.animation = animation
 global.on = on
 global.template = template
 global.setting = setting
-global.fetch = fetch as any
+global.fetch = fetch
 global.source = source
 global.device = device
 global.date = date
+global.cookie = cookie
+
+export default {
+  state,
+  cookie,
+  fetch
+}
