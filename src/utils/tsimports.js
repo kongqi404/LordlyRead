@@ -3,5 +3,7 @@ import storage from "@system.storage"
 import prompt from "@system.prompt"
 import fetch from "@system.fetch"
 import device from "@system.device"
+import request from "@system.request"
+import file from "@system.file"
 
-export {fetch, storage, device, router, prompt}
+export {fetch, storage, device, router, prompt, request, file}

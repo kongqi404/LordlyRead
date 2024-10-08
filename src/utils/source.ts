@@ -127,10 +127,20 @@ export class Source {
       .filter((v) => !!v && !v?.match(/^\s*$/))
     let url = parts.shift()
 
-    parts.forEach((v) => {
+    console.log(this.raw.searchUrl)
+    console.log(parts)
+
+    for (const v of parts) {
       const js = v.replace(/^<js>|^@js:|<\/js>$/gi, "")
-      // url = await this.executeJs(js, java, {result: url})
-    })
+      //       const js = `if(new Date().getTime()-Number(cookie.getKey('http://www.wenku8.net','jieqiVisitTime') ? cookie.getKey('http://www.wenku8.net','jieqiVisitTime').replace('jieqiArticlesearchTime%3D','') : 6)*1000<6000){
+      //   java.toast('搜索频率过高，延迟'+(new Date().getTime()-Number(cookie.getKey(source.bookSourceUrl,'jieqiVisitTime').replace('jieqiArticlesearchTime%3D',''))*1000)/1000+'秒后继续')
+      // }
+      // while(new Date().getTime()-Number(cookie.getKey('http://www.wenku8.net','jieqiVisitTime') ? cookie.getKey('http://www.wenku8.net','jieqiVisitTime').replace('jieqiArticlesearchTime%3D','') : 6)*1000<6000){
+      //   console.log(123)
+      // }
+      // result`
+      url = await this.executeJs(js, java, {result: url})
+    }
 
     if (url.match(/{{[\s\S]*?}}/gi)) {
       for (const v of url.match(/{{[\s\S]*?}}/gi)) {

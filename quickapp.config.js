@@ -1,21 +1,22 @@
 module.exports = {
-    webpack: {
-        module: {
-            rules: [
-                {
-                    test: /\.tsx?$/,
-                    use: [
-                        {
-                            loader: "ts-loader",
-                        },
-                    ],
-                },
-            ],
-        },
+  webpack: {
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: [
+            {
+              loader: "ts-loader"
+            }
+          ]
+        }
+      ]
     },
-    cli: {
-        "enable-custom-component": true,
-        "enable-jsc": true,
-        "enable-protobuf": true
-    }
-};
+    fallback: {}
+  },
+  cli: {
+    "enable-custom-component": true,
+    "enable-jsc": true,
+    "enable-protobuf": true
+  }
+}
