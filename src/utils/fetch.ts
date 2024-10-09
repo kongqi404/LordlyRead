@@ -1,4 +1,5 @@
 import {fetch as systemFetch, request, file} from "./tsimports"
+import {cookie} from "."
 const GBK = require("gbk.js")
 
 export function fetch(rawUrl: string, options?: any): Promise<Response> {
@@ -14,9 +15,20 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
       }
     }
 
+    const cookieList = []
+
+    cookie.getUrl(url)?.forEach((v, k) => {
+      cookieList.push(`${k}=${v}`)
+    })
+
     const fullOptions = {
       ...options,
-      ...urlOptions
+      ...urlOptions,
+      header: {
+        Cookie: cookieList.join(";"),
+        ...options.header,
+        ...urlOptions.header
+      }
     }
 
     if (fullOptions.charset) {
@@ -72,9 +84,13 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
         url,
         ...fullOptions,
         success(res) {
+          if (res.headers["Set-Cookie"]) {
+            cookie.setUrlByHeader(url, res.headers["Set-Cookie"])
+          }
           resolve(res)
         },
         fail(err) {
+          console.log(err)
           reject(err)
         }
       })

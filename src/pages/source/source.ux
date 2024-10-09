@@ -131,8 +131,6 @@ export default {
       this.toggleMenu()
       return true
     }
-  },
-  onDestroy() {
     source.save()
   },
   setValue(item, key, value, evt) {

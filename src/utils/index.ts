@@ -92,6 +92,10 @@ const on = {
     if (evt.direction === "right") {
       router.back()
     }
+  },
+  destroy() {
+    thisObj = undefined
+    cookie.save()
   }
 }
 
@@ -364,6 +368,9 @@ const template = {
   onShow() {
     on.show(this)
   },
+  onDestroy() {
+    on.destroy()
+  },
   pageSwipe(evt) {
     on.pageSwipe(evt)
   },
@@ -533,7 +540,36 @@ const date = {
   }
 }
 
-const cookie = new Cookie()
+export const cookie = new Cookie({
+  setter(data: string) {
+    return new Promise((resolve, reject) => {
+      storage.set({
+        key: "cookie",
+        value: data,
+        success() {
+          resolve()
+        },
+        fail(...err) {
+          reject(err)
+        }
+      })
+    })
+  },
+  getter() {
+    return new Promise((resolve, reject) => {
+      storage.get({
+        key: "cookie",
+        default: "{}",
+        success(res: string) {
+          resolve(res)
+        },
+        fail(...err) {
+          reject(...err)
+        }
+      })
+    })
+  }
+})
 
 global.config = config
 global.state = state

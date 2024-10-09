@@ -1,7 +1,7 @@
 <template>
   <div class="page {{pageClass}}" @swipe="pageSwipe">
     <div if="tab==0" class="topbar">
-      <div class="topbar-btn" @click="search">
+      <div class="topbar-btn" @click="wait">
         <image src="/common/icon/refresh.png" class="icon" />
       </div>
       <text class="title">{{ $t("index.title") }}</text>
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-const {template, router, setting, source} = global
+const {template, router, setting, fetch} = global
 
 const tabIdentifiers = {
   bookshelf: 0,
@@ -177,14 +177,6 @@ export default {
   toDetail() {
     longpress = true
     this.push('/pages/detail')
-  },
-
-  search() {
-    source.list
-      .filter((item) => item.enabled)
-      .forEach((item) => {
-        item.search('2', 1).then(res=>console.log(res))
-      })
   }
 }
 </script>
