@@ -1,3 +1,5 @@
+import {helper} from "./index"
+
 export class Cookie {
   cookies: Map<string, Map<string, string>>
   getter: () => Promise<string>
@@ -20,28 +22,24 @@ export class Cookie {
     await this.setter(JSON.stringify(Object.fromEntries(this.cookies)))
   }
 
-  getDomain(url: string) {
-    return url.replace(/https?:\/\//gi, "").split("/")?.[0]
-  }
-
   getKey(url: string, key: string) {
-    url = this.getDomain(url)
+    url = helper.getDomain(url)
     return this.cookies.get(url)?.get(key)
   }
 
   setKey(url: string, key: string, value: string) {
-    url = this.getDomain(url)
+    url = helper.getDomain(url)
     if (!this.cookies.has(url)) this.cookies.set(url, new Map())
     this.cookies.get(url).set(key, value)
   }
 
   getUrl(url: string) {
-    url = this.getDomain(url)
+    url = helper.getDomain(url)
     return this.cookies.get(url)
   }
 
   setUrl(url: string, value: Map<string, string>) {
-    url = this.getDomain(url)
+    url = helper.getDomain(url)
     if (!this.cookies.has(url)) this.cookies.set(url, new Map())
     const urlCookie = this.cookies.get(url)
     value.forEach((v, k) => {

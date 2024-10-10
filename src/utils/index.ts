@@ -571,6 +571,31 @@ export const cookie = new Cookie({
   }
 })
 
+export const helper = {
+  getDomain(url: string) {
+    return url.replace(/https?:\/\//gi, "").split("/")?.[0]
+  },
+  getPropertyValue(obj: any, path: string) {
+    return path.split(".").reduce((prev, curr) => {
+      if (/^\d+$/.test(curr)) {
+        return prev ? prev[parseInt(curr)] : undefined
+      }
+      return prev ? prev[curr] : undefined
+    }, obj)
+  },
+  setPropertyValue(obj: any, path: string, value: any) {
+    const paths = path.split(".")
+    const last = paths.pop()
+    const target = paths.reduce((prev, curr) => {
+      if (/^\d+$/.test(curr)) {
+        return prev[curr]
+      }
+      return prev[curr]
+    }, obj)
+    target[last] = value
+  }
+}
+
 global.config = config
 global.state = state
 global.router = router
@@ -583,9 +608,11 @@ global.source = source
 global.device = device
 global.date = date
 global.cookie = cookie
+global.helper = helper
 
 export default {
   state,
   cookie,
-  fetch
+  fetch,
+  helper
 }
