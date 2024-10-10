@@ -49,10 +49,10 @@
       </div>
       <div class="menu {{ sourceMenu }}">
         <scroll class="body-container" scroll-y="true" bounces="true">
-          <div class="card" @click="setValue(activeItem, 'enabled', !activeItem.enabled)">
-            <image src="/common/icon/check{{ activeItem.enabled ? '-active' : ''}}.png" class="icon" />
+          <div class="card" @click="setValue(activedItem, 'enabled', !activedItem.enabled)">
+            <image src="/common/icon/check{{ activedItem.enabled ? '-active' : ''}}.png" class="icon" />
             <text class="card-btn-text center">
-              {{ activeItem.enabled ? "禁用" : "启用" }}
+              {{ activedItem.enabled ? "禁用" : "启用" }}
             </text>
           </div>
           <div class="card" @click="moveUp">
@@ -63,7 +63,7 @@
             <image src="/common/icon/down.png" class="icon" />
             <text class="card-btn-text center">置底</text>
           </div>
-          <div if="{{activeItem.hasLogin}}" class="card" @click="wait">
+          <div if="{{activedItem.hasLogin}}" class="card" @click="login">
             <image src="/common/icon/password.png" class="icon" />
             <text class="card-btn-text center">登录</text>
           </div>
@@ -75,27 +75,54 @@
             <image src="/common/icon/trash.png" class="icon" />
             <text class="card-btn-text center">删除</text>
           </div>
-          <div if="{{activeItem.hasExplore}}" class="card"
-            @click="setValue(activeItem, 'enabledExplore', !activeItem.enabledExplore)">
-            <image src="/common/icon/check{{ activeItem.enabledExplore ? '-active' : ''}}.png" class="icon" />
+          <div if="{{activedItem.hasExplore}}" class="card"
+            @click="setValue(activedItem, 'enabledExplore', !activedItem.enabledExplore)">
+            <image src="/common/icon/check{{ activedItem.enabledExplore ? '-active' : ''}}.png" class="icon" />
             <text class="card-btn-text center">
-              {{ activeItem.enabledExplore ? "禁用" : "启用" }}发现
+              {{ activedItem.enabledExplore ? "禁用" : "启用" }}发现
             </text>
           </div>
         </scroll>
       </div>
-      <div class="menu input-menu pa-md {{importMenu}}">
-        <div class="pa-md col">
-          <div class="card">
+      <div class="menu pa-md justify-start {{importMenu}}">
+        <div class="col">
+          <div class="card {{ activedInput==='sourceUrl' ? 'active' : 'inactive'}}" @click="activeInput('sourceUrl')">
             <text class="card-btn-text">
               {{ sourceUrl === "" ? "请输入链接/9位传输码" : sourceUrl }}
             </text>
           </div>
-          <div class="card justify-center" @click="submit">
+          <div class="card justify-center" @click="submitUrl">
             <image src="/common/icon/submit.png" class="icon" />
             <text class="card-btn-text">提交</text>
           </div>
         </div>
+      </div>
+      <div class="menu pa-md justify-start {{loginMenu}}">
+        <div class="col">
+          <block for="(index, item) in activedItem.loginUi">
+            <div if="{{item.type === 'text'}}"
+              class="card {{ activedInput===`activedItem.loginUi.${index}.value` ? 'active' : 'inactive'}}"
+              @click="activeInput(`activedItem.loginUi.${index}.value`)">
+              <text class="card-btn-text">
+                {{ item.value === "" ? item.name : item.value }}
+              </text>
+            </div>
+            <div elif="{{item.type === 'password'}}"
+              class="card {{ activedInput===`activedItem.loginUi.${index}.value` ? 'active' : 'inactive'}}"
+              @click="activeInput(`activedItem.loginUi.${index}.value`)">
+              <text class="card-btn-text">
+                {{ item.value === "" ? item.name : item.value.replace(/./g, "·") }}
+              </text>
+            </div>
+          </block>
+          <div class="card justify-center" @click="submitLogin">
+            <image src="/common/icon/submit.png" class="icon" />
+            <text class="card-btn-text">提交</text>
+          </div>
+        </div>
+      </div>
+      <div class="menu input-menu pa-md {{keyboardMenu}}">
+        <div class="w-100 h-100" @click="toggleKeyboardMenu"></div>
         <input-method hide="{{false}}" screentype="{{'rect'}}" @delete="delete" @complete="complete"></input-method>
       </div>
     </div>
@@ -104,7 +131,7 @@
 </template>
 
 <script>
-const {template, router, fetch, source} = global
+const {template, router, fetch, source, helper} = global
 
 export default {
   ...template,
@@ -114,17 +141,37 @@ export default {
     menu: "",
     sourceMenu: "",
     importMenu: "",
-    activeItem: undefined,
-    sourceUrl: "1p7MAda36"
+    loginMenu: "",
+    keyboardMenu: "",
+    activedItem: undefined,
+    activedInput: undefined,
+    sourceUrl: "1pqfp18pG"
   },
   ...router,
+  onInit() {
+    this.$watch("activedInput", "watchActivedInput")
+  },
+  watchActivedInput() {
+    if (!!this.activedInput) this.toggleKeyboardMenu()
+  },
+  activeInput(name) {
+    this.activedInput = name
+  },
   onBack() {
+    if (this.keyboardMenu === "animation-in") {
+      this.toggleKeyboardMenu()
+      return true
+    }
+    if (this.loginMenu === "animation-in") {
+      this.toggleLoginMenu()
+      return true
+    }
     if (this.importMenu === "animation-in") {
       this.toggleImportMenu()
       return true
     }
     if (this.sourceMenu === "animation-in") {
-      this.toggleSourceMenu(this.activeItem)
+      this.toggleSourceMenu(this.activedItem)
       return true
     }
     if (this.menu === "animation-in") {
@@ -139,12 +186,20 @@ export default {
     evt.stopPropagation()
   },
   toggleMenu() {
+    if (this.keyboardMenu === "animation-in") {
+      this.toggleKeyboardMenu()
+      return
+    }
+    if (this.loginMenu === "animation-in") {
+      this.toggleLoginMenu()
+      return
+    }
     if (this.importMenu === "animation-in") {
       this.toggleImportMenu()
       return
     }
     if (this.sourceMenu === "animation-in") {
-      this.toggleSourceMenu(this.activeItem)
+      this.toggleSourceMenu(this.activedItem)
     }
     if (this.menu === "animation-in") {
       this.menu = "animation-out-back"
@@ -153,7 +208,7 @@ export default {
     }
   },
   toggleSourceMenu(item) {
-    this.activeItem = item
+    this.activedItem = item
     if (this.sourceMenu === "animation-in") {
       this.sourceMenu = "animation-out-back"
     } else {
@@ -165,18 +220,42 @@ export default {
       this.importMenu = "animation-out-back"
     } else {
       this.importMenu = "animation-in"
+      this.activedInput = "sourceUrl"
+    }
+  },
+  toggleLoginMenu() {
+    if (this.loginMenu === "animation-in") {
+      this.loginMenu = "animation-out-back"
+    } else {
+      this.loginMenu = "animation-in"
+    }
+  },
+  toggleKeyboardMenu() {
+    if (this.keyboardMenu === "animation-in") {
+      this.keyboardMenu = "animation-out-back"
+      this.activedInput = ""
+    } else {
+      this.keyboardMenu = "animation-in"
     }
   },
   onlineImport() {
     this.toggleImportMenu()
   },
   complete(evt) {
-    this.sourceUrl += evt.detail.content
+    helper.setPropertyValue(
+      this,
+      this.activedInput,
+      helper.getPropertyValue(this, this.activedInput) + evt.detail.content
+    )
   },
   delete() {
-    this.sourceUrl = this.sourceUrl.slice(0, -1)
+    helper.setPropertyValue(
+      this,
+      this.activedInput,
+      helper.getPropertyValue(this, this.activedInput).slice(0, -1)
+    )
   },
-  submit() {
+  submitUrl() {
     let url
     if (this.sourceUrl.startsWith("http://") || this.sourceUrl.startsWith("https://")) {
       url = this.sourceUrl
@@ -188,7 +267,7 @@ export default {
     }
 
     fetch(url).then((res) => {
-      console.log(res);
+      console.log(res)
       if (res.data.length > 0) {
         res.data.forEach((item) => {
           source.add(item)
@@ -201,22 +280,28 @@ export default {
     })
   },
   moveUp() {
-    if (this.activeItem) {
-      source.moveUp(this.activeItem)
+    if (this.activedItem) {
+      source.moveUp(this.activedItem)
       this.list = source.mapForUi()
       this.back()
     }
   },
   moveDown() {
-    if (this.activeItem) {
-      source.moveDown(this.activeItem)
+    if (this.activedItem) {
+      source.moveDown(this.activedItem)
       this.list = source.mapForUi()
       this.back()
     }
   },
+  login() {
+    if (this.activedItem) {
+      if (!this.activedItem.loginUi) this.toast("未找到登录页面，暂不支持 WebView 登录")
+      this.toggleLoginMenu()
+    }
+  },
   remove() {
-    if (this.activeItem) {
-      source.remove(this.activeItem)
+    if (this.activedItem) {
+      source.remove(this.activedItem)
       this.list = source.mapForUi()
       this.back()
     }
@@ -235,5 +320,14 @@ export default {
 .input-menu {
   padding: 0;
   justify-content: flex-start;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.inactive {
+  border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.active {
+  border: 3px solid white;
 }
 </style>

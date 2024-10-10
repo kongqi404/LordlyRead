@@ -36,7 +36,7 @@ const router = {
     }, config.animationDuration + config.animationDelay)
   },
   back(path?: string) {
-    if (!path) if (thisObj.onBack?.call()) return
+    if (!(typeof path === "string")) if (thisObj.onBack?.call()) return
     animation.out(true)
     setTimeout(() => {
       if (path) {
@@ -312,7 +312,9 @@ const setting = {
       storage.get({
         key: name,
         success: (data) => {
-          resolve(JSON.parse(data))
+          try {
+            resolve(JSON.parse(data))
+          } catch {}
         },
         fail: (err) => {
           reject(err)
@@ -439,7 +441,8 @@ const source = {
         enabled: item.enabled,
         enabledExplore: item.enabledExplore,
         hasExplore: item.hasExplore,
-        hasLogin: item.hasLogin
+        hasLogin: item.hasLogin,
+        loginUi: item.loginUi
       }
     })
   },

@@ -16,6 +16,7 @@ export interface SourceData {
   exploreUrl: string
   lastUpdateTime: number
   loginCheckJs: string
+  loginUi: string
   loginUrl: string
   respondTime: number
   ruleBookInfo: RuleBookInfo
@@ -71,6 +72,13 @@ export interface SourceUi {
   enabledExplore: boolean
   hasExplore: boolean
   hasLogin: boolean
+  loginUi?: LoginUiComponent[]
+}
+
+export interface LoginUiComponent {
+  type: string
+  name: string
+  value: string
 }
 
 export class Source {
@@ -104,6 +112,18 @@ export class Source {
   }
   get hasLogin() {
     return this.raw.loginUrl !== undefined
+  }
+  get loginUi() {
+    try {
+      return JSON.parse(this.raw.loginUi)?.map((v) => {
+        return {
+          value: "",
+          ...v
+        }
+      }) as LoginUiComponent[]
+    } catch (e) {
+      return undefined
+    }
   }
 
   async executeJs(js: string, java: JsExtension, additional: any) {
