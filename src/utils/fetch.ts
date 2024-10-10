@@ -26,8 +26,8 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
       ...urlOptions,
       header: {
         Cookie: cookieList.join(";"),
-        ...options.header,
-        ...urlOptions.header
+        ...options?.header,
+        ...urlOptions?.header
       }
     }
 
