@@ -596,6 +596,16 @@ export const helper = {
       return prev[curr]
     }, obj)
     target[last] = value
+  },
+  json2Map(json: string): Map<string, any> {
+    try {
+      return new Map(Object.entries(JSON.parse(json)))
+    } catch {
+      return undefined
+    }
+  },
+  map2Json(map: Map<string, any>) {
+    return JSON.stringify(Object.fromEntries(map))
   }
 }
 

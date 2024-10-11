@@ -14,12 +14,12 @@ export class Cookie {
 
   async refresh() {
     if (this.cookies) await this.save()
-    this.cookies = new Map(Object.entries(JSON.parse(await this.getter())))
+    this.cookies = helper.json2Map(await this.getter())
   }
 
   async save() {
     if (!this.cookies) console.error("在未初始化 Cookie 类前 save")
-    await this.setter(JSON.stringify(Object.fromEntries(this.cookies)))
+    await this.setter(helper.map2Json(this.cookies))
   }
 
   getKey(url: string, key: string) {
