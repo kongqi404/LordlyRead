@@ -99,6 +99,18 @@ const on = {
   }
 }
 
+interface SettingItem {
+  type: string
+  title: string
+  subtitle?: string
+  options?: {label: string; value: any}[]
+  name: string
+  value?: any
+  step?: number
+  doubleStep?: number
+  min?: number
+}
+
 const setting = {
   list: [
     {
@@ -297,9 +309,9 @@ const setting = {
       name: "log",
       value: false
     }
-  ],
+  ] as SettingItem[],
 
-  get(name) {
+  get(name: string) {
     for (const item of setting.list) {
       if (item.name === name) {
         return item.value
@@ -307,23 +319,23 @@ const setting = {
     }
   },
 
-  getRaw(name) {
+  getRaw(name: string): Promise<any> {
     return new Promise((resolve, reject) => {
       storage.get({
         key: name,
-        success: (data) => {
+        success: (data: string) => {
           try {
             resolve(JSON.parse(data))
           } catch {}
         },
-        fail: (err) => {
+        fail: (err: any) => {
           reject(err)
         }
       })
     })
   },
 
-  set(name, value) {
+  set(name: string, value: any) {
     return new Promise((resolve, reject) => {
       storage.set({
         key: name,
@@ -339,7 +351,7 @@ const setting = {
           }
           resolve(true)
         },
-        fail: (err) => {
+        fail: (err: any) => {
           reject(err)
         }
       })
@@ -348,7 +360,7 @@ const setting = {
 
   async init() {
     await Promise.all(
-      this.list.map((item) => {
+      this.list.map(async (item: SettingItem) => {
         if (item.value !== undefined) {
           return setting.getRaw(item.name).then((value) => {
             item.value = value
@@ -412,16 +424,15 @@ const source = {
     this.list.push(new Source(source, cookie))
   },
   remove(source: SourceUi) {
-    this.list = this.list.filter((item: Source) => item.bookSourceUrl !== source.bookSourceUrl)
+    this.list = this.list.filter((item: Source) => item !== source.source)
   },
   moveUp(source: SourceUi) {
-    source = this.list.find((item: Source) => item.bookSourceUrl === source.bookSourceUrl)
-    this.list = this.list.filter((item: Source) => item.bookSourceUrl !== source.bookSourceUrl)
-    this.list.unshift(source)
+    this.list = this.list.filter((item: Source) => item !== source.source)
+    this.list.unshift(source.source)
   },
   moveDown(source: SourceUi) {
-    source = this.list.find((item: Source) => item.bookSourceUrl === source.bookSourceUrl)
-    this.list = this.list.filter((item: Source) => item.bookSourceUrl !== source.bookSourceUrl)
+    source = this.list.find((item: Source) => item === source.source)
+    this.list = this.list.filter((item: Source) => item !== source.source)
     this.list.push(source)
   },
   clear() {
@@ -442,17 +453,15 @@ const source = {
         enabledExplore: item.enabledExplore,
         hasExplore: item.hasExplore,
         hasLogin: item.hasLogin,
-        loginUi: item.loginUi
+        loginUi: item.loginUi,
+        source: item
       }
     })
   },
   syncFromUi(uiList: SourceUi[]) {
     uiList.forEach((item) => {
-      const source = this.list.find((item2: Source) => item2.bookSourceUrl === item.bookSourceUrl)
-      if (source) {
-        source.enabled = item.enabled
-        source.enabledExplore = item.enabledExplore
-      }
+      item.source.enabled = item.enabled
+      item.source.enabledExplore = item.enabledExplore
     })
   }
 }
@@ -597,6 +606,12 @@ export const helper = {
     }, obj)
     target[last] = value
   },
+  record2Map(record: Record<string, string>) {
+    return new Map(Object.entries(record))
+  },
+  map2Record(map: Map<string, string>) {
+    return Object.fromEntries(map)
+  },
   json2Map(json: string): Map<string, any> {
     try {
       return new Map(Object.entries(JSON.parse(json)))
@@ -616,7 +631,7 @@ global.animation = animation
 global.on = on
 global.template = template
 global.setting = setting
-global.fetch = fetch
+global.fetch = fetch as any
 global.source = source
 global.device = device
 global.date = date

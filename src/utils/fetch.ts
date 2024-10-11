@@ -1,6 +1,24 @@
 import {fetch as systemFetch, request, file} from "./tsimports"
-import {cookie} from "."
+import {cookie, helper} from "."
 const GBK = require("gbk.js")
+
+class Response {
+  data: string
+  cookie: string
+
+  constructor(data: string) {
+    this.data = data
+  }
+
+  body() {
+    console.log(this.data)
+    return this.data
+  }
+
+  cookies() {
+    return helper.json2Map(this.cookie ?? "{}")
+  }
+}
 
 export function fetch(rawUrl: string, options?: any): Promise<Response> {
   return new Promise((resolve, reject) => {
@@ -44,10 +62,16 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
     }
 
     if (fullOptions.charset) {
+      // fullOptions.header = Object.entries(fullOptions.header ?? {})
+      //   .map((kv) => kv.join(": "))
+      //   .join("\n")
+      console.log(url, fullOptions)
       request.download({
         url,
         ...fullOptions,
+        header: "",
         success(data) {
+          console.log(data)
           request.onDownloadComplete({
             token: data.token,
             success(res) {
@@ -58,7 +82,7 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
                   file.delete({
                     uri: res.uri,
                     success() {
-                      resolve(result)
+                      resolve(new Response(result))
                     },
                     fail(...err) {
                       reject(err)
@@ -76,18 +100,23 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
           })
         },
         fail(...err) {
+          console.log(err)
           reject(err)
         }
       })
     } else {
+      console.log(url, fullOptions)
       systemFetch.fetch({
         url,
         ...fullOptions,
         success(res) {
+          console.log(res)
+          const response = new Response(res.data)
           if (res.headers["Set-Cookie"]) {
             cookie.setUrlByHeader(url, res.headers["Set-Cookie"])
+            response.cookie = helper.map2Json(cookie.getCookieFromHeader(res.headers["Set-Cookie"]))
           }
-          resolve(res)
+          resolve(response)
         },
         fail(err) {
           console.log(err)

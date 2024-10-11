@@ -1,6 +1,7 @@
 import {JsExtension} from "./jsExtension"
 import {Cookie} from "./cookie"
 import {fetch} from "./fetch"
+import {helper} from "./index"
 
 export interface SourceData {
   bookSourceComment: string
@@ -73,6 +74,7 @@ export interface SourceUi {
   hasExplore: boolean
   hasLogin: boolean
   loginUi?: LoginUiComponent[]
+  source: Source
 }
 
 export interface LoginUiComponent {
@@ -84,6 +86,11 @@ export interface LoginUiComponent {
 export class Source {
   raw: SourceData
   cookie: Cookie
+  java = new JsExtension({
+    vars: new Map()
+  })
+  loginInfoMap: string
+
   constructor(raw: SourceData, cookie: Cookie) {
     this.raw = raw
     this.cookie = cookie
@@ -126,25 +133,90 @@ export class Source {
     }
   }
 
-  async executeJs(js: string, java: JsExtension, additional: any) {
+  async executeJs(js: string, additional: any) {
     // noinspection JSUnusedLocalSymbols
-    const {key, page, result} = additional
+    const {key, page, result, resolve} = additional
+    const java = this.java
     const cookie = this.cookie
+    const source = this
+
+    let resultResolve: (value: any) => void
+    let resultReject: (value: any) => void
+
+    const resultPromise = new Promise((resolve, reject) => {
+      resultResolve = resolve
+      resultReject = reject
+    })
+
+    js = js.replace(/java\.(.*?)\(/gi, "await java.$1(")
+
+    js =
+      "async function main() {\n" +
+      js.replace(/\n(.+)$/i, "\nreturn $1") +
+      "\n}\nmain().then(r=>resultResolve(r)).catch(e=>resultReject(e))"
+
     try {
-      return eval(js)
+      eval(js)
+      return await resultPromise
     } catch (e) {
       console.log(e)
       return result
     }
   }
 
-  async search(key: string, page: number) {
-    const java = new JsExtension({
-      vars: new Map()
+  // noinspection JSUnusedGlobalSymbols // used in eval
+  getLoginInfoMap() {
+    return helper.json2Map(this.loginInfoMap)
+  }
+
+  // noinspection JSUnusedGlobalSymbols // used in eval
+  putLoginHeader(header: string) {
+    console.log("putLoginHeader 无实际作用", header)
+  }
+
+  async login(loginInfoMap: Map<string, string>) {
+    this.loginInfoMap = helper.map2Json(loginInfoMap)
+
+    if (!this.hasLogin) {
+      return {
+        success: false,
+        message: "未配置登录信息"
+      }
+    }
+
+    if (!this.raw.loginUrl.match(/^<js>|^@js:|<\/js>$/gi)) {
+      console.error("暂不支持链接登录")
+    }
+
+    const js = this.raw.loginUrl
+      .replace(/^<js>|^@js:|<\/js>$/gi, "")
+      .replace(/function login\(\) {/gi, "async function login() {")
+
+    let resultResolve: (value: {success: boolean; message: string}) => void
+
+    const result = new Promise<{
+      success: boolean
+      message: string
+    }>((resolve) => {
+      resultResolve = resolve
     })
+
+    await this.executeJs(
+      js +
+        "\nlogin().then(r=>resolve({success:true, msg:''})).catch(e=>resolve({success:false, msg:e}))",
+      {
+        resolve: resultResolve
+      }
+    )
+
+    return await result
+  }
+
+  async search(key: string, page: number) {
     let parts = this.raw.searchUrl
       .split(/(@js:[\s\S]*?$)|(<js>[\s\S]*?<\/js>)/gi)
       .filter((v) => !!v && !v?.match(/^\s*$/))
+      .filter((v) => !v.match(/^undefined$/gi))
     let url = parts.shift()
 
     console.log(this.raw.searchUrl)
@@ -152,20 +224,13 @@ export class Source {
 
     for (const v of parts) {
       const js = v.replace(/^<js>|^@js:|<\/js>$/gi, "")
-      //       const js = `if(new Date().getTime()-Number(cookie.getKey('http://www.wenku8.net','jieqiVisitTime') ? cookie.getKey('http://www.wenku8.net','jieqiVisitTime').replace('jieqiArticlesearchTime%3D','') : 6)*1000<6000){
-      //   java.toast('搜索频率过高，延迟'+(new Date().getTime()-Number(cookie.getKey(source.bookSourceUrl,'jieqiVisitTime').replace('jieqiArticlesearchTime%3D',''))*1000)/1000+'秒后继续')
-      // }
-      // while(new Date().getTime()-Number(cookie.getKey('http://www.wenku8.net','jieqiVisitTime') ? cookie.getKey('http://www.wenku8.net','jieqiVisitTime').replace('jieqiArticlesearchTime%3D','') : 6)*1000<6000){
-      //   console.log(123)
-      // }
-      // result`
-      url = await this.executeJs(js, java, {result: url})
+      url = await this.executeJs(js, {result: url})
     }
 
     if (url.match(/{{[\s\S]*?}}/gi)) {
       for (const v of url.match(/{{[\s\S]*?}}/gi)) {
         const js = v.replace(/^{{|}}$/gi, "")
-        url = url.replace(v, await this.executeJs(js, java, {key, page}))
+        url = url.replace(v, await this.executeJs(js, {key, page}))
       }
     }
 

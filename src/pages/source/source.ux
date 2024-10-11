@@ -145,7 +145,7 @@ export default {
     keyboardMenu: "",
     activedItem: undefined,
     activedInput: undefined,
-    sourceUrl: "1pqfp18pG"
+    sourceUrl: "1px9h2VDa"
   },
   ...router,
   onInit() {
@@ -278,6 +278,22 @@ export default {
         this.back()
       }
     })
+  },
+  submitLogin() {
+    if (this.activedItem) {
+      const loginInfoMap = new Map()
+      this.activedItem.loginUi.forEach((item) => {
+        loginInfoMap.set(item.name, item.value)
+      })
+      this.activedItem.source.login(loginInfoMap).then((res) => {
+        if (res.success) {
+          this.toast("登录成功")
+          this.back()
+        } else {
+          this.toast(res.msg)
+        }
+      })
+    }
   },
   moveUp() {
     if (this.activedItem) {
