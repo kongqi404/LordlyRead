@@ -424,15 +424,16 @@ const source = {
     this.list.push(new Source(source, cookie))
   },
   remove(source: SourceUi) {
-    this.list = this.list.filter((item: Source) => item !== source.source)
+    this.list = this.list.filter((item: Source) => item.bookSourceUrl !== source.bookSourceUrl)
   },
   moveUp(source: SourceUi) {
-    this.list = this.list.filter((item: Source) => item !== source.source)
-    this.list.unshift(source.source)
+    source = this.list.find((item: Source) => item.bookSourceUrl === source.bookSourceUrl)
+    this.list = this.list.filter((item: Source) => item.bookSourceUrl !== source.bookSourceUrl)
+    this.list.unshift(source)
   },
   moveDown(source: SourceUi) {
-    source = this.list.find((item: Source) => item === source.source)
-    this.list = this.list.filter((item: Source) => item !== source.source)
+    source = this.list.find((item: Source) => item.bookSourceUrl === source.bookSourceUrl)
+    this.list = this.list.filter((item: Source) => item.bookSourceUrl !== source.bookSourceUrl)
     this.list.push(source)
   },
   clear() {
