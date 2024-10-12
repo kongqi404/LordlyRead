@@ -49,9 +49,15 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
       }
     }
 
+    fullOptions.header = {
+      ...fullOptions.sourceHeader,
+      ...fullOptions.header
+    }
+
     if (fullOptions.charset) {
       if (/^utf-?8$/gi.test(fullOptions.charset)) {
         fullOptions.charset = undefined
+        url = encodeURI(decodeURIComponent(url))
       } else if (/^gbk$/gi.test(fullOptions.charset)) {
         fullOptions.charset = "gbk"
         url = GBK.URI.encodeURI(url)
@@ -59,13 +65,11 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
         console.error("不支持的编码类型")
         reject("不支持的编码类型")
       }
+    } else {
+      url = encodeURI(decodeURIComponent(url))
     }
 
     if (fullOptions.charset) {
-      // fullOptions.header = Object.entries(fullOptions.header ?? {})
-      //   .map((kv) => kv.join(": "))
-      //   .join("\n")
-      console.log(url, fullOptions)
       request.download({
         url,
         ...fullOptions,
@@ -105,12 +109,10 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
         }
       })
     } else {
-      console.log(url, fullOptions)
       systemFetch.fetch({
         url,
         ...fullOptions,
         success(res) {
-          console.log(res)
           const response = new Response(res.data)
           if (res.headers["Set-Cookie"]) {
             cookie.setUrlByHeader(url, res.headers["Set-Cookie"])

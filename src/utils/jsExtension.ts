@@ -1,12 +1,15 @@
 import {fetch} from "./fetch"
+import {Source} from "./source"
 
 export class JsExtension {
   state: {
     vars: Map<string, any>
   }
+  source: Source
 
-  constructor(state: any) {
+  constructor(state: any, source: Source) {
     this.state = state
+    this.source = source
   }
 
   put(key: string, value: any) {
@@ -28,6 +31,7 @@ export class JsExtension {
     return await fetch(urlStr, {
       method: "POST",
       header: headers,
+      sourceHeader: this.source.sourceHeader,
       data
     })
   }

@@ -2,6 +2,7 @@ import {JsExtension} from "./jsExtension"
 import {Cookie} from "./cookie"
 import {fetch} from "./fetch"
 import {helper} from "./index"
+import {JSONPath} from "jsonpath-plus"
 
 export interface SourceData {
   bookSourceComment: string
@@ -53,6 +54,7 @@ export interface RuleExplore {
   kind: string
   name: string
   wordCount: string
+  lastChapter: string
 }
 
 export interface RuleSearch extends RuleExplore {
@@ -86,10 +88,14 @@ export interface LoginUiComponent {
 export class Source {
   raw: SourceData
   cookie: Cookie
-  java = new JsExtension({
-    vars: new Map()
-  })
+  java = new JsExtension(
+    {
+      vars: new Map()
+    },
+    this
+  )
   loginInfoMap: string
+  loginHeader: string
 
   constructor(raw: SourceData, cookie: Cookie) {
     this.raw = raw
@@ -99,38 +105,74 @@ export class Source {
   get bookSourceUrl() {
     return this.raw.bookSourceUrl
   }
+
   get bookSourceName() {
     return this.raw.bookSourceName
   }
+
   get enabled() {
     return this.raw.enabled
   }
+
   set enabled(value: boolean) {
     this.raw.enabled = value
   }
+
   get enabledExplore() {
     return this.raw.enabledExplore
   }
+
   set enabledExplore(value: boolean) {
     this.raw.enabledExplore = value
   }
+
   get hasExplore() {
     return this.raw.ruleExplore !== undefined
   }
+
   get hasLogin() {
     return this.raw.loginUrl !== undefined
   }
+
   get loginUi() {
     try {
-      return JSON.parse(this.raw.loginUi)?.map((v) => {
+      const loginInfoMap = helper.json2Map(this.loginInfoMap ?? "{}")
+      return JSON.parse(this.raw.loginUi)?.map((v: Partial<LoginUiComponent>) => {
         return {
-          value: "",
+          value: loginInfoMap.get(v.name) ?? "",
           ...v
         }
       }) as LoginUiComponent[]
     } catch (e) {
       return undefined
     }
+  }
+
+  get additionalData() {
+    return {
+      bookSourceUrl: this.bookSourceUrl,
+      loginInfoMap: this.loginInfoMap,
+      loginHeader: this.loginHeader
+    }
+  }
+
+  set additionalData(value: {bookSourceUrl: string; loginInfoMap: string; loginHeader: string}) {
+    this.loginInfoMap = value.loginInfoMap
+    this.loginHeader = value.loginHeader
+  }
+
+  get sourceHeader() {
+    return JSON.parse(this.loginHeader ?? "{}")
+  }
+
+  // noinspection JSUnusedGlobalSymbols // used in eval
+  getLoginInfoMap() {
+    return helper.json2Map(this.loginInfoMap)
+  }
+
+  // noinspection JSUnusedGlobalSymbols // used in eval
+  putLoginHeader(header: string) {
+    this.loginHeader = header
   }
 
   async executeJs(js: string, additional: any) {
@@ -152,7 +194,7 @@ export class Source {
 
     js =
       "async function main() {\n" +
-      js.replace(/\n(.+)$/i, "\nreturn $1") +
+      js.replace(/\n(.+)$/i, "\nreturn $1").replace(/^(.+)$/i, "return $1") +
       "\n}\nmain().then(r=>resultResolve(r)).catch(e=>resultReject(e))"
 
     try {
@@ -164,14 +206,71 @@ export class Source {
     }
   }
 
-  // noinspection JSUnusedGlobalSymbols // used in eval
-  getLoginInfoMap() {
-    return helper.json2Map(this.loginInfoMap)
+  async parseGetRule(rule: string, result: string) {
+    let res
+    if (/^\$\./.test(rule)) {
+      // JsonPath
+      global.runGC()
+      res = JSONPath({json: JSON.parse(result), path: rule})
+    } else {
+      // No Match
+      res = rule
+    }
+
+    if (res instanceof Array) {
+      return res
+    } else {
+      return [res]
+    }
   }
 
-  // noinspection JSUnusedGlobalSymbols // used in eval
-  putLoginHeader(header: string) {
-    console.log("putLoginHeader 无实际作用", header)
+  async parseRule(rule: string, result: string, isList = false) {
+    if (!rule) {
+      return isList ? [] : ""
+    }
+
+    let parts = rule
+      .split(/(@js:[\s\S]*?$)|(<js>[\s\S]*?<\/js>)/gi)
+      .filter((v) => !!v && !v?.match(/^\s*$/))
+      .filter((v) => !v.match(/^undefined$/gi))
+
+    let res = undefined
+
+    for (const v of parts) {
+      if (/^<js>|^@js:|<\/js>$/gi.test(v)) {
+        let js = v.replace(/^<js>|^@js:|<\/js>$/gi, "")
+        if (js.match(/{{[\s\S]*?}}/gi)) {
+          for (const v of js.match(/{{[\s\S]*?}}/gi)) {
+            const rule = v.replace(/^{{|}}$/gi, "")
+            js = js.replace(v, (await this.parseGetRule(rule, result)).join(", "))
+          }
+        }
+        res = await this.executeJs(js, {result: res ?? result})
+      } else {
+        let resultList = []
+        for (const orPart of v.split("||")) {
+          for (const andPart of orPart.split("&&")) {
+            resultList.push(...(await this.parseGetRule(andPart, result)))
+          }
+          if (resultList.length > 0) break
+        }
+        res = resultList.flat(3).map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+        if (!isList) {
+          res = res.join(", ")
+        }
+      }
+    }
+
+    if (!isList) {
+      if (res.match(/{{[\s\S]*?}}/gi)) {
+        for (const v of res.match(/{{[\s\S]*?}}/gi)) {
+          const rule = v.replace(/^{{|}}$/gi, "")
+          res = res.replace(v, await this.parseGetRule(rule, result))
+        }
+      }
+    }
+
+    return res
   }
 
   async login(loginInfoMap: Map<string, string>) {
@@ -214,18 +313,18 @@ export class Source {
 
   async search(key: string, page: number) {
     let parts = this.raw.searchUrl
+      // .replace("pageSize=20", "pageSize=10")
       .split(/(@js:[\s\S]*?$)|(<js>[\s\S]*?<\/js>)/gi)
       .filter((v) => !!v && !v?.match(/^\s*$/))
       .filter((v) => !v.match(/^undefined$/gi))
     let url = parts.shift()
 
-    console.log(this.raw.searchUrl)
-    console.log(parts)
-
     for (const v of parts) {
       const js = v.replace(/^<js>|^@js:|<\/js>$/gi, "")
       url = await this.executeJs(js, {result: url})
     }
+
+    parts = null
 
     if (url.match(/{{[\s\S]*?}}/gi)) {
       for (const v of url.match(/{{[\s\S]*?}}/gi)) {
@@ -238,10 +337,29 @@ export class Source {
       url = url.replace(v, (/key/gi.test(v) ? key : page) as string)
     })
 
-    const response = await fetch(url, {
-      baseUrl: this.bookSourceUrl
-    })
+    const response = (
+      await fetch(url, {
+        baseUrl: this.bookSourceUrl,
+        sourceHeader: this.sourceHeader,
+        responseType: "text"
+      })
+    ).body()
 
-    return response
+    url = null
+
+    return await Promise.all(
+      (await this.parseRule(this.raw.ruleSearch.bookList, response, true)).map(async (v) => {
+        return {
+          name: await this.parseRule(this.raw.ruleSearch.name, v),
+          author: await this.parseRule(this.raw.ruleSearch.author, v),
+          kind: await this.parseRule(this.raw.ruleSearch.kind, v, true),
+          coverUrl: await this.parseRule(this.raw.ruleSearch.coverUrl, v),
+          intro: await this.parseRule(this.raw.ruleSearch.intro, v),
+          wordCount: await this.parseRule(this.raw.ruleSearch.wordCount, v),
+          bookUrl: await this.parseRule(this.raw.ruleSearch.bookUrl, v),
+          lastChapter: await this.parseRule(this.raw.ruleSearch.lastChapter, v)
+        }
+      })
+    )
   }
 }

@@ -96,6 +96,7 @@ const on = {
   destroy() {
     thisObj = undefined
     cookie.save()
+    global.runGC()
   }
 }
 
@@ -412,6 +413,16 @@ const source = {
       key: "source",
       success: (data: string) => {
         this.list = (JSON.parse(data) as SourceData[]).map((item) => new Source(item, cookie))
+        storage.get({
+          key: "sourceAdditionalData",
+          success: (data: string) => {
+            JSON.parse(data)?.forEach((item: Source["additionalData"]) => {
+              this.list.find(
+                (source: Source) => source.bookSourceUrl === item.bookSourceUrl
+              ).additionalData = item
+            })
+          }
+        })
       }
     })
   },
@@ -443,6 +454,10 @@ const source = {
     storage.set({
       key: "source",
       value: JSON.stringify(this.list.map((item: Source) => item.raw))
+    })
+    storage.set({
+      key: "sourceAdditionalData",
+      value: JSON.stringify(this.list.map((item: Source) => item.additionalData))
     })
   },
   mapForUi(): SourceUi[] {
