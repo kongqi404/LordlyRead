@@ -38,7 +38,7 @@
           </div>
           <scroll else class="body-container" scroll-y="true" bounces="true">
             <div class="card" @click="toContent" @longpress="toDetail">
-              <image src="/common/image/cover.jpg" class="book-cover" />
+              <image src="/common/image/bookcover.png" class="book-cover" />
               <div class="col grow">
                 <text class="book-name ellipsis">书名很长很长很长很长</text>
                 <text class="book-progress ellipsis">阅读进度很长很长很长</text>
@@ -183,26 +183,4 @@ export default {
 
 <style>
 @import url(../../common/css/page.css);
-
-.book-name {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.book-progress {
-  font-size: 24px;
-  color: #999;
-}
-
-.book-update {
-  font-size: 24px;
-  color: #999;
-}
-
-.book-cover {
-  width: 64px;
-  height: 96px;
-  border-radius: 8px;
-  margin-right: 8px;
-}
 </style>

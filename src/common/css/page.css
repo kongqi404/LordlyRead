@@ -172,6 +172,23 @@
   margin-left: -336px;
 }
 
+.book-name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.book-progress, .book-update, .book-hint {
+  font-size: 24px;
+  color: #999;
+}
+
+.book-cover {
+  width: 64px;
+  height: 96px;
+  border-radius: 8px;
+  margin-right: 8px;
+}
+
 @keyframes In {
   100% {
     transform: translateX(-336px);

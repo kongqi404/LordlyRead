@@ -11,36 +11,27 @@
     </div>
     <div class="body">
       <scroll class="body-container center" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
-        <image src="/common/image/cover.jpg" class="book-cover" @click="toggleImgMenu" />
-        <text class="book-name ellipsis">书名很长很长很长很长（）（）（）（）（）</text>
-        <scroll class="tags" scroll-x="true" bounces="true">
+        <image src="{{book.coverUrl}}" alt="/common/image/bookcover.png" class="book-cover" @click="toggleImgMenu" />
+        <text class="book-name ellipsis">{{book.name}}</text>
+        <scroll if="{{book.kind.length > 0}}" class="tags" scroll-x="true" bounces="true">
           <div class="grow justify-center">
-            <text class="tag">标签1</text>
-            <text class="tag">标签2</text>
-            <text class="tag">标签3</text>
-            <text class="tag">标签4</text>
-            <text class="tag">标签5</text>
-            <text class="tag">标签6</text>
-            <text class="tag">标签7</text>
-            <text class="tag">标签8</text>
-            <text class="tag">标签9</text>
-            <text class="tag">标签10</text>
+            <text for="tag in book.kind" class="tag">{{tag}}</text>
           </div>
         </scroll>
         <div class="center w-100">
           <image src="/common/icon/author.png" class="icon" />
-          <text class="item-text ellipsis">作者</text>
+          <text class="item-text ellipsis">{{ book.author ?? '未知'}}</text>
         </div>
         <div class="center w-100">
           <image src="/common/icon/source.png" class="icon" />
-          <text class="item-text ellipsis">书源</text>
+          <text class="item-text ellipsis">{{ book.bookSourceName ?? '未知'}}</text>
           <div class="badge-btn" @click="wait">
             <text class="badge">换源</text>
           </div>
         </div>
         <div class="center w-100">
           <image src="/common/icon/latest.png" class="icon" />
-          <text class="item-text ellipsis">最新章节</text>
+          <text class="item-text ellipsis">{{ book.lastChapter ?? '未知'}}</text>
         </div>
         <div class="center w-100">
           <image src="/common/icon/catalog.png" class="icon" />
@@ -50,12 +41,7 @@
           </div>
         </div>
         <div class="intro col">
-          <text class="intro-text">
-            简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介
-          </text>
-          <text class="intro-text">
-            简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介简介
-          </text>
+          <text for="text in book.intro.split('\n')" class="intro-text">{{text}}</text>
         </div>
         <div class="card w-100 justify-center" @click="push('pages/content')">
           <text class="card-btn-text">开始阅读</text>
@@ -65,7 +51,7 @@
         </div>
       </scroll>
       <div class="menu pa-md {{ menu }}">
-        <div class="card" @click="wait">
+        <div class="card" @click="refresh">
           <image src="/common/icon/refresh.png" class="icon" />
           <text class="card-btn-text center">刷新</text>
         </div>
@@ -87,7 +73,7 @@
         </div>
       </div>
       <div class="menu center {{ imgMenu }}">
-        <image src="/common/image/cover.jpg" class="book-cover full-cover" />
+        <image src="{{book.coverUrl}}" alt="/common/image/bookcover.png" class="book-cover full-cover" />
       </div>
     </div>
     <div class="cover-animation-helper {{coverAnimation}}"></div>
@@ -101,10 +87,39 @@ export default {
   ...template,
   private: {
     ...template.private,
+    book: {
+      name: "",
+      author: "",
+      bookUrl: "",
+      bookSourceName: "",
+      bookSourceUrl: "",
+      coverUrl: "",
+      kind: [""],
+      lastChapter: "",
+      intro: ""
+    },
     menu: "",
-    imgMenu: ""
+    imgMenu: "",
+    pre: ""
   },
   ...router,
+  onReady() {
+    try {
+      const pre = JSON.parse(this.pre)
+      console.log(pre)
+      this.book.name = pre.name
+      this.book.author = pre.author
+      this.book.bookUrl = pre.bookUrl
+      this.book.bookSourceUrl = pre.bookSourceUrl
+      this.book.kind = pre.kind
+      this.book.lastChapter = pre.lastChapter
+      this.book.intro = pre.intro
+      this.refresh()
+    } catch (e) {
+      this.toast("参数错误")
+      this.back()
+    }
+  },
   onBack() {
     if (this.imgMenu === "animation-in") {
       this.toggleImgMenu()
@@ -131,6 +146,9 @@ export default {
     } else {
       this.imgMenu = "animation-in"
     }
+  },
+  refresh() {
+    this.wait()
   }
 }
 </script>

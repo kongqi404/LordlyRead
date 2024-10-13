@@ -350,6 +350,7 @@ export class Source {
     return await Promise.all(
       (await this.parseRule(this.raw.ruleSearch.bookList, response, true)).map(async (v) => {
         return {
+          bookSourceUrl: this.bookSourceUrl,
           name: await this.parseRule(this.raw.ruleSearch.name, v),
           author: await this.parseRule(this.raw.ruleSearch.author, v),
           kind: await this.parseRule(this.raw.ruleSearch.kind, v, true),

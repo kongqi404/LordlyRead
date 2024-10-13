@@ -66,6 +66,10 @@
       "pages/search": {
         "component": "search",
         "launchMode": "singleTask"
+      },
+      "pages/searchResult": {
+        "component": "searchResult",
+        "launchMode": "singleTask"
       }
     }
   },
