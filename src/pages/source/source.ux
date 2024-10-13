@@ -131,7 +131,7 @@
 </template>
 
 <script>
-const {template, router, fetch, source, helper} = global
+const {template, router, helper, source, fetch} = global
 
 export default {
   ...template,

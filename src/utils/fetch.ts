@@ -1,6 +1,5 @@
 import {fetch as systemFetch, request, file} from "./tsimports"
 import {cookie, helper} from "."
-const GBK = require("gbk.js")
 
 class Response {
   data: string
@@ -60,7 +59,6 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
         url = encodeURI(decodeURIComponent(url))
       } else if (/^gbk$/gi.test(fullOptions.charset)) {
         fullOptions.charset = "gbk"
-        url = GBK.URI.encodeURI(url)
       } else {
         console.error("不支持的编码类型")
         reject("不支持的编码类型")
@@ -70,6 +68,8 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
     }
 
     if (fullOptions.charset) {
+      const GBK = require("../third-party/GBK.js/dist/gbk.min")
+      url = GBK.URI.encodeURI(url)
       request.download({
         url,
         ...fullOptions,
@@ -83,6 +83,7 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
                 uri: res.uri,
                 success(buffer) {
                   const result = GBK.decode(buffer.buffer)
+                  // const result = buffer
                   file.delete({
                     uri: res.uri,
                     success() {

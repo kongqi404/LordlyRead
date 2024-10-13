@@ -1,3 +1,6 @@
 [submodule "src/third-party/Vela_input_method"]
 	path = src/third-party/Vela_input_method
 	url = https://github.com/NEORUAA/Vela_input_method.git
+[submodule "src/third-party/GBK.js"]
+	path = src/third-party/GBK.js
+	url = https://github.com/cnwhy/GBK.js.git
