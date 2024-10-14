@@ -426,6 +426,9 @@ const source = {
       }
     })
   },
+  getSource(bookSourceUrl: string) {
+    return this.list.find((item: Source) => item.bookSourceUrl === bookSourceUrl)
+  },
   add(source: SourceData) {
     for (const item of this.list) {
       if (item.bookSourceUrl === source.bookSourceUrl) {
@@ -433,6 +436,7 @@ const source = {
       }
     }
     this.list.push(new Source(source, cookie))
+    return true
   },
   remove(source: SourceUi) {
     this.list = this.list.filter((item: Source) => item.bookSourceUrl !== source.bookSourceUrl)
@@ -469,15 +473,15 @@ const source = {
         enabledExplore: item.enabledExplore,
         hasExplore: item.hasExplore,
         hasLogin: item.hasLogin,
-        loginUi: item.loginUi,
-        source: item
+        loginUi: item.loginUi
       }
     })
   },
   syncFromUi(uiList: SourceUi[]) {
     uiList.forEach((item) => {
-      item.source.enabled = item.enabled
-      item.source.enabledExplore = item.enabledExplore
+      const source = this.getSource(item.bookSourceUrl)
+      source.enabled = item.enabled
+      source.enabledExplore = item.enabledExplore
     })
   }
 }

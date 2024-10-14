@@ -145,7 +145,7 @@ export default {
     keyboardMenu: "",
     activedItem: undefined,
     activedInput: undefined,
-    sourceUrl: "1pADKaNJC"
+    sourceUrl: "1pPFoe5Ec"
   },
   ...router,
   onInit() {
@@ -270,7 +270,9 @@ export default {
       console.log(res)
       if (res.data.length > 0) {
         res.data.forEach((item) => {
-          source.add(item)
+          if (!source.add(item)) {
+            this.toast("导入失败，已存在重复书源")
+          }
         })
         this.list = source.mapForUi()
 
@@ -285,14 +287,17 @@ export default {
       this.activedItem.loginUi.forEach((item) => {
         loginInfoMap.set(item.name, item.value)
       })
-      this.activedItem.source.login(loginInfoMap).then((res) => {
-        if (res.success) {
-          this.toast("登录成功")
-          this.back()
-        } else {
-          this.toast(res.msg)
-        }
-      })
+      source
+        .getSource(this.activedItem.bookSourceUrl)
+        .login(loginInfoMap)
+        .then((res) => {
+          if (res.success) {
+            this.toast("登录成功")
+            this.back()
+          } else {
+            this.toast(res.msg)
+          }
+        })
     }
   },
   moveUp() {

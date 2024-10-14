@@ -76,7 +76,6 @@ export interface SourceUi {
   hasExplore: boolean
   hasLogin: boolean
   loginUi?: LoginUiComponent[]
-  source: Source
 }
 
 export interface LoginUiComponent {
@@ -173,6 +172,14 @@ export class Source {
   // noinspection JSUnusedGlobalSymbols // used in eval
   putLoginHeader(header: string) {
     this.loginHeader = header
+  }
+
+  async fetch(url: string, options?: any) {
+    return await fetch(url, {
+      baseUrl: this.bookSourceUrl,
+      sourceHeader: this.sourceHeader,
+      ...options
+    })
   }
 
   async executeJs(js: string, additional: any) {
@@ -338,9 +345,7 @@ export class Source {
     })
 
     const response = (
-      await fetch(url, {
-        baseUrl: this.bookSourceUrl,
-        sourceHeader: this.sourceHeader,
+      await this.fetch(url, {
         responseType: "text"
       })
     ).body()

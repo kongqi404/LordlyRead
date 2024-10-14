@@ -28,10 +28,9 @@ export class JsExtension {
       })
     }
 
-    return await fetch(urlStr, {
+    return await this.source.fetch(urlStr, {
       method: "POST",
       header: headers,
-      sourceHeader: this.source.sourceHeader,
       data
     })
   }

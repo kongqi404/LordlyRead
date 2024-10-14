@@ -15,14 +15,20 @@
           <div class="card" @click="toDetail(item)">
             <image src="{{ item.coverUrl }}" alt="/common/image/bookcover.png" class="book-cover" />
             <div class="col grow">
-              <marquee class="book-name" scrollamount="48" text-offset="16">{{ item.name }}</marquee>
-              <marquee class="book-hint" scrollamount="48" text-offset="16">作者：{{ item.author ?? "未知" }}</marquee>
-              <marquee class="book-hint" scrollamount="48" text-offset="16">{{ item.kind.join(" / ") }}</marquee>
+              <marquee class="book-name" scrollamount="48" text-offset="16">
+                {{ item.name }}
+              </marquee>
+              <marquee class="book-hint" scrollamount="48" text-offset="16">
+                作者：{{ item.author ?? "未知" }}
+              </marquee>
+              <marquee class="book-hint" scrollamount="48" text-offset="16">
+                {{ item.kind.join(" / ") }}
+              </marquee>
             </div>
           </div>
         </block>
         <div class="card justify-center" @click="nextPage">
-          <text class="card-btn-text">第{{page}}页 | 下一页</text>
+          <text class="card-btn-text">第{{ page }}页 | 下一页</text>
         </div>
       </scroll>
       <div class="menu pa-md {{ menu }}">
@@ -85,19 +91,23 @@ export default {
     this.back()
   },
   nextPage() {
-    Promise.all(source.list
-      .filter((item) => item.enabled)
-      .map((item) => {
-        return item
-          .search(this.keyword, this.page)
-          .then((res) => {
-            this.list.push(...res)
-          })
-          .catch((err) => {this.toast(err)})
-      })).then(()=>{
-        console.log(this.list)
-        this.page++
-      })
+    Promise.all(
+      source.list
+        .filter((item) => item.enabled)
+        .map((item) => {
+          return item
+            .search(this.keyword, this.page)
+            .then((res) => {
+              this.list.push(...res)
+            })
+            .catch((err) => {
+              this.toast(err)
+            })
+        })
+    ).then(() => {
+      console.log(this.list)
+      this.page++
+    })
   }
 }
 </script>
