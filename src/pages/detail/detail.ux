@@ -12,36 +12,36 @@
     <div class="body">
       <scroll class="body-container center" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
         <image src="{{book.coverUrl}}" alt="/common/image/bookcover.png" class="book-cover" @click="toggleImgMenu" />
-        <text class="book-name ellipsis">{{book.name}}</text>
+        <text class="book-name ellipsis">{{ book.name }}</text>
         <scroll if="{{book.kind.length > 0}}" class="tags" scroll-x="true" bounces="true">
           <div class="grow justify-center">
-            <text for="tag in book.kind" class="tag">{{tag}}</text>
+            <text for="tag in book.kind" class="tag">{{ tag }}</text>
           </div>
         </scroll>
         <div class="center w-100">
           <image src="/common/icon/author.png" class="icon" />
-          <text class="item-text ellipsis">{{ book.author ?? '未知'}}</text>
+          <text class="item-text ellipsis">{{ book.author ?? "未知" }}</text>
         </div>
         <div class="center w-100">
           <image src="/common/icon/source.png" class="icon" />
-          <text class="item-text ellipsis">{{ book.bookSourceName ?? '未知'}}</text>
+          <text class="item-text ellipsis">{{ book.bookSourceName ?? "未知" }}</text>
           <div class="badge-btn" @click="wait">
             <text class="badge">换源</text>
           </div>
         </div>
         <div class="center w-100">
           <image src="/common/icon/latest.png" class="icon" />
-          <text class="item-text ellipsis">{{ book.lastChapter ?? '未知'}}</text>
+          <text class="item-text ellipsis">{{ book.lastChapter ?? "未知" }}</text>
         </div>
         <div class="center w-100">
           <image src="/common/icon/catalog.png" class="icon" />
-          <text class="item-text ellipsis">当前看到</text>
+          <text class="item-text ellipsis">目录加载中……</text>
           <div class="badge-btn" @click="wait">
             <text class="badge">目录</text>
           </div>
         </div>
         <div class="intro col">
-          <text for="text in book.intro.split('\n')" class="intro-text">{{text}}</text>
+          <text for="text in book.intro.split('\n')" class="intro-text">{{ text }}</text>
         </div>
         <div class="card w-100 justify-center" @click="push('pages/content')">
           <text class="card-btn-text">开始阅读</text>
@@ -51,7 +51,7 @@
         </div>
       </scroll>
       <div class="menu pa-md {{ menu }}">
-        <div class="card" @click="refresh">
+        <div class="card" @click="load(true)">
           <image src="/common/icon/refresh.png" class="icon" />
           <text class="card-btn-text center">刷新</text>
         </div>
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-const {template, router} = global
+const {template, router, source} = global
 
 export default {
   ...template,
@@ -96,7 +96,8 @@ export default {
       coverUrl: "",
       kind: [""],
       lastChapter: "",
-      intro: ""
+      intro: "",
+      wordCount: ""
     },
     menu: "",
     imgMenu: "",
@@ -114,7 +115,10 @@ export default {
       this.book.kind = pre.kind
       this.book.lastChapter = pre.lastChapter
       this.book.intro = pre.intro
-      this.refresh()
+      this.book.coverUrl = pre.coverUrl
+      this.book.wordCount = pre.wordCount
+      this.book.bookSourceName = source.getSource(pre.bookSourceUrl).bookSourceName
+      this.load()
     } catch (e) {
       this.toast("参数错误")
       this.back()
@@ -147,8 +151,38 @@ export default {
       this.imgMenu = "animation-in"
     }
   },
-  refresh() {
-    this.wait()
+  load(isRefresh) {
+    source
+      .getSource(this.book.bookSourceUrl)
+      .detail({
+        bookSourceUrl: this.book.bookSourceUrl,
+        bookUrl: this.book.bookUrl,
+        name: this.book.name,
+        author: this.book.author,
+        coverUrl: this.book.coverUrl,
+        kind: this.book.kind,
+        lastChapter: this.book.lastChapter,
+        intro: this.book.intro,
+        wordCount: this.book.wordCount
+      })
+      .then((data) => {
+        console.log(data)
+        this.book.name = data.name
+        this.book.author = data.author
+        this.book.bookUrl = data.bookUrl
+        this.book.bookSourceUrl = data.bookSourceUrl
+        this.book.kind = data.kind
+        this.book.lastChapter = data.lastChapter
+        this.book.intro = data.intro
+        this.book.coverUrl = data.coverUrl
+        this.book.wordCount = data.wordCount
+        if (isRefresh === true) {
+          this.toast("刷新成功")
+        }
+      })
+      .catch((e) => {
+        this.toast(e)
+      })
   }
 }
 </script>

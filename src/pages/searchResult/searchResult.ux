@@ -28,7 +28,7 @@
           </div>
         </block>
         <div class="card justify-center" @click="nextPage">
-          <text class="card-btn-text">第{{ page }}页 | 下一页</text>
+          <text class="card-btn-text">第{{ page-1 }}页 | 下一页</text>
         </div>
       </scroll>
       <div class="menu pa-md {{ menu }}">
@@ -98,7 +98,7 @@ export default {
           return item
             .search(this.keyword, this.page)
             .then((res) => {
-              this.list.push(...res)
+              this.list.push(...res.map(v=>v.toData()))
             })
             .catch((err) => {
               this.toast(err)

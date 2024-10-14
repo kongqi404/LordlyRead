@@ -2,6 +2,7 @@ import {storage, device as systemDevice, router as systemRouter, prompt} from ".
 import {Source, SourceData, SourceUi} from "./source"
 import {Cookie} from "./cookie"
 import {fetch} from "./fetch"
+import {Book, BookData} from "./book"
 
 const config = {
   animationDuration: 200,
@@ -488,6 +489,45 @@ const source = {
 
 source.init()
 
+const book = {
+  list: [] as Book[],
+  init() {
+    return new Promise<Book[]>((resolve, reject) => {
+      storage.get({
+        key: "book",
+        success: (data: string) => {
+          this.list = (JSON.parse(data) as BookData[]).map((item) => new Book(item))
+          resolve(this.list)
+        },
+        fail: (err) => {
+          reject(err)
+        }
+      })
+    })
+  },
+  add(book: Book) {
+    this.list.push(book)
+  },
+  remove(book: Book) {
+    this.list = this.list.filter(
+      (item: Book) => book.bookSourceUrl !== item.bookSourceUrl && book.bookUrl !== item.bookUrl
+    )
+  },
+  getBookFromData(data: BookData) {
+    return (
+      this.list.find(
+        (item: Book) => item.bookSourceUrl === data.bookSourceUrl && item.bookUrl === data.bookUrl
+      ) || new Book(data)
+    )
+  },
+  save() {
+    storage.set({
+      key: "book",
+      value: JSON.stringify(this.list.map((item: Book) => item.toData()))
+    })
+  }
+}
+
 const device = {
   info: undefined,
   async getInfo() {
@@ -641,6 +681,15 @@ export const helper = {
   },
   map2Json(map: Map<string, any>) {
     return JSON.stringify(Object.fromEntries(map))
+  },
+  withDefault(value: any, defaultValue: any) {
+    if (value === undefined || value === "" || value === null) {
+      return defaultValue
+    }
+    if (value instanceof Array) {
+      return value.length ? value : defaultValue
+    }
+    return value
   }
 }
 

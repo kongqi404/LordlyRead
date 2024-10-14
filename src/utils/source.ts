@@ -1,5 +1,6 @@
 import {JsExtension} from "./jsExtension"
 import {Cookie} from "./cookie"
+import {Book, BookData} from "./book"
 import {fetch} from "./fetch"
 import {helper} from "./index"
 import {JSONPath} from "jsonpath-plus"
@@ -33,6 +34,7 @@ export interface SourceData {
 export interface RuleBookInfo {
   author: string
   coverUrl: string
+  init: string
   intro: string
   kind: string
   lastChapter: string
@@ -184,7 +186,7 @@ export class Source {
 
   async executeJs(js: string, additional: any) {
     // noinspection JSUnusedLocalSymbols
-    const {key, page, result, resolve} = additional
+    const {key, page, result, resolve, book} = additional
     const java = this.java
     const cookie = this.cookie
     const source = this
@@ -231,7 +233,7 @@ export class Source {
     }
   }
 
-  async parseRule(rule: string, result: string, isList = false) {
+  async parseRule(rule: string, result: string, isList = false, additional?: any) {
     if (!rule) {
       return isList ? [] : ""
     }
@@ -252,7 +254,7 @@ export class Source {
             js = js.replace(v, (await this.parseGetRule(rule, result)).join(", "))
           }
         }
-        res = await this.executeJs(js, {result: res ?? result})
+        res = await this.executeJs(js, {result: res ?? result, ...additional})
       } else {
         let resultList = []
         for (const orPart of v.split("||")) {
@@ -354,7 +356,7 @@ export class Source {
 
     return await Promise.all(
       (await this.parseRule(this.raw.ruleSearch.bookList, response, true)).map(async (v) => {
-        return {
+        return new Book({
           bookSourceUrl: this.bookSourceUrl,
           name: await this.parseRule(this.raw.ruleSearch.name, v),
           author: await this.parseRule(this.raw.ruleSearch.author, v),
@@ -364,8 +366,62 @@ export class Source {
           wordCount: await this.parseRule(this.raw.ruleSearch.wordCount, v),
           bookUrl: await this.parseRule(this.raw.ruleSearch.bookUrl, v),
           lastChapter: await this.parseRule(this.raw.ruleSearch.lastChapter, v)
-        }
+        })
       })
     )
+  }
+
+  async detail(bookData: BookData) {
+    const response = await this.parseRule(
+      this.raw.ruleBookInfo.init,
+      (
+        await this.fetch(bookData.bookUrl, {
+          responseType: "text"
+        })
+      ).body(),
+      false,
+      {book: new Book(bookData)}
+    )
+
+    return new Book({
+      ...bookData,
+      bookSourceUrl: this.bookSourceUrl,
+      name: helper.withDefault(
+        await this.parseRule(this.raw.ruleBookInfo.name, response),
+        bookData.name
+      ),
+      author: helper.withDefault(
+        await this.parseRule(this.raw.ruleBookInfo.author, response),
+        bookData.author
+      ),
+      kind: helper.withDefault(
+        await this.parseRule(this.raw.ruleBookInfo.kind, response),
+        bookData.kind
+      ),
+      wordCount: helper.withDefault(
+        await this.parseRule(this.raw.ruleBookInfo.wordCount, response),
+        bookData.wordCount
+      ),
+      lastChapter: helper.withDefault(
+        await this.parseRule(this.raw.ruleBookInfo.lastChapter, response),
+        bookData.lastChapter
+      ),
+      coverUrl: helper.withDefault(
+        await this.parseRule(this.raw.ruleBookInfo.coverUrl, response),
+        bookData.coverUrl
+      ),
+      intro: helper.withDefault(
+        await this.parseRule(this.raw.ruleBookInfo.intro, response),
+        bookData.intro
+      ),
+      tocUrl: helper.withDefault(
+        await this.parseRule(this.raw.ruleBookInfo.tocUrl, response),
+        bookData.tocUrl
+      ),
+      bookUrl: helper.withDefault(
+        await this.parseRule(this.raw.ruleBookInfo.tocUrl, response),
+        bookData.bookUrl
+      )
+    })
   }
 }

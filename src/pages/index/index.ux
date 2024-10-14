@@ -127,12 +127,14 @@ export default {
     bodyHeight: 0,
     holder: false,
     tab: tabIdentifiers[setting.get("default_home")],
+    bookList:[]
   },
 
   ...router,
 
   async onReady() {
     this.tab= tabIdentifiers[await setting.getRaw("default_home")]
+    this.bookList = await book.init()
   },
 
   onBack() {

@@ -34,4 +34,8 @@ export class JsExtension {
       data
     })
   }
+
+  async ajax(urlStr: string) {
+    return (await this.source.fetch(urlStr)).body()
+  }
 }
