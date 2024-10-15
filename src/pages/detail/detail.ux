@@ -165,8 +165,7 @@ export default {
         intro: this.book.intro,
         wordCount: this.book.wordCount
       })
-      .then((data) => {
-        console.log(data)
+      .then(async (data) => {
         this.book.name = data.name
         this.book.author = data.author
         this.book.bookUrl = data.bookUrl
@@ -176,6 +175,7 @@ export default {
         this.book.intro = data.intro
         this.book.coverUrl = data.coverUrl
         this.book.wordCount = data.wordCount
+        await source.getSource(this.book.bookSourceUrl).loadToc(data)
         if (isRefresh === true) {
           this.toast("刷新成功")
         }
