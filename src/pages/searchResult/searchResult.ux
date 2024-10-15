@@ -98,7 +98,7 @@ export default {
           return item
             .search(this.keyword, this.page)
             .then((res) => {
-              this.list.push(...res.map(v=>v.toData()))
+              this.list.push(...res.filter(v=>!!v).map(v=>v.toData()))
             })
             .catch((err) => {
               this.toast(err)

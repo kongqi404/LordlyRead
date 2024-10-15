@@ -22,6 +22,7 @@ export class Book {
   intro: string
   tocUrl: string
   bookUrl: string
+  variable: string
 
   constructor(data: Partial<BookData>) {
     this.bookSourceUrl = data.bookSourceUrl
@@ -49,5 +50,9 @@ export class Book {
       tocUrl: this.tocUrl,
       bookUrl: this.bookUrl
     }
+  }
+
+  getVariable(v?: string) {
+    return this.variable ?? ""
   }
 }

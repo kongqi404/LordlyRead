@@ -17,6 +17,7 @@ export interface SourceData {
   enabledCookieJar: boolean
   enabledExplore: boolean
   exploreUrl: string
+  jsLib: string
   lastUpdateTime: number
   loginCheckJs: string
   loginUi: string
@@ -97,6 +98,7 @@ export class Source {
   )
   loginInfoMap: string
   loginHeader: string
+  variable: string
 
   constructor(raw: SourceData, cookie: Cookie) {
     this.raw = raw
@@ -153,13 +155,20 @@ export class Source {
     return {
       bookSourceUrl: this.bookSourceUrl,
       loginInfoMap: this.loginInfoMap,
-      loginHeader: this.loginHeader
+      loginHeader: this.loginHeader,
+      variable: this.variable
     }
   }
 
-  set additionalData(value: {bookSourceUrl: string; loginInfoMap: string; loginHeader: string}) {
+  set additionalData(value: {
+    bookSourceUrl: string
+    loginInfoMap: string
+    loginHeader: string
+    variable: string
+  }) {
     this.loginInfoMap = value.loginInfoMap
     this.loginHeader = value.loginHeader
+    this.variable = value.variable
   }
 
   get sourceHeader() {
@@ -176,6 +185,10 @@ export class Source {
     this.loginHeader = header
   }
 
+  getVariable() {
+    return this.variable ?? ""
+  }
+
   async fetch(url: string, options?: any) {
     return await fetch(url, {
       baseUrl: this.bookSourceUrl,
@@ -184,9 +197,12 @@ export class Source {
     })
   }
 
-  async executeJs(js: string, additional: any) {
+  async executeJs(js: string, additional: any, debug = false) {
     // noinspection JSUnusedLocalSymbols
-    const {key, page, result, resolve, book} = additional
+    const {key, page, result, resolve, book} = {
+      book: new Book({bookSourceUrl: this.bookSourceUrl}),
+      ...additional
+    }
     const java = this.java
     const cookie = this.cookie
     const source = this
@@ -195,16 +211,40 @@ export class Source {
     let resultReject: (value: any) => void
 
     const resultPromise = new Promise((resolve, reject) => {
-      resultResolve = resolve
-      resultReject = reject
+      resultResolve = (res) => {
+        if (debug) console.log(res)
+        resolve(res)
+      }
+      resultReject = (e) => {
+        if (debug) console.log(e)
+        reject(e)
+      }
     })
 
-    js = js.replace(/java\.(.*?)\(/gi, "await java.$1(")
+    // js = js.replace(/java\.(.*?)\(/gi, "await java.$1(")
+
+    js = js
+      .replace(/(?<=\s|\(|=|\n)([.\w]+)\(/g, "await $1(") // 将函数调用全部转换为 await
+      .replace(/^([.\w]+)\(/g, "await $1(") // 将函数调用全部转换为 await
+      .replace(/function( await)? (\w+)\(/g, "async function $2(") // 将函数声明全部转换为 async function
+      .replace(/new( await)? (\w+)\(/g, "new $2(") // 将类实例化中的 await 去掉
+      .replace(/await (if|else if|catch|for|while)/g, "$1") // 去掉关键字前的 await
+      .replace(/await (\w+)\((.*?)\)/g, "(await $1($2))") // 给 await 函数调用加括号
 
     js =
       "async function main() {\n" +
+      this.raw.jsLib
+        .replace(/(?<=\s|\(|=|\n)([.\w]+)\(/g, "await $1(") // 将函数调用全部转换为 await
+        .replace(/^([.\w]+)\(/g, "await $1(") // 将函数调用全部转换为 await
+        .replace(/function( await)? (\w+)\(/g, "async function $2(") // 将函数声明全部转换为 async function
+        .replace(/new( await)? (\w+)\(/g, "new $2(") // 将类实例化中的 await 去掉
+        .replace(/await (if|else if|catch|for|while)/g, "$1") // 去掉关键字前的 await
+        .replace(/await (\w+)\((.*?)\)/g, "(await $1($2))") // 给 await 函数调用加括号
+        .replace(/(const|let|var)\s*\{[\w\s,]+}\s*=\s*this\s*\n/g, "") + // 去掉 this 变量声明
       js.replace(/\n(.+)$/i, "\nreturn $1").replace(/^(.+)$/i, "return $1") +
       "\n}\nmain().then(r=>resultResolve(r)).catch(e=>resultReject(e))"
+
+    if (debug) console.log(js)
 
     try {
       eval(js)
@@ -215,16 +255,25 @@ export class Source {
     }
   }
 
-  async parseGetRule(rule: string, result: string) {
-    let res
+  async parseGetRule(
+    rule: string,
+    result: string,
+    maybeJs = false,
+    additional?: any,
+    debug = false
+  ) {
+    let res: string | string[] = rule
     if (/^\$\./.test(rule)) {
       // JsonPath
-      global.runGC()
-      res = JSONPath({json: JSON.parse(result), path: rule})
-    } else {
-      // No Match
-      res = rule
+      res = JSONPath({json: JSON.parse(result), path: rule.replace(/\[-1]/gi, "[-1:]")})
+    } else if (maybeJs) {
+      try {
+        res = await this.executeJs(rule, {result, ...additional})
+      } catch (e) {
+        console.log(e)
+      }
     }
+    if (debug) console.log(rule, res)
 
     if (res instanceof Array) {
       return res
@@ -233,7 +282,25 @@ export class Source {
     }
   }
 
-  async parseRule(rule: string, result: string, isList = false, additional?: any) {
+  async parseBracketRule(
+    rule: string,
+    result: string,
+    maybeJs = false,
+    additional?: any,
+    debug = false
+  ) {
+    let resultList = []
+    for (const orPart of rule.split("||")) {
+      if (debug) console.log(orPart)
+      for (const andPart of orPart.split("&&")) {
+        resultList.push(...(await this.parseGetRule(andPart, result, maybeJs, additional, debug)))
+      }
+      if (resultList.length > 0) break
+    }
+    return resultList.flat(3).map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+  }
+
+  async parseRule(rule: string, result: string, isList = false, additional?: any, debug = false) {
     if (!rule) {
       return isList ? [] : ""
     }
@@ -251,30 +318,29 @@ export class Source {
         if (js.match(/{{[\s\S]*?}}/gi)) {
           for (const v of js.match(/{{[\s\S]*?}}/gi)) {
             const rule = v.replace(/^{{|}}$/gi, "")
-            js = js.replace(v, (await this.parseGetRule(rule, result)).join(", "))
+            js = js.replace(v, (await this.parseBracketRule(rule, result)).join(", "))
           }
         }
-        res = await this.executeJs(js, {result: res ?? result, ...additional})
-      } else {
-        let resultList = []
-        for (const orPart of v.split("||")) {
-          for (const andPart of orPart.split("&&")) {
-            resultList.push(...(await this.parseGetRule(andPart, result)))
-          }
-          if (resultList.length > 0) break
-        }
-        res = resultList.flat(3).map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+        res = await this.executeJs(js, {result: res ?? result, ...additional}, debug)
+      } else if (!v.match(/{{[\s\S]*?}}/gi)) {
+        res = await this.parseBracketRule(v, result)
         if (!isList) {
           res = res.join(", ")
         }
+      } else {
+        res ??= v
       }
     }
 
     if (!isList) {
+      console.log(rule)
+      console.log(parts)
+      console.log(res)
       if (res.match(/{{[\s\S]*?}}/gi)) {
         for (const v of res.match(/{{[\s\S]*?}}/gi)) {
           const rule = v.replace(/^{{|}}$/gi, "")
-          res = res.replace(v, await this.parseGetRule(rule, result))
+          if (debug) console.log(v, rule)
+          res = res.replace(v, await this.parseBracketRule(rule, result, true, additional, debug))
         }
       }
     }
@@ -356,22 +422,47 @@ export class Source {
 
     return await Promise.all(
       (await this.parseRule(this.raw.ruleSearch.bookList, response, true)).map(async (v) => {
-        return new Book({
-          bookSourceUrl: this.bookSourceUrl,
-          name: await this.parseRule(this.raw.ruleSearch.name, v),
-          author: await this.parseRule(this.raw.ruleSearch.author, v),
-          kind: await this.parseRule(this.raw.ruleSearch.kind, v, true),
-          coverUrl: await this.parseRule(this.raw.ruleSearch.coverUrl, v),
-          intro: await this.parseRule(this.raw.ruleSearch.intro, v),
-          wordCount: await this.parseRule(this.raw.ruleSearch.wordCount, v),
-          bookUrl: await this.parseRule(this.raw.ruleSearch.bookUrl, v),
-          lastChapter: await this.parseRule(this.raw.ruleSearch.lastChapter, v)
-        })
+        try {
+          return new Book({
+            bookSourceUrl: this.bookSourceUrl,
+            name: await this.parseRule(this.raw.ruleSearch.name, v),
+            author: await this.parseRule(this.raw.ruleSearch.author, v),
+            kind: await this.parseRule(this.raw.ruleSearch.kind, v, true),
+            coverUrl: await this.parseRule(this.raw.ruleSearch.coverUrl, v),
+            intro: await this.parseRule(this.raw.ruleSearch.intro, v),
+            wordCount: await this.parseRule(this.raw.ruleSearch.wordCount, v),
+            bookUrl: await this.parseRule(this.raw.ruleSearch.bookUrl, v),
+            lastChapter: await this.parseRule(this.raw.ruleSearch.lastChapter, v, false, {}, false)
+          })
+        } catch (e) {
+          try {
+            return new Book({
+              bookSourceUrl: this.bookSourceUrl,
+              name: await this.parseRule(this.raw.ruleSearch.name, v),
+              author: await this.parseRule(this.raw.ruleSearch.author, v),
+              kind: await this.parseRule(this.raw.ruleSearch.kind, v, true),
+              coverUrl: await this.parseRule(this.raw.ruleSearch.coverUrl, v),
+              intro: await this.parseRule(this.raw.ruleSearch.intro, v),
+              wordCount: await this.parseRule(this.raw.ruleSearch.wordCount, v),
+              bookUrl: await this.parseRule(this.raw.ruleSearch.bookUrl, v),
+              lastChapter: await this.parseRule(
+                this.raw.ruleSearch.lastChapter,
+                v,
+                false,
+                {},
+                false
+              )
+            })
+          } catch (e) {
+            console.log(e)
+          }
+        }
       })
     )
   }
 
   async detail(bookData: BookData) {
+    const book = new Book(bookData)
     const response = await this.parseRule(
       this.raw.ruleBookInfo.init,
       (
@@ -380,48 +471,46 @@ export class Source {
         })
       ).body(),
       false,
-      {book: new Book(bookData)}
+      {book}
     )
 
-    return new Book({
-      ...bookData,
-      bookSourceUrl: this.bookSourceUrl,
-      name: helper.withDefault(
-        await this.parseRule(this.raw.ruleBookInfo.name, response),
-        bookData.name
-      ),
-      author: helper.withDefault(
-        await this.parseRule(this.raw.ruleBookInfo.author, response),
-        bookData.author
-      ),
-      kind: helper.withDefault(
-        await this.parseRule(this.raw.ruleBookInfo.kind, response),
-        bookData.kind
-      ),
-      wordCount: helper.withDefault(
-        await this.parseRule(this.raw.ruleBookInfo.wordCount, response),
-        bookData.wordCount
-      ),
-      lastChapter: helper.withDefault(
-        await this.parseRule(this.raw.ruleBookInfo.lastChapter, response),
-        bookData.lastChapter
-      ),
-      coverUrl: helper.withDefault(
-        await this.parseRule(this.raw.ruleBookInfo.coverUrl, response),
-        bookData.coverUrl
-      ),
-      intro: helper.withDefault(
-        await this.parseRule(this.raw.ruleBookInfo.intro, response),
-        bookData.intro
-      ),
-      tocUrl: helper.withDefault(
-        await this.parseRule(this.raw.ruleBookInfo.tocUrl, response),
-        bookData.tocUrl
-      ),
-      bookUrl: helper.withDefault(
-        await this.parseRule(this.raw.ruleBookInfo.tocUrl, response),
-        bookData.bookUrl
-      )
-    })
+    book.name = helper.withDefault(
+      await this.parseRule(this.raw.ruleBookInfo.name, response, false, {book}),
+      book.name
+    )
+    book.author = helper.withDefault(
+      await this.parseRule(this.raw.ruleBookInfo.author, response, false, {book}),
+      book.author
+    )
+    book.kind = helper.withDefault(
+      await this.parseRule(this.raw.ruleBookInfo.kind, response, false, {book}),
+      book.kind
+    )
+    book.wordCount = helper.withDefault(
+      await this.parseRule(this.raw.ruleBookInfo.wordCount, response, false, {book}),
+      book.wordCount
+    )
+    book.lastChapter = helper.withDefault(
+      await this.parseRule(this.raw.ruleBookInfo.lastChapter, response, false, {book}),
+      book.lastChapter
+    )
+    book.coverUrl = helper.withDefault(
+      await this.parseRule(this.raw.ruleBookInfo.coverUrl, response, false, {book}),
+      book.coverUrl
+    )
+    book.intro = helper.withDefault(
+      await this.parseRule(this.raw.ruleBookInfo.intro, response, false, {book}),
+      book.intro
+    )
+    book.tocUrl = helper.withDefault(
+      await this.parseRule(this.raw.ruleBookInfo.tocUrl, response, false, {book}),
+      book.tocUrl
+    )
+    book.bookUrl = helper.withDefault(
+      await this.parseRule(this.raw.ruleBookInfo.tocUrl, response, false, {book}),
+      book.bookUrl
+    )
+
+    return book
   }
 }
