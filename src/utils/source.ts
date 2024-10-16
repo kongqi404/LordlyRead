@@ -499,7 +499,7 @@ export class Source {
       book.author
     )
     book.kind = helper.withDefault(
-      await this.parseRule(this.raw.ruleBookInfo.kind, response, false, {
+      await this.parseRule(this.raw.ruleBookInfo.kind, response, true, {
         book,
         baseUrl: book.bookUrl
       }),
@@ -558,7 +558,7 @@ export class Source {
       })
     ).body()
 
-    const toc = await Promise.all(
+    book.toc = await Promise.all(
       (await this.parseRule(this.raw.ruleToc.chapterList, response, true)).map(async (v, i) => {
         try {
           return {
@@ -580,8 +580,6 @@ export class Source {
         }
       })
     )
-
-    console.log(toc)
 
     return book
   }

@@ -58,6 +58,7 @@
 .ellipsis {
   lines: 1;
   text-overflow: ellipsis;
+  text-align: left;
 }
 
 .body {

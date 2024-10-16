@@ -1,0 +1,80 @@
+<template>
+  <div class="page {{pageClass}}" @swipe="pageSwipe">
+    <div class="topbar">
+      <div class="topbar-btn" @click="back">
+        <image src="/common/icon/back.png" class="icon" />
+      </div>
+      <text class="title">目录</text>
+      <div class="topbar-btn" @click="toggleMenu">
+        <image src="/common/icon/menu.png" class="icon" />
+      </div>
+    </div>
+    <div class="body">
+      <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
+        <block for="chapter in tocList">
+          <text if="chapter.isVolume" class="btn-group-title">{{ chapter.chapterName }}</text>
+          <div else class="card col" @click="wait">
+            <text class="card-btn-text ellipsis w-100 ma-0">{{ chapter.chapterName }}</text>
+            <text if="chapter.chapterInfo" class="card-btn-secondary w-100">{{ chapter.chapterInfo }}</text>
+          </div>
+        </block>
+      </scroll>
+      <div class="menu pa-md {{ menu }}">
+        <div class="card" @click="wait">
+          <image src="/common/icon/refresh.png" class="icon" />
+          <text class="card-btn-text center">敬请期待</text>
+        </div>
+      </div>
+    </div>
+    <div class="cover-animation-helper {{coverAnimation}}"></div>
+  </div>
+</template>
+
+<script>
+const {template, router, source, helper} = global
+
+export default {
+  ...template,
+  private: {
+    ...template.private,
+    bookData: "",
+    menu: "",
+    page: 1,
+    tocList: []
+  },
+  ...router,
+
+  onReady() {
+    try {
+      const bookData = JSON.parse(this.bookData)
+      bookData.toc.forEach(async (chapter) => {
+        this.tocList.push(chapter)
+      })
+    } catch (e) {
+      console.log(e)
+      this.toast("参数错误")
+      this.back()
+    }
+  },
+  onBack() {
+    if (this.menu === "animation-in") {
+      this.toggleMenu()
+      return true
+    }
+  },
+  toggleMenu() {
+    if (this.menu === "animation-in") {
+      this.menu = "animation-out-back"
+    } else {
+      this.menu = "animation-in"
+    }
+  },
+  refresh() {
+    this.wait()
+  }
+}
+</script>
+
+<style>
+@import url(../../common/css/page.css);
+</style>

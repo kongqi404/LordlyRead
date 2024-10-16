@@ -32,22 +32,24 @@
       <swiper class="body-swiper" id="body" style="height: {{swiperHeight}}px" indicator="false" loop="false"
         @change="swiperChange" index="{{tab}}">
         <div class="swiper-container">
-          <div if="holder" class="body-holder">
+          <div if="bookList.length === 0" class="body-holder">
             <text>这里……</text>
             <text>空空如也呢~</text>
           </div>
           <scroll else class="body-container" scroll-y="true" bounces="true">
-            <div class="card" @click="toContent" @longpress="toDetail">
-              <image src="/common/image/bookcover.png" class="book-cover" />
-              <div class="col grow">
-                <text class="book-name ellipsis">书名很长很长很长很长</text>
-                <text class="book-progress ellipsis">阅读进度很长很长很长</text>
-                <div class="center">
-                  <text class="book-update ellipsis grow">最新章节很长很长很长</text>
-                  <text class="badge">100</text>
+            <block for="bookItem in bookList">
+              <div class="card" @click="toContent" @longpress="toDetail(bookItem)">
+                <image src="/common/image/bookcover.png" class="book-cover" />
+                <div class="col grow">
+                  <text class="book-name ellipsis">{{bookItem.name}}</text>
+                  <text class="book-progress ellipsis">{{bookItem.toc[bookItem.progress].chapterName}}</text>
+                  <div class="center">
+                    <text class="book-update ellipsis grow">{{bookItem.lastChapter}}</text>
+                    <text class="badge">{{bookItem.toc.length - 1 - bookItem.progress}}</text>
+                  </div>
                 </div>
               </div>
-            </div>
+            </block>
           </scroll>
         </div>
         <div class="swiper-container">
@@ -108,7 +110,7 @@
 </template>
 
 <script>
-const {template, router, setting, fetch} = global
+const {template, router, setting, book} = global
 
 const tabIdentifiers = {
   bookshelf: 0,
@@ -135,6 +137,10 @@ export default {
   async onReady() {
     this.tab= tabIdentifiers[await setting.getRaw("default_home")]
     this.bookList = await book.init()
+  },
+
+  updateSetting() {
+    this.bookList = book.list
   },
 
   onBack() {
@@ -176,9 +182,9 @@ export default {
     this.push('/pages/content')
   },
 
-  toDetail() {
+  toDetail(book) {
     longpress = true
-    this.push('/pages/detail')
+    this.push('/pages/detail', [['pre', book]])
   }
 }
 </script>

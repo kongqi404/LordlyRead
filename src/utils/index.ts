@@ -97,6 +97,7 @@ const on = {
   destroy() {
     thisObj = undefined
     cookie.save()
+    book.save()
     global.runGC()
   }
 }
@@ -510,7 +511,12 @@ const book = {
   },
   remove(book: Book) {
     this.list = this.list.filter(
-      (item: Book) => book.bookSourceUrl !== item.bookSourceUrl && book.bookUrl !== item.bookUrl
+      (item: Book) => book.bookSourceUrl !== item.bookSourceUrl || book.bookUrl !== item.bookUrl
+    )
+  },
+  getBook(bookSourceUrl: string, bookUrl: string) {
+    return this.list.find(
+      (item: Book) => item.bookSourceUrl === bookSourceUrl && item.bookUrl === bookUrl
     )
   },
   getBookFromData(data: BookData) {
@@ -690,6 +696,11 @@ export const helper = {
       return value.length ? value : defaultValue
     }
     return value
+  },
+  async sleep(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms)
+    })
   }
 }
 
@@ -702,6 +713,7 @@ global.template = template
 global.setting = setting
 global.fetch = fetch as any
 global.source = source
+global.book = book
 global.device = device
 global.date = date
 global.cookie = cookie

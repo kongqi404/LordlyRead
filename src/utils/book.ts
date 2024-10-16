@@ -1,27 +1,40 @@
+export interface BookTocChapter {
+  chapterInfo?: string
+  chapterName: string
+  chapterUrl?: string
+  isVolume?: boolean
+}
+
 export interface BookData {
   bookSourceUrl: string
   name: string
   author: string
-  kind: string
+  kind: string[]
   wordCount: string
   lastChapter: string
   coverUrl: string
   intro: string
   tocUrl: string
   bookUrl: string
+  toc: BookTocChapter[]
+  progress: number
+  variable: string
 }
 
 export class Book {
   bookSourceUrl: string
   name: string
   author: string
-  kind: string
+  kind: string[]
   wordCount: string
   lastChapter: string
   coverUrl: string
   intro: string
   tocUrl: string
   bookUrl: string
+  toc: BookTocChapter[] = []
+  progress: number = 0
+
   variable: string
 
   constructor(data: Partial<BookData>) {
@@ -35,6 +48,23 @@ export class Book {
     this.intro = data.intro
     this.tocUrl = data.tocUrl
     this.bookUrl = data.bookUrl
+    this.toc = data.toc ?? []
+    this.progress = data.progress ?? 0
+    this.variable = data.variable ?? ""
+  }
+
+  update(book: Book) {
+    this.bookSourceUrl = book.bookSourceUrl
+    this.name = book.name
+    this.author = book.author
+    this.kind = book.kind
+    this.wordCount = book.wordCount
+    this.lastChapter = book.lastChapter
+    this.coverUrl = book.coverUrl
+    this.intro = book.intro
+    this.tocUrl = book.tocUrl
+    this.bookUrl = book.bookUrl
+    this.toc = book.toc
   }
 
   toData(): BookData {
@@ -48,7 +78,10 @@ export class Book {
       coverUrl: this.coverUrl,
       intro: this.intro,
       tocUrl: this.tocUrl,
-      bookUrl: this.bookUrl
+      bookUrl: this.bookUrl,
+      toc: this.toc,
+      progress: this.progress,
+      variable: this.variable
     }
   }
 

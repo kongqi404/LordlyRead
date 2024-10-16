@@ -12,7 +12,7 @@
     <div class="body">
       <scroll class="body-container center" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
         <image src="{{book.coverUrl}}" alt="/common/image/bookcover.png" class="book-cover" @click="toggleImgMenu" />
-        <text class="book-name ellipsis">{{ book.name }}</text>
+        <text class="book-name">{{ book.name }}</text>
         <scroll if="{{book.kind.length > 0}}" class="tags" scroll-x="true" bounces="true">
           <div class="grow justify-center">
             <text for="tag in book.kind" class="tag">{{ tag }}</text>
@@ -22,10 +22,10 @@
           <image src="/common/icon/author.png" class="icon" />
           <text class="item-text ellipsis">{{ book.author ?? "未知" }}</text>
         </div>
-        <div class="center w-100">
+        <div class="center w-100" @click="wait">
           <image src="/common/icon/source.png" class="icon" />
           <text class="item-text ellipsis">{{ book.bookSourceName ?? "未知" }}</text>
-          <div class="badge-btn" @click="wait">
+          <div class="badge-btn">
             <text class="badge">换源</text>
           </div>
         </div>
@@ -33,10 +33,10 @@
           <image src="/common/icon/latest.png" class="icon" />
           <text class="item-text ellipsis">{{ book.lastChapter ?? "未知" }}</text>
         </div>
-        <div class="center w-100">
+        <div class="center w-100" @click="toCatalog">
           <image src="/common/icon/catalog.png" class="icon" />
-          <text class="item-text ellipsis">目录加载中……</text>
-          <div class="badge-btn" @click="wait">
+          <text class="item-text ellipsis">{{ book.progress ?? "目录加载中……" }}</text>
+          <div class="badge-btn">
             <text class="badge">目录</text>
           </div>
         </div>
@@ -46,8 +46,8 @@
         <div class="card w-100 justify-center" @click="push('pages/content')">
           <text class="card-btn-text">开始阅读</text>
         </div>
-        <div class="card w-100 justify-center">
-          <text class="card-btn-text">加入书架</text>
+        <div class="card w-100 justify-center" @click="addOrRemove">
+          <text class="card-btn-text">{{ book.inBookShelf ? "删除书籍" : "加入书架" }}</text>
         </div>
       </scroll>
       <div class="menu pa-md {{ menu }}">
@@ -81,23 +81,27 @@
 </template>
 
 <script>
-const {template, router, source} = global
+const {template, router, source, book} = global
+
+let thisBook
 
 export default {
   ...template,
   private: {
     ...template.private,
     book: {
-      name: "",
-      author: "",
-      bookUrl: "",
-      bookSourceName: "",
-      bookSourceUrl: "",
-      coverUrl: "",
+      name: undefined,
+      author: undefined,
+      bookUrl: undefined,
+      bookSourceName: undefined,
+      bookSourceUrl: undefined,
+      coverUrl: undefined,
       kind: [""],
-      lastChapter: "",
-      intro: "",
-      wordCount: ""
+      lastChapter: undefined,
+      intro: undefined,
+      wordCount: undefined,
+      progress: undefined,
+      inBookShelf: undefined
     },
     menu: "",
     imgMenu: "",
@@ -117,6 +121,7 @@ export default {
       this.book.intro = pre.intro
       this.book.coverUrl = pre.coverUrl
       this.book.wordCount = pre.wordCount
+      this.book.progress = pre.toc.length > 0 ? pre.toc[pre.progress].chapterName : undefined
       this.book.bookSourceName = source.getSource(pre.bookSourceUrl).bookSourceName
       this.load()
     } catch (e) {
@@ -152,37 +157,77 @@ export default {
     }
   },
   load(isRefresh) {
-    source
-      .getSource(this.book.bookSourceUrl)
-      .detail({
-        bookSourceUrl: this.book.bookSourceUrl,
-        bookUrl: this.book.bookUrl,
-        name: this.book.name,
-        author: this.book.author,
-        coverUrl: this.book.coverUrl,
-        kind: this.book.kind,
-        lastChapter: this.book.lastChapter,
-        intro: this.book.intro,
-        wordCount: this.book.wordCount
-      })
-      .then(async (data) => {
-        this.book.name = data.name
-        this.book.author = data.author
-        this.book.bookUrl = data.bookUrl
-        this.book.bookSourceUrl = data.bookSourceUrl
-        this.book.kind = data.kind
-        this.book.lastChapter = data.lastChapter
-        this.book.intro = data.intro
-        this.book.coverUrl = data.coverUrl
-        this.book.wordCount = data.wordCount
-        await source.getSource(this.book.bookSourceUrl).loadToc(data)
-        if (isRefresh === true) {
-          this.toast("刷新成功")
-        }
-      })
-      .catch((e) => {
-        this.toast(e)
-      })
+    if (isRefresh) this.back()
+    if (!isRefresh) thisBook = book.getBook(this.book.bookSourceUrl, this.book.bookUrl)
+    if (thisBook && !isRefresh) {
+      this.book.inBookShelf = true
+      this.book.progress = thisBook.toc[thisBook.progress].chapterName
+      this.book.name = thisBook.name
+      this.book.author = thisBook.author
+      this.book.bookUrl = thisBook.bookUrl
+      this.book.bookSourceUrl = thisBook.bookSourceUrl
+      this.book.kind = thisBook.kind
+      this.book.lastChapter = thisBook.lastChapter
+      this.book.intro = thisBook.intro
+      this.book.coverUrl = thisBook.coverUrl
+      this.book.wordCount = thisBook.wordCount
+    } else {
+      source
+        .getSource(this.book.bookSourceUrl)
+        .detail({
+          bookSourceUrl: this.book.bookSourceUrl,
+          bookUrl: this.book.bookUrl,
+          name: this.book.name,
+          author: this.book.author,
+          coverUrl: this.book.coverUrl,
+          kind: this.book.kind,
+          lastChapter: this.book.lastChapter,
+          intro: this.book.intro,
+          wordCount: this.book.wordCount
+        })
+        .then(async (data) => {
+          if (thisBook) thisBook.update(data)
+          else thisBook = data
+          this.book.name = data.name
+          this.book.author = data.author
+          this.book.bookUrl = data.bookUrl
+          this.book.bookSourceUrl = data.bookSourceUrl
+          this.book.kind = data.kind
+          this.book.lastChapter = data.lastChapter
+          this.book.intro = data.intro
+          this.book.coverUrl = data.coverUrl
+          this.book.wordCount = data.wordCount
+          try {
+            thisBook.update(await source.getSource(this.book.bookSourceUrl).loadToc(thisBook))
+
+            this.book.progress ??= thisBook.toc[thisBook.progress].chapterName
+            if (isRefresh === true) {
+              this.toast("刷新成功")
+            }
+          } catch (e) {
+            this.toast("目录加载失败")
+          }
+        })
+        .catch((e) => {
+          this.toast(e)
+        })
+    }
+  },
+  toCatalog() {
+    if (!thisBook.toc) {
+      this.toast("目录加载中")
+      return
+    }
+    this.push("/pages/catalog", [["bookData", thisBook]])
+  },
+  addOrRemove() {
+    if (this.book.inBookShelf) {
+      book.remove(thisBook)
+      this.book.inBookShelf = !this.book.inBookShelf
+    } else {
+      book.add(thisBook)
+      this.book.inBookShelf = !this.book.inBookShelf
+    }
   }
 }
 </script>
@@ -206,6 +251,7 @@ export default {
 .book-name {
   font-size: 24px;
   font-weight: bold;
+  text-align: center;
 }
 
 .tags {

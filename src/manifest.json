@@ -70,6 +70,10 @@
       "pages/searchResult": {
         "component": "searchResult",
         "launchMode": "singleTask"
+      },
+      "pages/catalog": {
+        "component": "catalog",
+        "launchMode": "singleTask"
       }
     }
   },
