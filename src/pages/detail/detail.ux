@@ -43,7 +43,7 @@
         <div class="intro col">
           <text for="text in book.intro.split('\n')" class="intro-text">{{ text }}</text>
         </div>
-        <div class="card w-100 justify-center" @click="push('pages/content')">
+        <div class="card w-100 justify-center" @click="toContent">
           <text class="card-btn-text">开始阅读</text>
         </div>
         <div class="card w-100 justify-center" @click="addOrRemove">
@@ -228,6 +228,9 @@ export default {
       book.add(thisBook)
       this.book.inBookShelf = !this.book.inBookShelf
     }
+  },
+  toContent() {
+    this.push("/pages/content", [["bookData", thisBook], ["chapterIndex", thisBook.progress]])
   }
 }
 </script>

@@ -18,6 +18,7 @@ export interface BookData {
   bookUrl: string
   toc: BookTocChapter[]
   progress: number
+  fProgress: number
   variable: string
 }
 
@@ -33,7 +34,7 @@ export class Book {
   tocUrl: string
   bookUrl: string
   toc: BookTocChapter[] = []
-  progress: number = 0
+  fProgress: number = 0
 
   variable: string
 
@@ -49,8 +50,16 @@ export class Book {
     this.tocUrl = data.tocUrl
     this.bookUrl = data.bookUrl
     this.toc = data.toc ?? []
-    this.progress = data.progress ?? 0
+    this.progress = data.fProgress ?? data.progress ?? 0
     this.variable = data.variable ?? ""
+  }
+
+  set progress(progress: number) {
+    this.fProgress = progress
+  }
+
+  get progress() {
+    return Math.floor(this.fProgress)
   }
 
   update(book: Book) {
@@ -81,6 +90,7 @@ export class Book {
       bookUrl: this.bookUrl,
       toc: this.toc,
       progress: this.progress,
+      fProgress: this.fProgress,
       variable: this.variable
     }
   }

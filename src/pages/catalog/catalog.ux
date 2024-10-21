@@ -11,9 +11,9 @@
     </div>
     <div class="body">
       <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
-        <block for="chapter in tocList">
+        <block for="(index, chapter) in tocList">
           <text if="chapter.isVolume" class="btn-group-title">{{ chapter.chapterName }}</text>
-          <div else class="card col" @click="wait">
+          <div else class="card col {{ progress===index ? 'active' : 'inactive'}}" @click="toContent(index)">
             <text class="card-btn-text ellipsis w-100 ma-0">{{ chapter.chapterName }}</text>
             <text if="chapter.chapterInfo" class="card-btn-secondary w-100">{{ chapter.chapterInfo }}</text>
           </div>
@@ -39,8 +39,8 @@ export default {
     ...template.private,
     bookData: "",
     menu: "",
-    page: 1,
-    tocList: []
+    tocList: [],
+    progress: 0,
   },
   ...router,
 
@@ -50,6 +50,7 @@ export default {
       bookData.toc.forEach(async (chapter) => {
         this.tocList.push(chapter)
       })
+      this.progress = bookData.progress
     } catch (e) {
       console.log(e)
       this.toast("参数错误")
@@ -71,10 +72,21 @@ export default {
   },
   refresh() {
     this.wait()
+  },
+  toContent(index) {
+    this.push('pages/content', [['bookData', this.bookData], ['chapterIndex', index]])
   }
 }
 </script>
 
 <style>
 @import url(../../common/css/page.css);
+
+.inactive {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+}
+
+.active {
+  border: 3px solid white;
+}
 </style>

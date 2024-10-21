@@ -200,7 +200,7 @@ export class Source {
 
   async executeJs(js: string, additional: any, debug = false) {
     // noinspection JSUnusedLocalSymbols
-    const {key, page, result, resolve, book, baseUrl} = {
+    let {key, page, result, resolve, book, baseUrl} = {
       book: new Book({bookSourceUrl: this.bookSourceUrl}),
       baseUrl: this.bookSourceUrl,
       ...additional
@@ -226,8 +226,9 @@ export class Source {
     // js = js.replace(/java\.(.*?)\(/gi, "await java.$1(")
 
     js = js
-      .replace(/(?<=\s|\(|=|\n)([.\w]+)\(/g, "await $1(") // 将函数调用全部转换为 await
+      .replace(/(?<=\s|\(|=|\n|\[)([.\w]+)\(/g, "await $1(") // 将函数调用全部转换为 await
       .replace(/^([.\w]+)\(/g, "await $1(") // 将函数调用全部转换为 await
+      .replace(/\((\w+)\(([^()\n]*?)\)/g, "(await $1($2))") // 将函数调用全部转换为 await
       .replace(/function( await)? (\w+)\(/g, "async function $2(") // 将函数声明全部转换为 async function
       .replace(/new( await)? (\w+)\(/g, "new $2(") // 将类实例化中的 await 去掉
       .replace(/await (if|else if|catch|for|while)/g, "$1") // 去掉关键字前的 await
@@ -582,5 +583,27 @@ export class Source {
     )
 
     return book
+  }
+
+  async loadContent(book: Book, chapterUrl: string) {
+    const response = (
+      await this.fetch(chapterUrl, {
+        responseType: "text"
+      })
+    ).body()
+
+    const content = await this.parseRule(
+      this.raw.ruleContent.content,
+      response,
+      false,
+      {
+        baseUrl: chapterUrl
+      },
+      true
+    )
+    return content
+      .split(/\n+/g)
+      .map((v: string) => v.trim())
+      .join("\n")
   }
 }

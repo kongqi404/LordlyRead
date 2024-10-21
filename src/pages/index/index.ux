@@ -38,7 +38,7 @@
           </div>
           <scroll else class="body-container" scroll-y="true" bounces="true">
             <block for="bookItem in bookList">
-              <div class="card" @click="toContent" @longpress="toDetail(bookItem)">
+              <div class="card" @click="toContent(bookItem)" @longpress="toDetail(bookItem)">
                 <image src="/common/image/bookcover.png" class="book-cover" />
                 <div class="col grow">
                   <text class="book-name ellipsis">{{bookItem.name}}</text>
@@ -174,12 +174,12 @@ export default {
     console.log(evt)
   },
 
-  toContent() {
+  toContent(book) {
     if (longpress) {
       longpress = false
       return
     }
-    this.push('/pages/content')
+    this.push("/pages/content", [["bookData", book], ["chapterIndex", book.progress]])
   },
 
   toDetail(book) {

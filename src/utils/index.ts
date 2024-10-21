@@ -1,8 +1,9 @@
-import {storage, device as systemDevice, router as systemRouter, prompt} from "./tsimports"
+import {storage, device as systemDevice, router as systemRouter, prompt, file} from "./tsimports"
 import {Source, SourceData, SourceUi} from "./source"
 import {Cookie} from "./cookie"
 import {fetch} from "./fetch"
 import {Book, BookData} from "./book"
+import {Chapter, ChapterInfo} from "./chapter"
 
 const config = {
   animationDuration: 200,
@@ -408,7 +409,7 @@ setting.getRaw("page_transition").then((value) => {
   }
 })
 
-const source = {
+export const source = {
   list: [] as Source[],
   init() {
     storage.get({
@@ -533,6 +534,62 @@ const book = {
     })
   }
 }
+
+const chapter = {
+  defineChapter(info: ChapterInfo, book: BookData) {
+    return new Chapter(info, book)
+  },
+  init() {
+    file.list({
+      uri: "internal://files/lordly-read/cache/chapter/",
+      success: function (data) {
+        console.log("cache list: ", data.fileList)
+        data.fileList.forEach((item) => {
+          if (item.lastModifiedTime < date.now() - 7 * 24 * 60 * 60 * 1000) {
+            // 7 days
+            file.delete({
+              uri: item.uri
+            })
+          }
+        })
+      },
+      fail: function (data, code) {
+        console.log("init cache fail: ", data, code)
+        file.mkdir({
+          uri: "internal://files/lordly-read/cache/chapter/",
+          recursive: true,
+          success: function (data) {
+            console.log("mkdir cache: ", data)
+          },
+          fail: function (data, code) {
+            console.log("mkdir cache fail: ", data, code)
+          }
+        })
+      }
+    })
+    file.list({
+      uri: "internal://files/lordly-read/download/chapter/",
+      success: function (data) {
+        console.log("download list: ", data.fileList)
+      },
+      fail: function (data, code) {
+        console.log("init download fail: ", data, code)
+        file.mkdir({
+          uri: "internal://files/lordly-read/download/chapter/",
+          recursive: true,
+          success: function (data) {
+            console.log("mkdir download: ", data)
+          },
+          fail: function (data, code) {
+            console.log("mkdir download fail: ", data, code)
+          }
+        })
+      }
+    })
+  }
+}
+
+chapter.init()
 
 const device = {
   info: undefined,
@@ -714,6 +771,7 @@ global.setting = setting
 global.fetch = fetch as any
 global.source = source
 global.book = book
+global.chapter = chapter
 global.device = device
 global.date = date
 global.cookie = cookie
@@ -723,5 +781,6 @@ export default {
   state,
   cookie,
   fetch,
-  helper
+  helper,
+  source
 }

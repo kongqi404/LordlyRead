@@ -2,19 +2,19 @@
   <div class="page {{pageClass}}" @swipe="pageSwipe">
     <div class="body">
       <div class="topbar space-between">
-        <text class="info mx-lg my-xs">详情</text>
-        <text class="info mx-lg my-xs">{{ time }}</text>
+        <text class="info mx-lg my-xs ellipsis">{{ bookName }}</text>
+        <text class="info mx-lg my-xs no-shrink">{{ time }}</text>
       </div>
       <div class="vertical-separator"></div>
       <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true"
-        @longpress="onLongPress" @click="onClick">
+        @longpress="onLongPress" @click="onClick" @scrolltop="scrolltop" @scrollbottom="scrollbottom" @scroll="scroll">
         <text class="chapter"
           style="text-align: {{chapter_title_align}}; font-size: {{paragraph_size * chapter_title_size}}px; margin-top: {{paragraph_size * chapter_title_top_margin}}px; margin-bottom: {{paragraph_size * chapter_title_bottom_margin}}px;">
-          第一章 章节名
+          {{ chapter.chapterName }}
         </text>
-        <text for="Array.from({length: 100})"
+        <text for="text in content"
           style="font-size: {{paragraph_size}}px; margin-bottom: {{paragraph_size * paragraph_spacing}}px; font-weight: {{paragraph_weight}};">
-          段落内容段落内容段落内容段落内容
+          {{ text }}
         </text>
       </scroll>
       <div class="menu {{ menu }}">
@@ -22,25 +22,25 @@
           <div class="topbar-btn no-shrink" @click="back">
             <image src="/common/icon/back.png" class="icon" />
           </div>
-          <text class="title ellipsis">书籍名称特别特别特别长</text>
+          <text class="title ellipsis">{{ bookName }}</text>
           <div class="topbar-btn no-shrink" @click="back('/')">
             <image src="/common/icon/close.png" class="icon" />
           </div>
         </div>
         <scroll class="body-container" scroll-y="true" bounces="true">
           <div class="justify-center my-xs">
-            <text class="info ma-0 mr-xs ellipsis">第一章 章节名特别特别特别长</text>
-            <text class="info ma-0 no-shrink">(1/10086)</text>
+            <text class="info ma-0 mr-xs ellipsis">{{ chapter.chapterName }}</text>
+            <text class="info ma-0 no-shrink">({{ chapterIndex + 1 }}/{{ chapterCount }})</text>
           </div>
           <div class="mb-xs">
-            <div class="card ma-0 mr-xs" @click="wait">
+            <div class="card ma-0 mr-xs" @click="lastChapter">
               <image src="/common/icon/left.png" class="icon" />
             </div>
-            <div class="card ma-0 mr-xs grow justify-center" @click="wait">
+            <div class="card ma-0 mr-xs grow justify-center" @click="toCatalog">
               <image src="/common/icon/catalog.png" class="icon" />
               <text class="card-btn-text center">目录</text>
             </div>
-            <div class="card ma-0" @click="wait">
+            <div class="card ma-0" @click="nextChapter">
               <image src="/common/icon/right.png" class="icon" />
             </div>
           </div>
@@ -80,9 +80,11 @@
 </template>
 
 <script>
-const {template, router, device, date, setting} = global
+const {template, router, device, date, setting, chapter, book, helper} = global
 
 let longpress = false
+let bookData = undefined
+let thisBook = undefined
 
 export default {
   ...template,
@@ -96,9 +98,36 @@ export default {
     chapter_title_align: setting.get("chapter_title_align"),
     chapter_title_size: setting.get("chapter_title_size"),
     chapter_title_top_margin: setting.get("chapter_title_top_margin"),
-    chapter_title_bottom_margin: setting.get("chapter_title_bottom_margin")
+    chapter_title_bottom_margin: setting.get("chapter_title_bottom_margin"),
+    bookData: undefined,
+    bookName: undefined,
+    chapter: undefined,
+    chapterIndex: undefined,
+    chapterCount: undefined,
+    content: [],
+    loading: false,
+    lock: 0,
+    last: false
   },
   ...router,
+  onReady() {
+    try {
+      bookData = JSON.parse(this.bookData)
+      if (bookData.toc?.length === 0) {
+        this.toast("目录为空")
+        throw new Error("目录为空")
+      }
+      thisBook = book.getBook(bookData.bookSourceUrl, bookData.bookUrl)
+      console.log(thisBook)
+      this.bookName = bookData.name
+      this.chapterCount = bookData.toc.length
+      this.chapterIndex = thisBook?.progress ?? 0
+      this.load()
+    } catch (e) {
+      this.toast("参数错误")
+      this.back()
+    }
+  },
   onInit() {
     setInterval(() => {
       this.time = date.formatNow("hh:mm")
@@ -110,8 +139,8 @@ export default {
       return true
     }
   },
-  toggleMenu() {
-    if (this.menu === "animation-in") {
+  toggleMenu(close) {
+    if (this.menu === "animation-in" || close === true) {
       this.menu = "animation-out-back"
     } else {
       this.menu = "animation-in"
@@ -162,6 +191,120 @@ export default {
     this.chapter_title_size = setting.get("chapter_title_size")
     this.chapter_title_top_margin = setting.get("chapter_title_top_margin")
     this.chapter_title_bottom_margin = setting.get("chapter_title_bottom_margin")
+  },
+  toCatalog() {
+    if (!thisBook.toc) {
+      this.toast("目录加载中")
+      return
+    }
+    this.push("/pages/catalog", [["bookData", thisBook ?? bookData]])
+  },
+  nextChapter() {
+    this.chapterIndex++
+    this.load()
+  },
+  lastChapter() {
+    this.chapterIndex--
+    if (bookData.toc?.[this.chapterIndex]?.isVolume) {
+      return this.lastChapter()
+    }
+    this.last = true
+    this.load()
+  },
+  load() {
+    if (this.loading) {
+      this.toast("正在加载中，请勿重复操作")
+      return
+    }
+    if (bookData.toc?.[this.chapterIndex]?.isVolume) {
+      this.chapterIndex++
+      return this.load()
+    }
+    if (this.chapterIndex >= bookData.toc.length) {
+      this.toast("没有更多章节了")
+      return
+    }
+    this.loading = true
+    this.toast("正在加载中")
+    this.chapter = bookData.toc[this.chapterIndex]
+    chapter
+      .defineChapter(this.chapter, bookData)
+      .getContent()
+      .then((content) => {
+        this.content = content.split("\n")
+        if (thisBook && thisBook?.progress !== this.chapterIndex) {
+          thisBook.progress = this.chapterIndex
+        }
+        helper.sleep(0).then(() => {
+          this.loading = false
+          this.toggleMenu(true)
+          console.log(this.last)
+          if (thisBook || this.last) {
+            this.$element("body").getScrollRect({
+              success: ({height}) => {
+                if (thisBook && !this.last) {
+                  this.$element("body").scrollTo({
+                    top: height * (thisBook.fProgress - thisBook.progress),
+                    behavior: "auto"
+                  })
+                } else {
+                  this.$element("body").scrollTo({
+                    top: height - 1
+                  })
+                  this.last = false
+                }
+              }
+            })
+          } else {
+            this.$element("body").scrollTo({
+              top: 1,
+              behavior: "auto"
+            })
+          }
+        })
+      })
+      .catch((err) => {
+        this.toast(err)
+      })
+  },
+  scrolltop() {
+    if (this.lock === 0) {
+      this.lock++
+      helper.sleep(2000).then(() => {
+        this.lock = 0
+      })
+      return
+    }
+    if (this.lock === 1) {
+      this.toast("再拉一下加载上一章")
+      this.lock++
+      return
+    }
+    this.lastChapter()
+  },
+  scrollbottom() {
+    if (this.lock === 0) {
+      this.lock++
+      helper.sleep(2000).then(() => {
+        this.lock = 0
+      })
+      return
+    }
+    if (this.lock === 1) {
+      this.toast("再拉一次加载下一章")
+      this.lock++
+      return
+    }
+    this.nextChapter()
+  },
+  scroll(event) {
+    if (thisBook) {
+      this.$element("body").getScrollRect({
+        success({height}) {
+          thisBook.fProgress = thisBook.progress + event.scrollY / height
+        }
+      })
+    }
   }
 }
 </script>
