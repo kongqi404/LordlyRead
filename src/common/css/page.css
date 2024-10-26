@@ -190,6 +190,12 @@
   margin-right: 8px;
 }
 
+.progress {
+  color: white;
+  layer-color: grey;
+  stroke-width: 8px;
+}
+
 @keyframes In {
   100% {
     transform: translateX(-336px);
@@ -271,6 +277,10 @@
 /* style reset classes */
 .col {
   flex-direction: column;
+}
+
+.start {
+  align-items: flex-start;
 }
 
 .center {

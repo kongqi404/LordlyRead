@@ -1,4 +1,11 @@
-import {storage, device as systemDevice, router as systemRouter, prompt, file} from "./tsimports"
+import {
+  storage,
+  device as systemDevice,
+  router as systemRouter,
+  prompt,
+  file,
+  crypto
+} from "./tsimports"
 import {Source, SourceData, SourceUi} from "./source"
 import {Cookie} from "./cookie"
 import {fetch} from "./fetch"
@@ -542,7 +549,7 @@ const chapter = {
   init() {
     file.list({
       uri: "internal://files/lordly-read/cache/chapter/",
-      success: function (data) {
+      success(data) {
         console.log("cache list: ", data.fileList)
         data.fileList.forEach((item) => {
           if (item.lastModifiedTime < date.now() - 7 * 24 * 60 * 60 * 1000) {
@@ -553,15 +560,15 @@ const chapter = {
           }
         })
       },
-      fail: function (data, code) {
+      fail(data, code) {
         console.log("init cache fail: ", data, code)
         file.mkdir({
           uri: "internal://files/lordly-read/cache/chapter/",
           recursive: true,
-          success: function (data) {
+          success(data) {
             console.log("mkdir cache: ", data)
           },
-          fail: function (data, code) {
+          fail(data, code) {
             console.log("mkdir cache fail: ", data, code)
           }
         })
@@ -569,18 +576,40 @@ const chapter = {
     })
     file.list({
       uri: "internal://files/lordly-read/download/chapter/",
-      success: function (data) {
+      async success(data) {
         console.log("download list: ", data.fileList)
+        const bookList = await book.init()
+        data.fileList.forEach((item) => {
+          let found = false
+          for (const book of bookList) {
+            if (
+              item.uri.includes(
+                crypto.hashDigest({
+                  data: book.bookUrl,
+                  algo: "MD5"
+                })
+              )
+            ) {
+              found = true
+              break
+            }
+          }
+          if (!found) {
+            file.delete({
+              uri: item.uri
+            })
+          }
+        })
       },
-      fail: function (data, code) {
+      fail(data, code) {
         console.log("init download fail: ", data, code)
         file.mkdir({
           uri: "internal://files/lordly-read/download/chapter/",
           recursive: true,
-          success: function (data) {
+          success(data) {
             console.log("mkdir download: ", data)
           },
-          fail: function (data, code) {
+          fail(data, code) {
             console.log("mkdir download fail: ", data, code)
           }
         })

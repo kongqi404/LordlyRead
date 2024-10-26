@@ -41,11 +41,13 @@
               <div class="card" @click="toContent(bookItem)" @longpress="toDetail(bookItem)">
                 <image src="/common/image/bookcover.png" class="book-cover" />
                 <div class="col grow">
-                  <text class="book-name ellipsis">{{bookItem.name}}</text>
-                  <text class="book-progress ellipsis">{{bookItem.toc[bookItem.progress].chapterName}}</text>
+                  <text class="book-name ellipsis">{{ bookItem.name }}</text>
+                  <text class="book-progress ellipsis">
+                    {{ bookItem.toc[bookItem.progress].chapterName }}
+                  </text>
                   <div class="center">
-                    <text class="book-update ellipsis grow">{{bookItem.lastChapter}}</text>
-                    <text class="badge">{{bookItem.toc.length - 1 - bookItem.progress}}</text>
+                    <text class="book-update ellipsis grow">{{ bookItem.lastChapter }}</text>
+                    <text class="badge">{{ bookItem.toc.length - 1 - bookItem.progress }}</text>
                   </div>
                 </div>
               </div>
@@ -129,14 +131,14 @@ export default {
     bodyHeight: 0,
     holder: false,
     tab: tabIdentifiers[setting.get("default_home")],
-    bookList:[]
+    bookList: []
   },
 
   ...router,
 
   async onReady() {
-    this.tab= tabIdentifiers[await setting.getRaw("default_home")]
     this.bookList = await book.init()
+    this.tab = tabIdentifiers[await setting.getRaw("default_home")]
   },
 
   updateSetting() {
@@ -179,12 +181,15 @@ export default {
       longpress = false
       return
     }
-    this.push("/pages/content", [["bookData", book], ["chapterIndex", book.progress]])
+    this.push("/pages/content", [
+      ["bookData", book],
+      ["chapterIndex", book.progress]
+    ])
   },
 
   toDetail(book) {
     longpress = true
-    this.push('/pages/detail', [['pre', book]])
+    this.push("/pages/detail", [["pre", book]])
   }
 }
 </script>

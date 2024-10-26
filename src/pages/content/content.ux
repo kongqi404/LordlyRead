@@ -27,52 +27,131 @@
             <image src="/common/icon/close.png" class="icon" />
           </div>
         </div>
-        <scroll class="body-container" scroll-y="true" bounces="true">
-          <div class="justify-center my-xs">
-            <text class="info ma-0 mr-xs ellipsis">{{ chapter.chapterName }}</text>
-            <text class="info ma-0 no-shrink">({{ chapterIndex + 1 }}/{{ chapterCount }})</text>
-          </div>
-          <div class="mb-xs">
-            <div class="card ma-0 mr-xs" @click="lastChapter">
-              <image src="/common/icon/left.png" class="icon" />
+        <div class="body">
+          <scroll class="body-container" scroll-y="true" bounces="true">
+            <div class="justify-center my-xs">
+              <text class="info ma-0 mr-xs ellipsis">{{ chapter.chapterName }}</text>
+              <text class="info ma-0 no-shrink">({{ chapterIndex + 1 }}/{{ chapterCount }})</text>
             </div>
-            <div class="card ma-0 mr-xs grow justify-center" @click="toCatalog">
-              <image src="/common/icon/catalog.png" class="icon" />
-              <text class="card-btn-text center">目录</text>
+            <div class="mb-xs">
+              <div class="card ma-0 mr-xs" @click="lastChapter">
+                <image src="/common/icon/left.png" class="icon" />
+              </div>
+              <div class="card ma-0 mr-xs grow justify-center" @click="toCatalog">
+                <image src="/common/icon/catalog.png" class="icon" />
+                <text class="card-btn-text center">目录</text>
+              </div>
+              <div class="card ma-0" @click="nextChapter">
+                <image src="/common/icon/right.png" class="icon" />
+              </div>
             </div>
-            <div class="card ma-0" @click="nextChapter">
-              <image src="/common/icon/right.png" class="icon" />
+            <div class="card" @click="load(true)">
+              <image src="/common/icon/refresh.png" class="icon" />
+              <text class="card-btn-text center">刷新</text>
             </div>
+            <div class="card" @click="toggleDownloadMenu">
+              <image src="/common/icon/down.png" class="icon" />
+              <text class="card-btn-text center">缓存</text>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/magic.png" class="icon" />
+              <text class="card-btn-text center">替换净化</text>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/up.png" class="icon" />
+              <text class="card-btn-text center">更新目录</text>
+            </div>
+            <div class="card" @click="wait">
+              <image src="/common/icon/library.png" class="icon" />
+              <text class="card-btn-text center">换源</text>
+            </div>
+            <div class="card" @click="push('pages/setting', [['to', 'read_ui']])">
+              <image src="/common/icon/ui.png" class="icon" />
+              <text class="card-btn-text center">界面</text>
+            </div>
+            <div class="card" @click="push('pages/setting', [['to', 'read_setting']])">
+              <image src="/common/icon/setting.png" class="icon" />
+              <text class="card-btn-text center">设置</text>
+            </div>
+          </scroll>
+          <div class="menu justify-start {{ downloadMenu }}">
+            <scroll class="body-container" scroll-y="true" bounces="true">
+              <div class="justify-center my-xs">
+                <text class="info ma-0 mr-xs grow ellipsis">{{ down.state }}</text>
+                <text class="info ma-0 no-shrink">
+                  ({{ down.progress ?? 0 }}/{{ down.endI - down.startI + 1 }})
+                </text>
+              </div>
+              <text class="card-btn-secondary">起始章节</text>
+              <div class="choose-container my-xs">
+                <div class="choose-item" @click="setV('down.startI', Math.max(1, down.startI - 10))">
+                  <image src="/common/icon/left-double.png" class="icon" />
+                </div>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <div class="choose-item" @click="setV('down.startI', Math.max(1, down.startI - 1))">
+                  <image src="/common/icon/left.png" class="icon" />
+                </div>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <text class="choose-item choose-item-active grow">
+                  {{ down.startI }}
+                </text>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <div class="choose-item" @click="setV('down.startI', Math.min(chapterCount, down.endI, down.startI + 1))">
+                  <image src="/common/icon/right.png" class="icon" />
+                </div>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <div class="choose-item"
+                  @click="setV('down.startI', Math.min(chapterCount, down.endI, down.startI + 10))">
+                  <image src="/common/icon/right-double.png" class="icon" />
+                </div>
+              </div>
+              <text class="card-btn-secondary">结束章节</text>
+              <div class="choose-container my-xs">
+                <div class="choose-item" @click="setV('down.endI', Math.max(down.startI, down.endI - 10))">
+                  <image src="/common/icon/left-double.png" class="icon" />
+                </div>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <div class="choose-item" @click="setV('down.endI', Math.max(down.startI, down.endI - 1))">
+                  <image src="/common/icon/left.png" class="icon" />
+                </div>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <text class="choose-item choose-item-active grow">
+                  {{ down.endI }}
+                </text>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <div class="choose-item" @click="setV('down.endI', Math.min(chapterCount, down.endI + 1))">
+                  <image src="/common/icon/right.png" class="icon" />
+                </div>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <div class="choose-item" @click="setV('down.endI', Math.min(chapterCount, down.endI + 10))">
+                  <image src="/common/icon/right-double.png" class="icon" />
+                </div>
+              </div>
+              <div class="choose-container my-xs">
+                <text class="choose-item grow" @click="setV('down.endI', Math.min(chapterCount, down.startI + 5))">
+                  后5章
+                </text>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <text class="choose-item grow" @click="setV('down.endI', Math.min(chapterCount, down.startI + 10))">
+                  后10章
+                </text>
+                <div class="horizontal-separator transparent w-xs"></div>
+                <text class="choose-item grow" @click="setV('down.endI', chapterCount)">
+                  后续全部
+                </text>
+              </div>
+              <progress class="my-xs progress" percent="{{down.progress/(down.endI-down.startI+1)*100}}"></progress>
+              <text for="text in down.log" class="card-btn-secondary my-xs" style="color: red">
+                {{ text }}
+              </text>
+              <div class="card justify-center" @click="download">
+                <text class="card-btn-text">
+                  {{ this.down.progress?"缓存中":"提交" }}
+                </text>
+              </div>
+            </scroll>
           </div>
-          <div class="card" @click="wait">
-            <image src="/common/icon/refresh.png" class="icon" />
-            <text class="card-btn-text center">刷新</text>
-          </div>
-          <div class="card" @click="wait">
-            <image src="/common/icon/down.png" class="icon" />
-            <text class="card-btn-text center">缓存</text>
-          </div>
-          <div class="card" @click="wait">
-            <image src="/common/icon/magic.png" class="icon" />
-            <text class="card-btn-text center">替换净化</text>
-          </div>
-          <div class="card" @click="wait">
-            <image src="/common/icon/up.png" class="icon" />
-            <text class="card-btn-text center">更新目录</text>
-          </div>
-          <div class="card" @click="wait">
-            <image src="/common/icon/library.png" class="icon" />
-            <text class="card-btn-text center">换源</text>
-          </div>
-          <div class="card" @click="push('pages/setting', [['to', 'read_ui']])">
-            <image src="/common/icon/ui.png" class="icon" />
-            <text class="card-btn-text center">界面</text>
-          </div>
-          <div class="card" @click="push('pages/setting', [['to', 'read_setting']])">
-            <image src="/common/icon/setting.png" class="icon" />
-            <text class="card-btn-text center">设置</text>
-          </div>
-        </scroll>
+        </div>
       </div>
     </div>
     <div class="cover-animation-helper {{coverAnimation}}"></div>
@@ -91,6 +170,7 @@ export default {
   private: {
     ...template.private,
     menu: "",
+    downloadMenu: "",
     time: date.formatNow("hh:mm"),
     paragraph_weight: setting.get("paragraph_weight"),
     paragraph_size: setting.get("paragraph_size"),
@@ -107,7 +187,14 @@ export default {
     content: [],
     loading: false,
     lock: 0,
-    last: false
+    last: false,
+    down: {
+      state: "等待缓存开始",
+      progress: undefined,
+      startI: undefined,
+      endI: undefined,
+      log: []
+    }
   },
   ...router,
   onReady() {
@@ -134,6 +221,10 @@ export default {
     }, 1000)
   },
   onBack() {
+    if (this.downloadMenu === "animation-in") {
+      this.toggleDownloadMenu()
+      return true
+    }
     if (this.menu === "animation-in") {
       this.toggleMenu()
       return true
@@ -145,6 +236,23 @@ export default {
     } else {
       this.menu = "animation-in"
     }
+  },
+  toggleDownloadMenu() {
+    if (this.downloadMenu === "animation-in") {
+      this.downloadMenu = "animation-out-back"
+    } else {
+      this.downloadMenu = "animation-in"
+      if (this.down.startI === undefined) {
+        this.down.startI = this.chapterIndex + 1
+      }
+      if (this.down.endI === undefined) {
+        this.down.endI = this.chapterCount
+      }
+    }
+  },
+  setV(path, newValue) {
+    console.log(path, newValue)
+    helper.setPropertyValue(this, path, newValue)
   },
   onLongPress() {
     longpress = true
@@ -211,7 +319,7 @@ export default {
     this.last = true
     this.load()
   },
-  load() {
+  load(isRefresh) {
     if (this.loading) {
       this.toast("正在加载中，请勿重复操作")
       return
@@ -226,10 +334,13 @@ export default {
     }
     this.loading = true
     this.toast("正在加载中")
+    this.content = ["正在加载中"]
     this.chapter = bookData.toc[this.chapterIndex]
-    chapter
-      .defineChapter(this.chapter, bookData)
-      .getContent()
+    const contentPromise =
+      isRefresh === true
+        ? chapter.defineChapter(this.chapter, bookData).getOnlineContent()
+        : chapter.defineChapter(this.chapter, bookData).getContent()
+    contentPromise
       .then((content) => {
         this.content = content.split("\n")
         if (thisBook && thisBook?.progress !== this.chapterIndex) {
@@ -305,6 +416,33 @@ export default {
         }
       })
     }
+  },
+  async download() {
+    if (this.down.progress !== undefined) {
+      this.toast("正在下载中，请勿重复操作")
+      return
+    }
+    this.down.state = "正在开始下载"
+    this.down.log = []
+    for (let i = this.down.startI; i <= this.down.endI; i++) {
+      this.down.state = `下载中：${i}`
+      if (bookData.toc[i - 1].isVolume) {
+        this.down.progress = i - this.down.startI + 1
+        continue
+      }
+      const chapt = chapter.defineChapter(bookData.toc[i - 1], bookData)
+      try {
+        global.runGC()
+        await chapt.downloadContent()
+      } catch (error) {
+        this.down.log.push(`第${i}章下载失败：${error}`)
+      }
+      this.down.progress = i - this.down.startI + 1
+    }
+    this.down.state = "下载完成"
+    this.toast("下载完成")
+    await helper.sleep(1000)
+    this.down.progress = undefined
   }
 }
 </script>

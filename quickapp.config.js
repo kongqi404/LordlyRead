@@ -12,7 +12,11 @@ module.exports = {
         }
       ]
     },
-    fallback: {}
+    resolve: {
+      alias: {
+        vm: false
+      }
+    }
   },
   cli: {
     "enable-custom-component": true,

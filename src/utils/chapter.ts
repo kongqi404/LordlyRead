@@ -13,11 +13,11 @@ export class Chapter {
     this.book = book
   }
 
-  getUri() {
+  getUri(type: string) {
     if (!this.info.chapterUrl) throw new Error("Chapter url not found")
     if (!this.book.bookUrl) throw new Error("Book url not found")
     return (
-      "internal://files/lordly-read/cache/chapter/" +
+      `internal://files/lordly-read/${type}/chapter/` +
       crypto.hashDigest({
         data: this.book.bookUrl,
         algo: "MD5"
@@ -32,8 +32,9 @@ export class Chapter {
 
   hasCached() {
     return new Promise<boolean>((resolve, reject) => {
+      const uri = this.getUri("cache")
       file.access({
-        uri: "internal://files/lordly-read/cache/chapter/" + this.getUri(),
+        uri,
         success() {
           resolve(true)
         },
@@ -46,9 +47,9 @@ export class Chapter {
 
   hasDownloaded() {
     return new Promise<boolean>((resolve, reject) => {
-      if (!this.info.chapterUrl) reject(new Error("Chapter url not found"))
+      const uri = this.getUri("download")
       file.access({
-        uri: this.getUri(),
+        uri,
         success() {
           resolve(true)
         },
@@ -73,11 +74,11 @@ export class Chapter {
 
   getCachedContent() {
     return new Promise<string>((resolve, reject) => {
-      if (!this.info.chapterUrl) reject(new Error("Chapter url not found"))
+      const uri = this.getUri("cache")
       file.readText({
-        uri: this.getUri(),
+        uri,
         success(data) {
-          console.log("cache: " + this.uri)
+          console.log("cache: " + uri)
           resolve(data.text)
         },
         fail(data, code) {
@@ -90,12 +91,13 @@ export class Chapter {
 
   getDownloadedContent() {
     return new Promise<string>((resolve, reject) => {
-      if (!this.info.chapterUrl) reject(new Error("Chapter url not found"))
+      const uri = this.getUri("download")
       file.readText({
-        uri: this.getUri(),
+        uri,
         success(data) {
-          console.log("download: " + this.uri)
+          // console.log("download: " + uri)
           resolve(data.text)
+          console.log("download")
         },
         fail(data, code) {
           console.log("download-fail: ", data, code)
@@ -118,12 +120,12 @@ export class Chapter {
 
   cacheContent(content: string) {
     return new Promise<void>((resolve, reject) => {
-      if (!this.info.chapterUrl) reject(new Error("Chapter url not found"))
+      const uri = this.getUri("cache")
       file.writeText({
-        uri: this.getUri(),
+        uri,
         text: content,
         success() {
-          console.log("cache: " + this.uri)
+          console.log("cache: " + uri)
           resolve()
         },
         fail(data, code) {
@@ -136,9 +138,9 @@ export class Chapter {
 
   clearCache() {
     return new Promise<void>((resolve, reject) => {
-      if (!this.info.chapterUrl) reject(new Error("Chapter url not found"))
+      const uri = this.getUri("cache")
       file.delete({
-        uri: this.getUri(),
+        uri,
         success() {
           resolve()
         },
@@ -151,11 +153,11 @@ export class Chapter {
 
   downloadContent() {
     return new Promise(async (resolve, reject) => {
-      if (!this.info.chapterUrl) reject(new Error("Chapter url not found"))
+      const uri = this.getUri("download")
       const content = await this.getContent()
       await this.clearCache().catch(() => {})
       file.writeText({
-        uri: this.getUri(),
+        uri,
         text: content,
         success() {
           resolve(true)
