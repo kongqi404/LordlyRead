@@ -110,7 +110,7 @@ export default {
   ...router,
   onReady() {
     try {
-      const pre = JSON.parse(this.pre)
+      const pre = book.getBookFromData(JSON.parse(this.pre))
       console.log(pre)
       this.book.name = pre.name
       this.book.author = pre.author
