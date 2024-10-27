@@ -145,11 +145,33 @@
                 {{ text }}
               </text>
               <div class="card justify-center" @click="download">
-                <text class="card-btn-text">
+                <text class="card-btn-text ma-0">
                   {{ this.down.progress ? "缓存中" : "提交" }}
                 </text>
               </div>
             </scroll>
+          </div>
+        </div>
+      </div>
+      <div class="menu {{ confirmMenu }}">
+        <div class="topbar">
+          <div class="topbar-btn no-shrink" @click="back">
+            <image src="/common/icon/back.png" class="icon" />
+          </div>
+          <text class="title">放入书架</text>
+          <div class="topbar-btn no-shrink" @click="back('/')">
+            <image src="/common/icon/close.png" class="icon" />
+          </div>
+        </div>
+        <div class="body pa-md">
+          <div class="grow start">
+            <text class="card-btn-text ma-0">是否将《{{ bookName }}》放入书架</text>
+          </div>
+          <div class="card justify-center" @click="back(true)">
+            <text class="card-btn-text center ma-0">否</text>
+          </div>
+          <div class="card justify-center" @click="addToShelf">
+            <text class="card-btn-text center ma-0">确定</text>
           </div>
         </div>
       </div>
@@ -163,6 +185,7 @@ const {template, router, device, date, setting, chapter, book, helper} = global
 import brightness from "@system.brightness"
 
 let longpress = false
+let swipe = false
 let bookData = undefined
 let thisBook = undefined
 
@@ -172,6 +195,7 @@ export default {
     ...template.private,
     menu: "",
     downloadMenu: "",
+    confirmMenu: "",
     time: date.formatNow("hh:mm"),
     paragraph_weight: setting.get("paragraph_weight"),
     paragraph_size: setting.get("paragraph_size"),
@@ -247,13 +271,22 @@ export default {
       }
     } catch {}
   },
-  onBack() {
+  onBack(confirm, ...args) {
+    swipe = true
     if (this.downloadMenu === "animation-in") {
       this.toggleDownloadMenu()
       return true
     }
     if (this.menu === "animation-in") {
       this.toggleMenu()
+      return true
+    }
+    if (this.confirmMenu === "animation-in" && !(confirm === true)) {
+      this.toggleConfirmMenu()
+      return true
+    }
+    if (!thisBook && setting.get("default_add") && !(confirm === true)) {
+      this.toggleConfirmMenu()
       return true
     }
     try {
@@ -263,9 +296,9 @@ export default {
     } catch {}
   },
   toggleMenu(close) {
-    if (this.menu === "animation-in" || close === true) {
+    if (this.menu === "animation-in") {
       this.menu = "animation-out-back"
-    } else {
+    } else if (close !== true) {
       this.menu = "animation-in"
     }
   },
@@ -282,11 +315,29 @@ export default {
       }
     }
   },
+  toggleConfirmMenu() {
+    if (this.confirmMenu === "animation-in") {
+      this.confirmMenu = "animation-out-back"
+    } else {
+      this.confirmMenu = "animation-in"
+    }
+  },
+  addToShelf() {
+    thisBook = book.getBookFromData(bookData)
+    thisBook.progress = this.chapterIndex
+    book.add(thisBook)
+    this.toast("添加成功")
+    this.back(true)
+  },
   setV(path, newValue) {
     console.log(path, newValue)
     helper.setPropertyValue(this, path, newValue)
   },
   onLongPress() {
+    if (swipe) {
+      swipe = false
+      return
+    }
     longpress = true
     this.toggleMenu()
   },
@@ -394,7 +445,6 @@ export default {
         helper.sleep(0).then(() => {
           this.loading = false
           this.toggleMenu(true)
-          console.log(this.last)
           if (thisBook || this.last) {
             this.$element("body").getScrollRect({
               success: ({height}) => {

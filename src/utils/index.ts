@@ -44,8 +44,9 @@ const router = {
       }
     }, config.animationDuration + config.animationDelay)
   },
-  back(path?: string) {
-    if (!(typeof path === "string")) if (thisObj.onBack?.call()) return
+  back(path?: any, ...args: any[]) {
+    if (!(typeof path === "string") && thisObj.hasOwnProperty("onBack"))
+      if (thisObj.onBack(path, ...args)) return
     animation.out(true)
     setTimeout(() => {
       if (path) {
@@ -322,7 +323,7 @@ const setting = {
     },
     {
       type: "switch",
-      title: "返回时提示放入书架*",
+      title: "返回时提示放入书架",
       subtitle: "阅读未放入书架的书籍在返回时提示放入书架",
       name: "default_add",
       value: true
@@ -537,6 +538,9 @@ const book = {
     })
   },
   add(book: Book) {
+    if (this.getBook(book.bookSourceUrl, book.bookUrl)) {
+      return
+    }
     this.list.push(book)
   },
   remove(book: Book) {

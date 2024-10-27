@@ -129,6 +129,9 @@ export default {
       this.back()
     }
   },
+  updateSetting() {
+    this.book.inBookShelf = !!book.getBook(this.book.bookSourceUrl, this.book.bookUrl)
+  },
   onBack() {
     if (this.imgMenu === "animation-in") {
       this.toggleImgMenu()
@@ -230,7 +233,10 @@ export default {
     }
   },
   toContent() {
-    this.push("/pages/content", [["bookData", thisBook], ["chapterIndex", thisBook.progress]])
+    this.push("/pages/content", [
+      ["bookData", thisBook],
+      ["chapterIndex", thisBook.progress]
+    ])
   }
 }
 </script>
