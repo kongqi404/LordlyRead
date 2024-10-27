@@ -4,8 +4,8 @@
   "versionName": "1.0.0",
   "versionCode": 1,
   "minPlatformVersion": 1000,
-  "minAPILevel": 3,
-  "icon": "/common/logo/96-round.png",
+  "minAPILevel": 2,
+  "icon": "/common/logo/192-round.png",
   "deviceTypeList": [
     "watch"
   ],
