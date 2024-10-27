@@ -303,7 +303,7 @@ const setting = {
     },
     {
       type: "choose",
-      title: "预下载章节数量*",
+      title: "预下载章节数量",
       options: [
         {label: "1", value: 1},
         {label: "2", value: 2},

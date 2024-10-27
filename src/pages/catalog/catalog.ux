@@ -33,7 +33,9 @@
 </template>
 
 <script>
-const {template, router, source, helper} = global
+const {template, router, book} = global
+
+let thisBook
 
 export default {
   ...template,
@@ -48,16 +50,20 @@ export default {
 
   onReady() {
     try {
-      const bookData = JSON.parse(this.bookData)
-      bookData.toc.forEach(async (chapter) => {
+      this.bookData = JSON.parse(this.bookData)
+      this.bookData.toc.forEach(async (chapter) => {
         this.tocList.push(chapter)
       })
-      this.progress = Math.floor(bookData.fProgress)
+      thisBook = book.getBook(this.bookData.bookSourceUrl, this.bookData.bookUrl)
+      this.progress = Math.floor(this.bookData.fProgress)
     } catch (e) {
       console.log(e)
       this.toast("参数错误")
       this.back()
     }
+  },
+  onRefresh() {
+    this.progress = thisBook?.progress ?? this.progress
   },
   onBack() {
     if (this.menu === "animation-in") {
@@ -76,9 +82,12 @@ export default {
     this.wait()
   },
   toContent(index) {
+    this.bookData.fProgress = index
+    if (thisBook) {
+      thisBook.progress = index
+    }
     this.push("pages/content", [
-      ["bookData", this.bookData],
-      ["chapterIndex", index]
+      ["bookData", this.bookData]
     ])
   }
 }

@@ -208,7 +208,24 @@ export default {
         throw new Error("目录为空")
       }
       thisBook = book.getBook(bookData.bookSourceUrl, bookData.bookUrl)
-      console.log(thisBook)
+      this.bookName = bookData.name
+      this.chapterCount = bookData.toc.length
+      this.chapterIndex = thisBook?.progress ?? 0
+      this.load()
+    } catch (e) {
+      this.toast("参数错误")
+      this.back()
+    }
+  },
+  onRefresh() {
+    console.log(this.chapterIndex)
+    try {
+      bookData = JSON.parse(this.bookData)
+      if (bookData.toc?.length === 0) {
+        this.toast("目录为空")
+        throw new Error("目录为空")
+      }
+      thisBook = book.getBook(bookData.bookSourceUrl, bookData.bookUrl)
       this.bookName = bookData.name
       this.chapterCount = bookData.toc.length
       this.chapterIndex = thisBook?.progress ?? 0
@@ -401,6 +418,10 @@ export default {
             })
           }
         })
+        // 预加载
+        for (let index = 0; index < setting.get("preload"); index++) {
+          chapter.defineChapter(bookData.toc[this.chapterIndex + index + 1], bookData).getContent()
+        }
       })
       .catch((err) => {
         this.toast(err)
