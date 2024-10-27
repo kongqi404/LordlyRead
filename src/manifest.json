@@ -6,9 +6,7 @@
   "minPlatformVersion": 1000,
   "minAPILevel": 2,
   "icon": "/common/logo/192-round.png",
-  "deviceTypeList": [
-    "watch"
-  ],
+  "deviceTypeList": ["watch"],
   "features": [
     {
       "name": "system.router"
@@ -30,6 +28,9 @@
     },
     {
       "name": "system.file"
+    },
+    {
+      "name": "system.brightness"
     }
   ],
   "config": {

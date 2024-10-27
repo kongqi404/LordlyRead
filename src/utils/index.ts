@@ -193,6 +193,17 @@ const setting = {
     },
     {
       type: "number",
+      title: "正文字色",
+      subtitle: "阅读时正文段落的字色，目前只能调整颜色深浅，1代表纯白，0代表纯黑",
+      step: 0.1,
+      doubleStep: 0.2,
+      min: 0,
+      max: 1,
+      name: "paragraph_color",
+      value: 1
+    },
+    {
+      type: "number",
       title: "正文段距",
       subtitle: "阅读时正文段落的段间距，相对于字号大小的比例",
       step: 0.1,
@@ -222,6 +233,17 @@ const setting = {
       min: 0,
       name: "chapter_title_size",
       value: 1.2
+    },
+    {
+      type: "number",
+      title: "标题字色",
+      subtitle: "阅读时章节标题的字色，目前只能调整颜色深浅，1代表纯白，0代表纯黑",
+      step: 0.1,
+      doubleStep: 0.2,
+      min: 0,
+      max: 1,
+      name: "chapter_title_color",
+      value: 1
     },
     {
       type: "number",
@@ -257,7 +279,7 @@ const setting = {
     },
     {
       type: "switch",
-      title: "屏幕常亮*",
+      title: "屏幕常亮",
       subtitle: "阅读时屏幕常亮",
       name: "keep_screen_on",
       value: false

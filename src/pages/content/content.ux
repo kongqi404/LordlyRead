@@ -1,7 +1,7 @@
 <template>
   <div class="page {{pageClass}}" @swipe="pageSwipe">
     <div class="body">
-      <div class="topbar space-between">
+      <div class="topbar space-between" style="color: rgba(255, 255, 255, {{paragraph_color}});">
         <text class="info mx-lg my-xs ellipsis">{{ bookName }}</text>
         <text class="info mx-lg my-xs no-shrink">{{ time }}</text>
       </div>
@@ -9,11 +9,11 @@
       <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true"
         @longpress="onLongPress" @click="onClick" @scrolltop="scrolltop" @scrollbottom="scrollbottom" @scroll="scroll">
         <text class="chapter"
-          style="text-align: {{chapter_title_align}}; font-size: {{paragraph_size * chapter_title_size}}px; margin-top: {{paragraph_size * chapter_title_top_margin}}px; margin-bottom: {{paragraph_size * chapter_title_bottom_margin}}px;">
+          style="text-align: {{chapter_title_align}}; font-size: {{paragraph_size * chapter_title_size}}px; color: rgba(255, 255, 255, {{chapter_title_color}}); margin-top: {{paragraph_size * chapter_title_top_margin}}px; margin-bottom: {{paragraph_size * chapter_title_bottom_margin}}px;">
           {{ chapter.chapterName }}
         </text>
         <text for="text in content"
-          style="font-size: {{paragraph_size}}px; margin-bottom: {{paragraph_size * paragraph_spacing}}px; font-weight: {{paragraph_weight}};">
+          style="font-size: {{paragraph_size}}px; color: rgba(255, 255, 255, {{paragraph_color}}); margin-bottom: {{paragraph_size * paragraph_spacing}}px; font-weight: {{paragraph_weight}};">
           {{ text }}
         </text>
       </scroll>
@@ -146,7 +146,7 @@
               </text>
               <div class="card justify-center" @click="download">
                 <text class="card-btn-text">
-                  {{ this.down.progress?"缓存中":"提交" }}
+                  {{ this.down.progress ? "缓存中" : "提交" }}
                 </text>
               </div>
             </scroll>
@@ -160,6 +160,7 @@
 
 <script>
 const {template, router, device, date, setting, chapter, book, helper} = global
+import brightness from "@system.brightness"
 
 let longpress = false
 let bookData = undefined
@@ -174,9 +175,11 @@ export default {
     time: date.formatNow("hh:mm"),
     paragraph_weight: setting.get("paragraph_weight"),
     paragraph_size: setting.get("paragraph_size"),
+    paragraph_color: setting.get("paragraph_color"),
     paragraph_spacing: setting.get("paragraph_spacing"),
     chapter_title_align: setting.get("chapter_title_align"),
     chapter_title_size: setting.get("chapter_title_size"),
+    chapter_title_color: setting.get("chapter_title_color"),
     chapter_title_top_margin: setting.get("chapter_title_top_margin"),
     chapter_title_bottom_margin: setting.get("chapter_title_bottom_margin"),
     bookData: undefined,
@@ -219,6 +222,13 @@ export default {
     setInterval(() => {
       this.time = date.formatNow("hh:mm")
     }, 1000)
+    try {
+      if (setting.get("keep_screen_on")) {
+        brightness.setKeepScreenOn({
+          keepScreenOn: true
+        })
+      }
+    } catch {}
   },
   onBack() {
     if (this.downloadMenu === "animation-in") {
@@ -229,6 +239,11 @@ export default {
       this.toggleMenu()
       return true
     }
+    try {
+      brightness.setKeepScreenOn({
+        keepScreenOn: false
+      })
+    } catch {}
   },
   toggleMenu(close) {
     if (this.menu === "animation-in" || close === true) {
@@ -294,11 +309,24 @@ export default {
   updateSetting() {
     this.paragraph_weight = setting.get("paragraph_weight")
     this.paragraph_size = setting.get("paragraph_size")
+    this.paragraph_color = setting.get("paragraph_color")
     this.paragraph_spacing = setting.get("paragraph_spacing")
     this.chapter_title_align = setting.get("chapter_title_align")
     this.chapter_title_size = setting.get("chapter_title_size")
+    this.chapter_title_color = setting.get("chapter_title_color")
     this.chapter_title_top_margin = setting.get("chapter_title_top_margin")
     this.chapter_title_bottom_margin = setting.get("chapter_title_bottom_margin")
+    try {
+      if (setting.get("keep_screen_on")) {
+        brightness.setKeepScreenOn({
+          keepScreenOn: true
+        })
+      } else {
+        brightness.setKeepScreenOn({
+          keepScreenOn: false
+        })
+      }
+    } catch {}
   },
   toCatalog() {
     if (!thisBook.toc) {
