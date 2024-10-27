@@ -9,15 +9,21 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       {text: "首页", link: "/"},
-      {text: "使用指南", link: "/getting-started"}
+      {text: "使用指南", link: "/start"}
     ],
 
     sidebar: [
       {
         text: "使用指南",
         items: [
-          {text: "快速开始", link: "/getting-started"},
-          {text: "Runtime API Examples", link: "/api-examples"}
+          {text: "简介&下载", link: "/start"},
+          {text: "基础教程", link: "/Tutorial/a"},
+          {text: "功能介绍及详细说明", link: "/Tutorial/b"},
+          {text: "书籍的缓存与导出", link: "/Tutorial/c"},
+          {text: "界面自定义", link: "/Tutorial/d"},
+          {text: "主要社区", link: "/Tutorial/e"},
+          {text: "反馈渠道", link: "/Tutorial/f"}
+
         ]
       }
     ],
