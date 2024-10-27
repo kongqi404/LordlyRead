@@ -1,3 +1,5 @@
+import {source} from "./index"
+
 export interface BookTocChapter {
   chapterInfo?: string
   chapterName: string
@@ -99,5 +101,9 @@ export class Book {
 
   getVariable(v?: string) {
     return this.variable ?? ""
+  }
+
+  async updateToc() {
+    return await source.getSource(this.bookSourceUrl).loadToc(this)
   }
 }

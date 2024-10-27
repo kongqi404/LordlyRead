@@ -132,7 +132,7 @@ const setting = {
     },
     {
       type: "switch",
-      title: "自动刷新*",
+      title: "自动刷新",
       subtitle: "打开软件时自动更新书籍",
       name: "auto_refresh",
       value: false
@@ -369,7 +369,9 @@ const setting = {
         success: (data: string) => {
           try {
             resolve(JSON.parse(data))
-          } catch {}
+          } catch {
+            resolve(undefined)
+          }
         },
         fail: (err: any) => {
           reject(err)
@@ -402,15 +404,15 @@ const setting = {
   },
 
   async init() {
-    await Promise.all(
-      this.list.map(async (item: SettingItem) => {
-        if (item.value !== undefined) {
-          return setting.getRaw(item.name).then((value) => {
-            item.value = value
-          })
-        }
-      })
-    )
+    for (const item of setting.list) {
+      if (item.value === undefined) continue
+      try {
+        item.value = (await setting.getRaw(item.name)) ?? item.value
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    return true
   }
 }
 

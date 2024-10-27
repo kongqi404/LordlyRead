@@ -1,7 +1,7 @@
 <template>
   <div class="page {{pageClass}}" @swipe="pageSwipe">
     <div if="tab==0" class="topbar">
-      <div class="topbar-btn" @click="wait">
+      <div class="topbar-btn" @click="refreshShelf">
         <image src="/common/icon/refresh.png" class="icon" />
       </div>
       <text class="title">{{ $t("index.title") }}</text>
@@ -114,6 +114,8 @@
 <script>
 const {template, router, setting, book} = global
 
+let refreshing = false
+
 const tabIdentifiers = {
   bookshelf: 0,
   explore: 1,
@@ -137,8 +139,12 @@ export default {
   ...router,
 
   async onReady() {
+    await setting.init()
     this.bookList = await book.init()
-    this.tab = tabIdentifiers[await setting.getRaw("default_home")]
+    this.tab = tabIdentifiers[setting.get("default_home")]
+    if (setting.get("auto_refresh")) {
+      this.refreshShelf()
+    }
   },
 
   updateSetting() {
@@ -190,6 +196,28 @@ export default {
   toDetail(book) {
     longpress = true
     this.push("/pages/detail", [["pre", book]])
+  },
+
+  async refreshShelf() {
+    if (refreshing) {
+      this.toast("正在刷新书架，请勿重复操作")
+      return
+    }
+    refreshing = true
+    this.toast("正在刷新书架")
+    if (book.list.length === 0) {
+      await book.init()
+    }
+    for (let thisBook of book.list) {
+      try {
+        await thisBook.updateToc()
+      } catch (error) {
+        this.toast(error)
+      }
+    }
+    this.bookList = book.list
+    this.toast("刷新完成")
+    refreshing = false
   }
 }
 </script>
