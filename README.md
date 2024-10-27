@@ -1,7 +1,7 @@
 # Lordly·阅读
 
 <div align="center">
-<img width="192" height="192" src="src/common/logo/192-round.png" alt="Lordly·阅读"/>  
+<img width="96" height="96" src="src/common/logo/192-round.png" alt="Lordly·阅读"/>  
 
 Lordly·阅读
 <br>
@@ -33,33 +33,7 @@ Lordly·阅读
 
 ## 软件截图
 
-<img src="docs/public/screenshot/1.png" width="180">
-<img src="docs/public/screenshot/2.png" width="180">
-<img src="docs/public/screenshot/3.png" width="180">
-<img src="docs/public/screenshot/4.png" width="180">
-<img src="docs/public/screenshot/5.png" width="180">
-<img src="docs/public/screenshot/6.png" width="180">
-<img src="docs/public/screenshot/7.png" width="180">
-<img src="docs/public/screenshot/8.png" width="180">
-<img src="docs/public/screenshot/9.png" width="180">
-<img src="docs/public/screenshot/10.png" width="180">
-<img src="docs/public/screenshot/11.png" width="180">
-<img src="docs/public/screenshot/12.png" width="180">
-<img src="docs/public/screenshot/13.png" width="180">
-<img src="docs/public/screenshot/14.png" width="180">
-<img src="docs/public/screenshot/15.png" width="180">
-<img src="docs/public/screenshot/16.png" width="180">
-<img src="docs/public/screenshot/17.png" width="180">
-<img src="docs/public/screenshot/18.png" width="180">
-<img src="docs/public/screenshot/19.png" width="180">
-<img src="docs/public/screenshot/20.png" width="180">
-<img src="docs/public/screenshot/21.png" width="180">
-<img src="docs/public/screenshot/22.png" width="180">
-<img src="docs/public/screenshot/23.png" width="180">
-<img src="docs/public/screenshot/24.png" width="180">
-<img src="docs/public/screenshot/25.png" width="180">
-<img src="docs/public/screenshot/26.png" width="180">
-<img src="docs/public/screenshot/27.png" width="180">
+<img src="docs/public/screenshot/1.png" width="180"><img src="docs/public/screenshot/2.png" width="180"><img src="docs/public/screenshot/3.png" width="180"><img src="docs/public/screenshot/4.png" width="180"><img src="docs/public/screenshot/5.png" width="180"><img src="docs/public/screenshot/6.png" width="180"><img src="docs/public/screenshot/7.png" width="180"><img src="docs/public/screenshot/8.png" width="180"><img src="docs/public/screenshot/9.png" width="180"><img src="docs/public/screenshot/10.png" width="180"><img src="docs/public/screenshot/11.png" width="180"><img src="docs/public/screenshot/12.png" width="180"><img src="docs/public/screenshot/13.png" width="180"><img src="docs/public/screenshot/14.png" width="180"><img src="docs/public/screenshot/15.png" width="180"><img src="docs/public/screenshot/16.png" width="180"><img src="docs/public/screenshot/17.png" width="180"><img src="docs/public/screenshot/18.png" width="180"><img src="docs/public/screenshot/19.png" width="180"><img src="docs/public/screenshot/20.png" width="180"><img src="docs/public/screenshot/21.png" width="180"><img src="docs/public/screenshot/22.png" width="180"><img src="docs/public/screenshot/23.png" width="180"><img src="docs/public/screenshot/24.png" width="180"><img src="docs/public/screenshot/25.png" width="180"><img src="docs/public/screenshot/26.png" width="180"><img src="docs/public/screenshot/27.png" width="180">
 
 ## 免责声明（修改自 [https://gedoor.github.io/Disclaimer](https://gedoor.github.io/Disclaimer)）
 
