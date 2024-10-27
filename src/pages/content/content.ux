@@ -384,6 +384,11 @@ export default {
     this.chapter_title_color = setting.get("chapter_title_color")
     this.chapter_title_top_margin = setting.get("chapter_title_top_margin")
     this.chapter_title_bottom_margin = setting.get("chapter_title_bottom_margin")
+    this.down.state = "等待缓存开始"
+    this.down.progress = undefined
+    this.down.startI = undefined
+    this.down.endI = undefined
+    this.down.log = []
     try {
       if (setting.get("keep_screen_on")) {
         brightness.setKeepScreenOn({
@@ -475,6 +480,8 @@ export default {
       })
       .catch((err) => {
         this.toast(err)
+        this.content = ["加载失败", err]
+        this.loading = false
       })
   },
   scrolltop() {

@@ -330,10 +330,19 @@ const setting = {
     },
     {
       type: "button",
-      title: "清除缓存*",
-      subtitle: "清除已下载的书籍缓存",
+      title: "清除缓存",
+      subtitle: "清除自动加载的书籍缓存（缓存默认保留七天，可手动清除全部缓存）",
       action() {
-        console.log("清除缓存")
+        chapter.clearCache()
+      }
+    },
+    {
+      type: "button",
+      title: "清除下载",
+      subtitle:
+        "清除手动下载的书籍缓存（注意：在书架中删除书籍后会自动清理下载内容，此手动清理会清除全部下载内容，请慎重清理）",
+      action() {
+        chapter.clearDownload()
       }
     },
     {
@@ -638,6 +647,56 @@ const chapter = {
           fail(data, code) {
             console.log("mkdir download fail: ", data, code)
           }
+        })
+      }
+    })
+  },
+  clearCache() {
+    file.list({
+      uri: "internal://files/lordly-read/cache/chapter/",
+      async success(data) {
+        let sumSize = 0
+        for (const item of data.fileList) {
+          sumSize += item.length
+          await new Promise<void>((resolve, reject) => {
+            file.delete({
+              uri: item.uri,
+              success() {
+                resolve()
+              },
+              fail() {
+                reject()
+              }
+            })
+          })
+        }
+        prompt.showToast({
+          message: `清理了${(sumSize / 1024 / 1024).toFixed(2)}MB 共${data.fileList.length}个缓存文件`
+        })
+      }
+    })
+  },
+  clearDownload() {
+    file.list({
+      uri: "internal://files/lordly-read/download/chapter/",
+      async success(data) {
+        let sumSize = 0
+        for (const item of data.fileList) {
+          sumSize += item.length
+          await new Promise<void>((resolve, reject) => {
+            file.delete({
+              uri: item.uri,
+              success() {
+                resolve()
+              },
+              fail() {
+                reject()
+              }
+            })
+          })
+        }
+        prompt.showToast({
+          message: `清理了${(sumSize / 1024 / 1024).toFixed(2)}MB 共${data.fileList.length}个下载文件`
         })
       }
     })

@@ -51,6 +51,8 @@ export class Book {
     this.bookUrl = data.bookUrl
     this.toc = data.toc ?? []
     this.progress = data.fProgress ?? data.progress ?? 0
+    this.progress = Math.max(this.fProgress, 0)
+    if (this.progress >= this.toc.length) this.progress = this.toc.length - 1
     this.variable = data.variable ?? ""
   }
 
