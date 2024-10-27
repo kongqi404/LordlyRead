@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: 开始了解
-      link: /getting-started
+      link: /start
     - theme: alt
       text: 在 GitHub 上查看
       link: https://github.com/Lordly-Tech/LordlyRead
