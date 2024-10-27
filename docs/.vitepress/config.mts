@@ -9,21 +9,19 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       {text: "首页", link: "/"},
-      {text: "使用指南", link: "/start"}
+      {text: "使用指南", link: "/getting-started"}
     ],
 
     sidebar: [
       {
         text: "使用指南",
         items: [
-          {text: "简介&下载", link: "/start"},
-          {text: "基础教程", link: "/Tutorial/a"},
-          {text: "功能介绍及详细说明", link: "/Tutorial/b"},
-          {text: "书籍的缓存与导出", link: "/Tutorial/c"},
-          {text: "界面自定义", link: "/Tutorial/d"},
-          {text: "主要社区", link: "/Tutorial/e"},
-          {text: "反馈渠道", link: "/Tutorial/f"}
-
+          {text: "简介&下载", link: "/getting-started"},
+          {text: "基础教程", link: "/tutorial/basic"},
+          {text: "概念介绍", link: "/tutorial/concepts"},
+          {text: "主要功能及界面介绍", link: "/tutorial/functions"},
+          {text: "设置及自定义", link: "/tutorial/setting"},
+          {text: "主要社区 & 反馈渠道", link: "/tutorial/community"}
         ]
       }
     ],
@@ -35,7 +33,12 @@ export default defineConfig({
       copyright: "Copyright © 2024-present, Jiwang Yihao (as part of the Lordly Tech Team)"
     },
 
-    logo: "logo.png"
+    logo: "logo.png",
+
+    editLink: {
+      pattern: "https://github.com/Lordly-Tech/LordlyRead/edit/main/docs/:path",
+      text: "在 GitHub 上编辑此页面"
+    }
   },
 
   locales: {
@@ -49,7 +52,7 @@ export default defineConfig({
 
       title: "Lordly·Read",
       description: "Supports Legado rule band reading tool",
-      
+
       themeConfig: {
         nav: [
           {text: "Home", link: "/"},

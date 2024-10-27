@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: 开始了解
-      link: /start
+      link: /getting-started
     - theme: alt
       text: 在 GitHub 上查看
       link: https://github.com/Lordly-Tech/LordlyRead
@@ -26,3 +26,6 @@ features:
     details: 阅读工具支持高度个性化定制功能，打造独一无二的阅读环境，满足不同审美需求，让每次阅读成为一种独特的享受。
 ---
 
+## 图片展示
+
+<!--@include: @parts/screenshot.md-->
