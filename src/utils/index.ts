@@ -539,8 +539,12 @@ const book = {
       storage.get({
         key: "book",
         success: (data: string) => {
-          this.list = (JSON.parse(data) as BookData[]).map((item) => new Book(item))
-          resolve(this.list)
+          try {
+            this.list = (JSON.parse(data) as BookData[]).map((item) => new Book(item))
+            resolve(this.list)
+          } catch {
+            resolve([])
+          }
         },
         fail: (err) => {
           reject(err)

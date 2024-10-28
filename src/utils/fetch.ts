@@ -4,9 +4,11 @@ import {cookie, helper} from "."
 class Response {
   data: string
   cookie: string
+  headers: any
 
-  constructor(data: string) {
+  constructor(data: string, headers?: any) {
     this.data = data
+    this.headers = headers
   }
 
   body() {
@@ -41,7 +43,9 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
       ...options,
       ...urlOptions,
       header: {
-        Cookie: cookieList.join(";"),
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
+        "Cookie": cookieList.join(";"),
         ...options?.header,
         ...urlOptions?.header
       }
@@ -113,7 +117,7 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
         url,
         ...fullOptions,
         success(res) {
-          const response = new Response(res.data)
+          const response = new Response(res.data, res.headers)
           if (res.headers["Set-Cookie"]) {
             cookie.setUrlByHeader(url, res.headers["Set-Cookie"])
             response.cookie = helper.map2Json(cookie.getCookieFromHeader(res.headers["Set-Cookie"]))

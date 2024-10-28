@@ -12,10 +12,14 @@
           style="text-align: {{chapter_title_align}}; font-size: {{paragraph_size * chapter_title_size}}px; color: rgba(255, 255, 255, {{chapter_title_color}}); margin-top: {{paragraph_size * chapter_title_top_margin}}px; margin-bottom: {{paragraph_size * chapter_title_bottom_margin}}px;">
           {{ chapter.chapterName }}
         </text>
-        <text for="text in content"
-          style="font-size: {{paragraph_size}}px; color: rgba(255, 255, 255, {{paragraph_color}}); margin-bottom: {{paragraph_size * paragraph_spacing}}px; font-weight: {{paragraph_weight}};">
-          {{ text }}
-        </text>
+        <div for="item in content">
+          <image if="item.type === 'img'" src="{{ item.content }}" class="img" alt="blank"
+            style="margin-bottom: {{paragraph_size * paragraph_spacing}}px;" @error="imgFallback(item)" />
+          <text else
+            style="font-size: {{paragraph_size}}px; color: rgba(255, 255, 255, {{paragraph_color}}); margin-bottom: {{paragraph_size * paragraph_spacing}}px; font-weight: {{paragraph_weight}};">
+            {{ item.content }}
+          </text>
+        </div>
       </scroll>
       <div class="menu {{ menu }}">
         <div class="topbar">
@@ -181,7 +185,7 @@
 </template>
 
 <script>
-const {template, router, device, date, setting, chapter, book, helper} = global
+const {template, router, device, date, setting, chapter, book, helper, fetch} = global
 import brightness from "@system.brightness"
 
 let longpress = false
@@ -435,7 +439,7 @@ export default {
     }
     this.loading = true
     this.toast("正在加载中")
-    this.content = ["正在加载中"]
+    this.content = [{type: "text", content: "正在加载中..."}]
     this.chapter = bookData.toc[this.chapterIndex]
     const contentPromise =
       isRefresh === true
@@ -443,7 +447,19 @@ export default {
         : chapter.defineChapter(this.chapter, bookData).getContent()
     contentPromise
       .then((content) => {
-        this.content = content.split("\n")
+        this.content = content.split("\n").map((p) => {
+          if (/^<img.*?src=\\?"(.*?)\\?".*?>$/.test(p)) {
+            return {
+              type: "img",
+              content: p.match(/^<img.*?src=\\?"(.*?)\\?".*?>$/)[1]
+            }
+          } else {
+            return {
+              type: "text",
+              content: p
+            }
+          }
+        })
         if (thisBook && thisBook?.progress !== this.chapterIndex) {
           thisBook.progress = this.chapterIndex
         }
@@ -480,7 +496,10 @@ export default {
       })
       .catch((err) => {
         this.toast(err)
-        this.content = ["加载失败", err]
+        this.content = [
+          {type: "text", content: "加载失败"},
+          {type: "text", content: err}
+        ]
         this.loading = false
       })
   },
@@ -549,6 +568,21 @@ export default {
     this.toast("下载完成")
     await helper.sleep(1000)
     this.down.progress = undefined
+  },
+  imgFallback(item) {
+    if (item.retried) {
+      item = {type: "text", content: "图片加载失败：" + item.content}
+    }
+    fetch(item.content, {
+      responseType: "file"
+    })
+      .then((res) => {
+        item.content = res.headers.Location
+        item.retried = true
+      })
+      .catch((err) => {
+        item = {type: "text", content: "图片加载失败：" + item.content + "Error：" + err}
+      })
   }
 }
 </script>
@@ -558,5 +592,10 @@ export default {
 
 .chapter {
   font-weight: bold;
+}
+
+.img {
+  width: 288px; /* 336px - 24px * 2 */
+  object-fit: scale-down;
 }
 </style>

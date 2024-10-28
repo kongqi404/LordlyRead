@@ -111,7 +111,6 @@ export default {
   onReady() {
     try {
       const pre = book.getBookFromData(JSON.parse(this.pre))
-      console.log(pre)
       this.book.name = pre.name
       this.book.author = pre.author
       this.book.bookUrl = pre.bookUrl
@@ -208,6 +207,7 @@ export default {
               this.toast("刷新成功")
             }
           } catch (e) {
+            conosle.log(e)
             this.toast("目录加载失败")
           }
         })

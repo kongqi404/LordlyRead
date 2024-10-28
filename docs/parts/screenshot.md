@@ -35,5 +35,6 @@ const previewSrcList = [
   "/screenshot/25.png",
   "/screenshot/26.png",
   "/screenshot/27.png",
+  "/screenshot/28.png",
 ]
 </script>
