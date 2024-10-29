@@ -244,7 +244,7 @@ export class Source {
         .replace(/await (if|else if|catch|for|while)/g, "$1") // 去掉关键字前的 await
         .replace(/await (\w+)\((.*?)\)/g, "(await $1($2))") // 给 await 函数调用加括号
         .replace(/(const|let|var)\s*\{[\w\s,]+}\s*=\s*this\s*\n/g, "") + // 去掉 this 变量声明
-      js.replace(/\n(.+)$/i, "\nreturn $1").replace(/^(.+)$/i, "return $1") +
+      js.replace(/\n(.+)\s*$/i, "\nreturn $1").replace(/^(.+)$/i, "return $1") +
       "\n}\nmain().then(r=>resultResolve(r)).catch(e=>resultReject(e))"
 
     if (debug) console.log(js)
