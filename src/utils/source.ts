@@ -450,17 +450,20 @@ export class Source {
       })
     ).body()
 
-    return await Promise.all(
-      (await this.parseRule(this.raw.ruleSearch.bookList, response, true)).map(async (v) => {
-        try {
-          return new Book({
+    this.java.updateSrc(response)
+
+    const resultList = []
+
+    for (const v of await this.parseRule(this.raw.ruleSearch.bookList, response, true)) {
+      this.java.updateSrc(v)
+      try {
+        resultList.push(
+          new Book({
             bookSourceUrl: this.bookSourceUrl,
             name: await this.parseRule(this.raw.ruleSearch.name, v, false, {baseUrl: url}),
             author: await this.parseRule(this.raw.ruleSearch.author, v, false, {baseUrl: url}),
             kind: await this.parseRule(this.raw.ruleSearch.kind, v, true, {baseUrl: url}),
-            coverUrl: await this.parseRule(this.raw.ruleSearch.coverUrl, v, false, {
-              baseUrl: url
-            }),
+            coverUrl: await this.parseRule(this.raw.ruleSearch.coverUrl, v, false, {baseUrl: url}),
             intro: await this.parseRule(this.raw.ruleSearch.intro, v, false, {baseUrl: url}),
             wordCount: await this.parseRule(this.raw.ruleSearch.wordCount, v, false, {
               baseUrl: url
@@ -470,31 +473,13 @@ export class Source {
               baseUrl: url
             })
           })
-        } catch (e) {
-          try {
-            return new Book({
-              bookSourceUrl: this.bookSourceUrl,
-              name: await this.parseRule(this.raw.ruleSearch.name, v, false, {baseUrl: url}),
-              author: await this.parseRule(this.raw.ruleSearch.author, v, false, {baseUrl: url}),
-              kind: await this.parseRule(this.raw.ruleSearch.kind, v, true, {baseUrl: url}),
-              coverUrl: await this.parseRule(this.raw.ruleSearch.coverUrl, v, false, {
-                baseUrl: url
-              }),
-              intro: await this.parseRule(this.raw.ruleSearch.intro, v, false, {baseUrl: url}),
-              wordCount: await this.parseRule(this.raw.ruleSearch.wordCount, v, false, {
-                baseUrl: url
-              }),
-              bookUrl: await this.parseRule(this.raw.ruleSearch.bookUrl, v, false, {baseUrl: url}),
-              lastChapter: await this.parseRule(this.raw.ruleSearch.lastChapter, v, false, {
-                baseUrl: url
-              })
-            })
-          } catch (e) {
-            console.log(e)
-          }
-        }
-      })
-    )
+        )
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+    return resultList
   }
 
   async detail(bookData: BookData) {
@@ -584,28 +569,33 @@ export class Source {
       })
     ).body()
 
-    book.toc = await Promise.all(
-      (await this.parseRule(this.raw.ruleToc.chapterList, response, true)).map(async (v, i) => {
-        try {
-          return {
-            chapterInfo: await this.parseRule(this.raw.ruleToc.updateTime, v, false, {
-              baseUrl: book.bookUrl
-            }),
-            chapterName: await this.parseRule(this.raw.ruleToc.chapterName, v, false, {
-              baseUrl: book.bookUrl
-            }),
-            chapterUrl: await this.parseRule(this.raw.ruleToc.chapterUrl, v, false, {
-              baseUrl: book.bookUrl
-            }),
-            isVolume: await this.parseRule(this.raw.ruleToc.isVolume, v, false, {
-              baseUrl: book.bookUrl
-            })
-          }
-        } catch (e) {
-          console.log(e)
-        }
-      })
-    )
+    this.java.updateSrc(response)
+
+    book.toc = []
+
+    for (const v of await this.parseRule(this.raw.ruleToc.chapterList, response, true)) {
+      this.java.updateSrc(v)
+      try {
+        book.toc.push({
+          chapterInfo: await this.parseRule(this.raw.ruleToc.updateTime, v, false, {
+            baseUrl: book.bookUrl
+          }),
+          chapterName: await this.parseRule(this.raw.ruleToc.chapterName, v, false, {
+            baseUrl: book.bookUrl
+          }),
+          chapterUrl: await this.parseRule(this.raw.ruleToc.chapterUrl, v, false, {
+            baseUrl: book.bookUrl
+          }),
+          isVolume: await this.parseRule(this.raw.ruleToc.isVolume, v, false, {
+            baseUrl: book.bookUrl
+          })
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+    console.log(book.toc)
 
     return book
   }
