@@ -55,7 +55,7 @@ export default {
     try {
       this.bookData = JSON.parse(this.bookData)
       thisBook = book.getBook(this.bookData.bookSourceUrl, this.bookData.bookUrl)
-      this.progress = Math.floor(thisBook?.progress ?? this.bookData.fProgress)
+      this.progress = Math.max(Math.floor(thisBook?.progress ?? this.bookData.fProgress), 0)
       const toc = this.bookData.toc
       for (let index = 0; index < toc.length; index++) {
         const chapter = toc[index]
