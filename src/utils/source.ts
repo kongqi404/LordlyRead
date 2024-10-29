@@ -551,13 +551,6 @@ export class Source {
       }),
       book.tocUrl
     )
-    book.bookUrl = helper.withDefault(
-      await this.parseRule(this.raw.ruleBookInfo.tocUrl, response, false, {
-        book,
-        baseUrl: book.bookUrl
-      }),
-      book.bookUrl
-    )
 
     return book
   }
@@ -594,8 +587,6 @@ export class Source {
         console.log(e)
       }
     }
-
-    console.log(book.toc)
 
     return book
   }
