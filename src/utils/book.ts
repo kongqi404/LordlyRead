@@ -63,7 +63,7 @@ export class Book {
   }
 
   get progress() {
-    return Math.floor(this.fProgress)
+    return Math.max(Math.floor(this.fProgress), 0)
   }
 
   update(book: Book) {
