@@ -6,15 +6,24 @@ export class JsExtension {
     vars: Map<string, any>
   }
   source: Source
+  src: string
 
   constructor(state: any, source: Source) {
     this.state = state
     this.source = source
   }
 
+  updateSrc(src: string) {
+    this.src = src
+  }
+
   put(key: string, value: any) {
     this.state.vars.set(key, value)
     return value
+  }
+
+  getString(rule: string) {
+    return this.source.parseGetRule(rule, this.src)
   }
 
   async post(urlStr: string, body: string, headers: Record<string, string>) {
