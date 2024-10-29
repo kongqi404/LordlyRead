@@ -12,8 +12,11 @@
     <div class="body">
       <scroll class="body-container" id="body" style="height: {{bodyHeight}}px" scroll-y="true" bounces="true">
         <block for="(index, chapter) in tocList">
-          <text if="chapter.isVolume" class="btn-group-title">{{ chapter.chapterName }}</text>
-          <div else class="card col {{ progress===index ? 'active' : 'inactive'}}" @click="toContent(index)">
+          <text if="chapter.isVolume" class="btn-group-title" id="c-{{index}}">
+            {{ chapter.chapterName }}
+          </text>
+          <div else class="card col {{ progress===index ? 'active' : 'inactive'}}" @click="toContent(index)"
+            id="c-{{index}}">
             <text class="card-btn-text ellipsis w-100 ma-0">{{ chapter.chapterName }}</text>
             <text if="chapter.chapterInfo" class="card-btn-secondary w-100">
               {{ chapter.chapterInfo }}
@@ -33,7 +36,7 @@
 </template>
 
 <script>
-const {template, router, book} = global
+const {template, router, book, helper, setting} = global
 
 let thisBook
 
@@ -48,14 +51,37 @@ export default {
   },
   ...router,
 
-  onReady() {
+  async onReady() {
     try {
       this.bookData = JSON.parse(this.bookData)
-      this.bookData.toc.forEach(async (chapter) => {
-        this.tocList.push(chapter)
-      })
       thisBook = book.getBook(this.bookData.bookSourceUrl, this.bookData.bookUrl)
-      this.progress = Math.floor(this.bookData.fProgress)
+      this.progress = Math.floor(thisBook?.progress ?? this.bookData.fProgress)
+      const toc = this.bookData.toc
+      for (let index = 0; index < toc.length; index++) {
+        const chapter = toc[index]
+        this.tocList.push(chapter)
+        if (index === this.progress + 20) {
+          await helper.sleep(0)
+          await new Promise((resolve) => {
+            this.$element("body").getBoundingClientRect({
+              success: ({top: bodyTop}) => {
+                this.$element("c-" + this.progress).getBoundingClientRect({
+                  success: ({top}) => {
+                    this.$element("body").scrollTo({top: top - bodyTop})
+                    helper.sleep(setting.get("catalog_wait_time") * 1000).then(resolve)
+                  }
+                })
+              }
+            })
+          })
+        }
+        if (index % 20 === 0) {
+          global.runGC()
+          if (index > this.progress + 20) {
+            await helper.sleep(setting.get("catalog_wait_time") * 1000)
+          }
+        }
+      }
     } catch (e) {
       console.log(e)
       this.toast("参数错误")
@@ -86,9 +112,7 @@ export default {
     if (thisBook) {
       thisBook.progress = index
     }
-    this.push("pages/content", [
-      ["bookData", this.bookData]
-    ])
+    this.push("pages/content", [["bookData", this.bookData]])
   }
 }
 </script>

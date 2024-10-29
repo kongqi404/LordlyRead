@@ -303,6 +303,20 @@ const setting = {
       name: "other"
     },
     {
+      type: "number",
+      title: "目录分段加载等待时间（秒）",
+      subtitle:
+        "由于小米手环渲染界面性能较差，界面加载时应用响应会丢失，无法进行操作。" +
+        "为保证应用及时响应，本应用采取分段加载策略。" +
+        "具体来说，在加载至阅读进度前应用不会分段，优先保证当前进度的加载。" +
+        "在加载至当前进度后20章后，本应用在每加载20章时会等待一段时间，恢复界面响应，便于用户操作。",
+      step: 1,
+      doubleStep: 5,
+      min: 0,
+      name: "catalog_wait_time",
+      value: 10
+    },
+    {
       type: "choose",
       title: "预下载章节数量",
       options: [
