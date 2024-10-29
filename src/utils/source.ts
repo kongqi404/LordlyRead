@@ -607,18 +607,17 @@ export class Source {
       })
     ).body()
 
-    const content = await this.parseRule(
-      this.raw.ruleContent.content,
-      response,
-      false,
-      {
-        baseUrl: chapterUrl
-      },
-      true
-    )
+    const content = await this.parseRule(this.raw.ruleContent.content, response, false, {
+      baseUrl: chapterUrl
+    })
+
     return content
-      .split(/\n+/g)
+      .replace(/<(?!img\b)[^>]*>/gi, "") // 去掉除<img>以外的标签
+      .replace(/&amp;/gi, "&")
+      .replace(/&nbsp;/gi, " ")
+      .split(/\n+/)
       .map((v: string) => v.trim())
+      .filter((v: string) => !!v)
       .join("\n")
   }
 }
