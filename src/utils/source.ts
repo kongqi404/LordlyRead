@@ -301,6 +301,9 @@ export class Source {
     additional?: any,
     debug = false
   ) {
+    const regexpRule = rule.match(/##.+(##.*)?/gi)?.[0]
+    rule = rule.replace(/##.+(##.*)?/gi, "")
+
     let resultList = []
     for (const orPart of rule.split("||")) {
       if (debug) console.log(orPart)
@@ -309,7 +312,19 @@ export class Source {
       }
       if (resultList.length > 0) break
     }
-    return resultList.flat(3).map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+
+    resultList = resultList.flat(3).map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+
+    if (regexpRule) {
+      resultList = resultList.map((res) =>
+        res.replace(
+          new RegExp(regexpRule.split("##")[1] ?? "", "gi"),
+          regexpRule.split("##")[2] ?? ""
+        )
+      )
+    }
+
+    return resultList
   }
 
   async parseRule(rule: string, result: string, isList = false, additional?: any, debug = false) {
@@ -340,6 +355,10 @@ export class Source {
         }
         if (debug) console.log(js)
         res = await this.executeJs(js, {result: res ?? result, ...additional}, debug)
+      } else if (/^\s*##.+(##.*)?\s*$/.test(v)) {
+        if (!isList && typeof res === "string") {
+          res = res.replace(new RegExp(v.split("##")[1] ?? "", "gi"), v.split("##")[2] ?? "")
+        }
       } else if (!v.match(/{{[\s\S]*?}}/gi)) {
         res = await this.parseBracketRule(v, result, false, additional, debug)
         if (!isList) {
