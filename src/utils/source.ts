@@ -435,8 +435,8 @@ export class Source {
 
     if (url.match(/{{[\s\S]*?}}/gi)) {
       for (const v of url.match(/{{[\s\S]*?}}/gi)) {
-        const js = v.replace(/^{{|}}$/gi, "")
-        url = url.replace(v, await this.executeJs(js, {key, page}))
+        const rule = v.replace(/^{{|}}$/gi, "")
+        url = url.replace(v, (await this.parseBracketRule(rule, url, true, {key, page}))[0])
       }
     }
 
