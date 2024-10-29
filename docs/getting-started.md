@@ -21,4 +21,5 @@ Lordly·阅读为免费应用，其余一切收费或附带广告皆为盗版！
 
 ## 下载
 
-敬请期待
+- [GitHub](https://github.com/Lordly-Tech/LordlyRead/releases)
+- More coming soon...
