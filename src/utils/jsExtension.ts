@@ -1,5 +1,6 @@
 import {fetch} from "./fetch"
 import {Source} from "./source"
+import {date} from "./index"
 
 export class JsExtension {
   state: {
@@ -50,5 +51,9 @@ export class JsExtension {
 
   async ajax(urlStr: string) {
     return (await this.source.fetch(urlStr)).body()
+  }
+
+  timeFormat(time: number) {
+    return date.format(new Date(time), "yyyy-MM-dd hh:mm:ss")
   }
 }

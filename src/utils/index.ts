@@ -776,8 +776,8 @@ const device = {
 
 device.init().then()
 
-const date = {
-  format(date, format) {
+export const date = {
+  format(date: Date, format: string) {
     const opt = {
       "y+": date.getFullYear().toString(), // 年
       "M+": (date.getMonth() + 1).toString(), // 月
@@ -804,7 +804,7 @@ const date = {
   now() {
     return new Date().getTime()
   },
-  formatNow(format) {
+  formatNow(format: string) {
     return this.format(new Date(), format)
   }
 }
