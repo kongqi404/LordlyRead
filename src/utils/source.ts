@@ -336,7 +336,7 @@ export class Source {
         const bracketRule = v.replace(/^{{|}}$/gi, "")
         rule = rule.replace(
           v,
-          (await this.parseBracketRule(bracketRule, result, false, additional, debug)).join(", ")
+          (await this.parseBracketRule(bracketRule, result, true, additional, debug)).join(", ")
         )
       }
     }
