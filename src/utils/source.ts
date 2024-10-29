@@ -332,6 +332,16 @@ export class Source {
       return isList ? [] : ""
     }
 
+    if (rule.match(/{{[\s\S]*?}}/gi)) {
+      for (const v of rule.match(/{{[\s\S]*?}}/gi)) {
+        const bracketRule = v.replace(/^{{|}}$/gi, "")
+        rule = rule.replace(
+          v,
+          (await this.parseBracketRule(bracketRule, result, false, additional, debug)).join(", ")
+        )
+      }
+    }
+
     let parts = rule
       .split(/(@js:[\s\S]*?$)|(<js>[\s\S]*?<\/js>)/gi)
       .filter((v) => !!v && !v?.match(/^\s*$/))
@@ -510,10 +520,15 @@ export class Source {
       book.author
     )
     book.kind = helper.withDefault(
-      await this.parseRule(this.raw.ruleBookInfo.kind, response, true, {
-        book,
-        baseUrl: book.bookUrl
-      }),
+      (
+        await this.parseRule(this.raw.ruleBookInfo.kind, response, false, {
+          book,
+          baseUrl: book.bookUrl
+        })
+      )
+        .split(",")
+        .map((v: string) => v.trim())
+        .filter((v: string) => !!v),
       book.kind
     )
     book.wordCount = helper.withDefault(
