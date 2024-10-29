@@ -202,9 +202,9 @@ export default {
           this.book.coverUrl = data.coverUrl
           this.book.wordCount = data.wordCount
           try {
-            thisBook.update(await source.getSource(this.book.bookSourceUrl).loadToc(thisBook))
-
+            thisBook = await thisBook.updateToc()
             this.book.progress ??= thisBook.toc[thisBook.progress].chapterName
+
             if (isRefresh === true) {
               this.toast("刷新成功")
             }
