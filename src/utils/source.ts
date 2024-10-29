@@ -269,14 +269,13 @@ export class Source {
 
     const additionalKeys = Object.keys(additional)
 
-    if (debug) console.log(rule)
-
     if (additionalKeys.includes(rule)) {
       return [additional[rule]]
     } else if (/^\$\./.test(rule)) {
       // JsonPath
-      global.runGC()
+      if (debug) console.log(rule, result)
       res = JSONPath({json: JSON.parse(result), path: rule.replace(/\[-1]/gi, "[-1:]")})
+      global.runGC()
     } else if (maybeJs) {
       try {
         res = await this.executeJs(rule, {result, ...additional})
@@ -504,6 +503,8 @@ export class Source {
       false,
       {book}
     )
+
+    this.java.updateSrc(response)
 
     book.name = helper.withDefault(
       await this.parseRule(this.raw.ruleBookInfo.name, response, false, {
