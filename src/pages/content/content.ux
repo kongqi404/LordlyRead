@@ -537,7 +537,7 @@ export default {
     if (thisBook) {
       this.$element("body").getScrollRect({
         success({height}) {
-          thisBook.fProgress = thisBook.progress + event.scrollY / height
+          thisBook.fProgress = thisBook.progress + Math.min(1, Math.max(0, event.scrollY / height))
         }
       })
     }
