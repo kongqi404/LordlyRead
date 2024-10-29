@@ -26,7 +26,7 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
     let url = rawUrl.split(",")[0] ?? rawUrl
 
     if (!/^http/i.test(url)) {
-      if (options.baseUrl) url = `${options.baseUrl}/${url}`
+      if (options.baseUrl) url = `${options.baseUrl}/${url}`.replace(/([^:]\/)\/+/g, "$1")
       else {
         console.error("错误链接格式")
         reject("错误链接格式")
