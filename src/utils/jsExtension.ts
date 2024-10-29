@@ -17,6 +17,10 @@ export class JsExtension {
     this.src = src
   }
 
+  get(key: string) {
+    return this.state.vars.get(key)
+  }
+
   put(key: string, value: any) {
     this.state.vars.set(key, value)
     return value
