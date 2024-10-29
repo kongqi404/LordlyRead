@@ -41,7 +41,9 @@
           </div>
         </div>
         <div class="intro col">
-          <text for="text in book.intro.split('\n')" class="intro-text">{{ text }}</text>
+          <text for="text in book.intro.replace(/&\w+;/g,' ').replace(/\n+\s*\n*/g, '\n').split('\n')" class="intro-text">
+            {{ text }}
+          </text>
         </div>
         <div class="card w-100 justify-center" @click="toContent">
           <text class="card-btn-text">开始阅读</text>
@@ -212,6 +214,7 @@ export default {
           }
         })
         .catch((e) => {
+          console.log(e)
           this.toast(e)
         })
     }
