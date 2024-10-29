@@ -39,7 +39,7 @@
           <scroll else class="body-container" scroll-y="true" bounces="true">
             <block for="bookItem in bookList">
               <div class="card" @click="toContent(bookItem)" @longpress="toDetail(bookItem)">
-                <image src="/common/image/bookcover.png" class="book-cover" />
+                <image src="{{bookItem.coverUrl}}" alt="/common/image/bookcover.png" class="book-cover" />
                 <div class="col grow">
                   <text class="book-name ellipsis">{{ bookItem.name }}</text>
                   <text class="book-progress ellipsis">
