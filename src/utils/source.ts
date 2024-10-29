@@ -236,7 +236,7 @@ export class Source {
 
     js =
       "async function main() {\n" +
-      this.raw.jsLib
+      (this.raw.jsLib ?? "")
         .replace(/(?<=\s|\(|=|\n)([.\w]+)\(/g, "await $1(") // 将函数调用全部转换为 await
         .replace(/^([.\w]+)\(/g, "await $1(") // 将函数调用全部转换为 await
         .replace(/function( await)? (\w+)\(/g, "async function $2(") // 将函数声明全部转换为 async function
