@@ -262,15 +262,20 @@ export class Source {
     rule: string,
     result: string,
     maybeJs = false,
-    additional?: any,
+    additional: any = {},
     debug = false
   ) {
     let res: string | string[] = rule
 
-    if (rule === "baseUrl") {
-      return [additional.baseUrl]
+    const additionalKeys = Object.keys(additional)
+
+    if (debug) console.log(rule)
+
+    if (additionalKeys.includes(rule)) {
+      return [additional[rule]]
     } else if (/^\$\./.test(rule)) {
       // JsonPath
+      global.runGC()
       res = JSONPath({json: JSON.parse(result), path: rule.replace(/\[-1]/gi, "[-1:]")})
     } else if (maybeJs) {
       try {
@@ -279,6 +284,7 @@ export class Source {
         console.log(e)
       }
     }
+
     if (debug) console.log(rule, res)
 
     if (res instanceof Array) {
