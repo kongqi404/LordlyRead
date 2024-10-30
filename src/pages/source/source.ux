@@ -148,14 +148,9 @@ export default {
     sourceUrl: "1reoU28H6"
   },
   ...router,
-  onInit() {
-    this.$watch("activedInput", "watchActivedInput")
-  },
-  watchActivedInput() {
-    if (!!this.activedInput) this.toggleKeyboardMenu()
-  },
   activeInput(name) {
     this.activedInput = name
+    if (!!this.activedInput) this.toggleKeyboardMenu()
   },
   onBack() {
     if (this.keyboardMenu === "animation-in") {
@@ -220,7 +215,7 @@ export default {
       this.importMenu = "animation-out-back"
     } else {
       this.importMenu = "animation-in"
-      this.activedInput = "sourceUrl"
+      this.activeInput("sourceUrl")
     }
   },
   toggleLoginMenu() {
