@@ -261,20 +261,33 @@ export default {
       return
     }
 
-    fetch(url).then((res) => {
-      console.log(res)
-      if (res.data.length > 0) {
-        res.data.forEach((item) => {
-          if (!source.add(item)) {
-            this.toast("导入失败，已存在重复书源")
+    fetch(url)
+      .then((res) => {
+        if (typeof res.data === "string") {
+          try {
+            res.data = JSON.parse(res.data)
+          } catch (e) {
+            throw "JSON解析失败，请检查链接是否正确"
           }
-        })
-        this.list = source.mapForUi()
+        }
+        if (res.data.length > 0) {
+          res.data.forEach((item) => {
+            if (!source.add(item)) {
+              this.toast("导入失败，已存在重复书源")
+            }
+          })
+          this.list = source.mapForUi()
 
-        this.back()
-        this.back()
-      }
-    })
+          this.back()
+          this.back()
+        }
+      })
+      .catch((err) => {
+        this.toast(err)
+      })
+      .finally(() => {
+        this.importing = false
+      })
   },
   submitLogin() {
     if (this.activedItem) {
