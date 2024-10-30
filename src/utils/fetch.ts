@@ -71,47 +71,47 @@ export function fetch(rawUrl: string, options?: any): Promise<Response> {
     }
 
     if (fullOptions.charset) {
-      const GBK = require("../third-party/GBK.js/dist/gbk.min")
-      url = GBK.URI.encodeURI(url)
-      request.download({
-        url,
-        ...fullOptions,
-        header: "",
-        success(data) {
-          console.log(data)
-          request.onDownloadComplete({
-            token: data.token,
-            success(res) {
-              file.readArrayBuffer({
-                uri: res.uri,
-                success(buffer) {
-                  const result = GBK.decode(buffer.buffer)
-                  // const result = buffer
-                  file.delete({
-                    uri: res.uri,
-                    success() {
-                      resolve(new Response(result))
-                    },
-                    fail(...err) {
-                      reject(err)
-                    }
-                  })
-                },
-                fail(...err) {
-                  reject(err)
-                }
-              })
-            },
-            fail(...err) {
-              reject(err)
-            }
-          })
-        },
-        fail(...err) {
-          console.log(err)
-          reject(err)
-        }
-      })
+      // const GBK = require("../third-party/GBK.js/dist/gbk.min")
+      // url = GBK.URI.encodeURI(url)
+      // request.download({
+      //   url,
+      //   ...fullOptions,
+      //   header: "",
+      //   success(data) {
+      //     console.log(data)
+      //     request.onDownloadComplete({
+      //       token: data.token,
+      //       success(res) {
+      //         file.readArrayBuffer({
+      //           uri: res.uri,
+      //           success(buffer) {
+      //             const result = GBK.decode(buffer.buffer)
+      //             // const result = buffer
+      //             file.delete({
+      //               uri: res.uri,
+      //               success() {
+      //                 resolve(new Response(result))
+      //               },
+      //               fail(...err) {
+      //                 reject(err)
+      //               }
+      //             })
+      //           },
+      //           fail(...err) {
+      //             reject(err)
+      //           }
+      //         })
+      //       },
+      //       fail(...err) {
+      //         reject(err)
+      //       }
+      //     })
+      //   },
+      //   fail(...err) {
+      //     console.log(err)
+      //     reject(err)
+      //   }
+      // })
     } else {
       systemFetch.fetch({
         url,
