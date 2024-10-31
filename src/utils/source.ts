@@ -100,6 +100,7 @@ export class Source {
   loginInfoMap: string
   loginHeader: string
   variable: string
+  jsonPathCache: Map<string, string[]> = new Map()
 
   constructor(raw: SourceData, cookie: Cookie) {
     this.raw = raw
@@ -198,13 +199,13 @@ export class Source {
     })
   }
 
-  async executeJs(js: string, additional: any, debug = false) {
+  async executeJs(js: string, additional: Record<string, any>, debug = false) {
     // noinspection JSUnusedLocalSymbols
     let {key, page, result, resolve, book, baseUrl} = {
       book: new Book({bookSourceUrl: this.bookSourceUrl}),
       baseUrl: this.bookSourceUrl,
       ...additional
-    }
+    } as Record<string, any>
     const java = this.java
     const cookie = this.cookie
     const source = this
@@ -250,6 +251,7 @@ export class Source {
     if (debug) console.log(js)
 
     try {
+      global.runGC()
       eval(js)
       return await resultPromise
     } catch (e) {
@@ -262,7 +264,8 @@ export class Source {
     rule: string,
     result: string,
     maybeJs = false,
-    additional: any = {},
+    isList = false,
+    additional: Record<string, any> = {},
     debug = false
   ) {
     let res: string | string[] = rule
@@ -275,10 +278,29 @@ export class Source {
       // JsonPath
       if (debug) console.log(rule, result)
       global.runGC()
+      const $ = JSON.parse(result)
+      if (isList) {
         res = jsonPath($, rule.replace(/\[-1]/gi, "[-1:]"))
+      } else {
+        let path = this.jsonPathCache.get(rule)
+        if (path === undefined) {
+          path = jsonPath($, rule.replace(/\[-1]/gi, "[-1:]"), {
+            resultType: "PATH"
+          })
+          if (path.length === 1) {
+            this.jsonPathCache.set(rule, path)
+          }
+        }
+        for (const v of path) {
+          res = eval(v)
+        }
+      }
     } else if (maybeJs) {
       try {
-        res = await this.executeJs(rule, {result, ...additional})
+        res = await this.executeJs(rule, {
+          result,
+          ...additional
+        })
       } catch (e) {
         console.log(e)
       }
@@ -297,7 +319,8 @@ export class Source {
     rule: string,
     result: string,
     maybeJs = false,
-    additional?: any,
+    isList = false,
+    additional?: Record<string, any>,
     debug = false
   ) {
     const regexpRule = rule.match(/##.+(##.*)?/gi)?.[0]
@@ -307,7 +330,9 @@ export class Source {
     for (const orPart of rule.split("||")) {
       if (debug) console.log(orPart)
       for (const andPart of orPart.split("&&")) {
-        resultList.push(...(await this.parseGetRule(andPart, result, maybeJs, additional, debug)))
+        resultList.push(
+          ...(await this.parseGetRule(andPart, result, maybeJs, isList, additional, debug))
+        )
       }
       if (resultList.length > 0) break
     }
@@ -326,7 +351,13 @@ export class Source {
     return resultList
   }
 
-  async parseRule(rule: string, result: string, isList = false, additional?: any, debug = false) {
+  async parseRule(
+    rule: string,
+    result: string,
+    isList = false,
+    additional?: Record<string, any>,
+    debug = false
+  ) {
     if (!rule) {
       return isList ? [] : ""
     }
@@ -336,7 +367,9 @@ export class Source {
         const bracketRule = v.replace(/^{{|}}$/gi, "")
         rule = rule.replace(
           v,
-          (await this.parseBracketRule(bracketRule, result, true, additional, debug)).join(", ")
+          (await this.parseBracketRule(bracketRule, result, true, isList, additional, debug)).join(
+            ", "
+          )
         )
       }
     }
@@ -358,7 +391,9 @@ export class Source {
             const rule = v.replace(/^{{|}}$/gi, "")
             js = js.replace(
               v,
-              (await this.parseBracketRule(rule, result, false, additional, debug)).join(", ")
+              (await this.parseBracketRule(rule, result, false, isList, additional, debug)).join(
+                ", "
+              )
             )
           }
         }
@@ -369,7 +404,7 @@ export class Source {
           res = res.replace(new RegExp(v.split("##")[1] ?? "", "gi"), v.split("##")[2] ?? "")
         }
       } else if (!v.match(/{{[\s\S]*?}}/gi)) {
-        res = await this.parseBracketRule(v, result, false, additional, debug)
+        res = await this.parseBracketRule(v, result, false, isList, additional, debug)
         if (!isList) {
           res = res.join(", ")
         }
@@ -383,7 +418,10 @@ export class Source {
         for (const v of res.match(/{{[\s\S]*?}}/gi)) {
           const rule = v.replace(/^{{|}}$/gi, "")
           if (debug) console.log(v, rule)
-          res = res.replace(v, await this.parseBracketRule(rule, result, true, additional, debug))
+          res = res.replace(
+            v,
+            await this.parseBracketRule(rule, result, true, isList, additional, debug)
+          )
         }
       }
     }
@@ -445,7 +483,7 @@ export class Source {
     if (url.match(/{{[\s\S]*?}}/gi)) {
       for (const v of url.match(/{{[\s\S]*?}}/gi)) {
         const rule = v.replace(/^{{|}}$/gi, "")
-        url = url.replace(v, (await this.parseBracketRule(rule, url, true, {key, page}))[0])
+        url = url.replace(v, (await this.parseBracketRule(rule, url, true, false, {key, page}))[0])
       }
     }
 
