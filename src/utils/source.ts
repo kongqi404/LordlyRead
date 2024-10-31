@@ -3,7 +3,7 @@ import {Cookie} from "./cookie"
 import {Book, BookData} from "./book"
 import {fetch} from "./fetch"
 import {helper} from "./index"
-import {JSONPath} from "jsonpath-plus"
+import {jsonPath} from "../third-party/JSONPath/jsonpath"
 
 export interface SourceData {
   bookSourceComment: string
@@ -274,8 +274,8 @@ export class Source {
     } else if (/^\$\./.test(rule)) {
       // JsonPath
       if (debug) console.log(rule, result)
-      res = JSONPath({json: JSON.parse(result), path: rule.replace(/\[-1]/gi, "[-1:]")})
       global.runGC()
+        res = jsonPath($, rule.replace(/\[-1]/gi, "[-1:]"))
     } else if (maybeJs) {
       try {
         res = await this.executeJs(rule, {result, ...additional})
