@@ -99,7 +99,6 @@ export default {
         this.toast(err)
       }
     }
-    console.log(this.list)
     this.page++
   }
 }
