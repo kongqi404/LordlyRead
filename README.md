@@ -10,6 +10,15 @@ Lordly·阅读
 支持「开源阅读」规则的手环在线阅读工具
 </div>
 
+[![GitHub License](https://img.shields.io/github/license/Lordly-Tech/LordlyRead)](https://github.com/Lordly-Tech/LordlyRead/blob/main/LICENSE)
+[![wakatime](https://wakatime.com/badge/user/7ef6dafe-00d7-45e3-b4c7-27b1f5d4d735/project/47bae092-8953-4da1-a089-e75e4ec13996.svg)](https://wakatime.com/badge/user/7ef6dafe-00d7-45e3-b4c7-27b1f5d4d735/project/47bae092-8953-4da1-a089-e75e4ec13996)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Lordly-Tech/LordlyRead/.github%2Fworkflows%2Fdeploy.yml)](https://github.com/Lordly-Tech/LordlyRead/actions)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/w/Lordly-Tech/LordlyRead)](https://github.com/Lordly-Tech/LordlyRead/commits)
+[![GitHub Release](https://img.shields.io/github/v/release/Lordly-Tech/LordlyRead)](https://github.com/Lordly-Tech/LordlyRead/releases/latest)
+[![GitHub Release Date](https://img.shields.io/github/release-date/Lordly-Tech/LordlyRead)](https://github.com/Lordly-Tech/LordlyRead/releases/latest)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Lordly-Tech/LordlyRead/total)](https://github.com/Lordly-Tech/LordlyRead/releases)
+
+
 > 新用户？请查看我们的[使用指南](https://read.lordly.vip/getting-started)。
 
 ## 主要功能
