@@ -118,6 +118,6 @@ export function jsonPath(
 
   if (expr && obj && (P.resultType == "VALUE" || P.resultType == "PATH")) {
     P.trace(P.normalize(expr).replace(/^\$;/, ""), obj, "$")
-    return P.result.length ? P.result : false
+    return P.result
   }
 }
