@@ -65,3 +65,9 @@ Lordly·阅读
 ### GitHub Discussions
 
 GitHub Discussions 地址：https://github.com/Lordly-Tech/LordlyRead/discussions
+
+## ✨ Stargazers over time
+
+感谢大家的支持！
+
+[![Stargazers over time](https://starchart.cc/Lordly-Tech/LordlyRead.svg?variant=adaptive)](https://starchart.cc/Lordly-Tech/LordlyRead)
