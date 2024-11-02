@@ -261,7 +261,7 @@ export default {
     this.toast("正在导入，请稍候")
     let url
     if (!isNaN(parseFloat(this.sourceUrl)) && isFinite(this.sourceUrl)) {
-      url = `https://www.yckceo.com/yuedu/shuyuan/json/id/${this.sourceUrl}.json`
+      url = `https://www.yckceo.com/yuedu/shuyuan/json/id/${this.sourceUrl}`
     } else if (this.sourceUrl.length === 9) {
       url = `https://t.doruo.cn/${this.sourceUrl}`
     } else {
