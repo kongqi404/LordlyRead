@@ -261,7 +261,7 @@ export default {
     this.toast("正在导入，请稍候")
     let url
     if (!isNaN(parseFloat(this.sourceUrl)) && isFinite(this.sourceUrl)) {
-      url = `https://www.yckceo.com/yuedu/shuyuan/json/id/${url}.json`
+      url = `https://www.yckceo.com/yuedu/shuyuan/json/id/${this.url}.json`
     } else if (this.sourceUrl.length === 9) {
       url = `https://t.doruo.cn/${this.sourceUrl}`
     } else {
@@ -270,8 +270,8 @@ export default {
     }
 
     fetch(url)
+    fetch(url,{retry:100})
       .then((res) => {
-        this.toast("get data")
         if (typeof res.data === "string") {
           try {
             res.data = JSON.parse(res.data)
